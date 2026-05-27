@@ -1,0 +1,587 @@
+import { useState } from 'react'
+import {
+  FaUser,
+  FaBriefcase,
+  FaGraduationCap,
+  FaTools,
+  FaCertificate,
+  FaLanguage,
+  FaPlus,
+  FaTrash,
+  FaChevronDown,
+  FaChevronUp,
+} from 'react-icons/fa'
+
+function Section({ title, icon: Icon, children, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+            <Icon className="text-blue-600" size={16} />
+          </div>
+          <span className="font-semibold text-gray-800">{title}</span>
+        </div>
+        {open ? (
+          <FaChevronUp className="text-gray-400" size={14} />
+        ) : (
+          <FaChevronDown className="text-gray-400" size={14} />
+        )}
+      </button>
+      {open && <div className="px-5 pb-5 border-t border-gray-100 pt-4">{children}</div>}
+    </div>
+  )
+}
+
+function InputField({ label, value, onChange, type = 'text', placeholder = '' }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+      />
+    </div>
+  )
+}
+
+function TextArea({ label, value, onChange, placeholder = '', rows = 3 }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <textarea
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        rows={rows}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm resize-none"
+      />
+    </div>
+  )
+}
+
+export default function ResumeForm({ data, setData }) {
+  const updatePersonalInfo = (field, value) => {
+    setData((prev) => ({
+      ...prev,
+      personalInfo: { ...prev.personalInfo, [field]: value },
+    }))
+  }
+
+  // Experience handlers
+  const addExperience = () => {
+    setData((prev) => ({
+      ...prev,
+      experience: [
+        ...prev.experience,
+        {
+          id: Date.now(),
+          company: '',
+          position: '',
+          startDate: '',
+          endDate: '',
+          current: false,
+          description: '',
+        },
+      ],
+    }))
+  }
+
+  const updateExperience = (id, field, value) => {
+    setData((prev) => ({
+      ...prev,
+      experience: prev.experience.map((exp) =>
+        exp.id === id ? { ...exp, [field]: value } : exp
+      ),
+    }))
+  }
+
+  const removeExperience = (id) => {
+    setData((prev) => ({
+      ...prev,
+      experience: prev.experience.filter((exp) => exp.id !== id),
+    }))
+  }
+
+  // Education handlers
+  const addEducation = () => {
+    setData((prev) => ({
+      ...prev,
+      education: [
+        ...prev.education,
+        {
+          id: Date.now(),
+          institution: '',
+          degree: '',
+          field: '',
+          startDate: '',
+          endDate: '',
+          gpa: '',
+        },
+      ],
+    }))
+  }
+
+  const updateEducation = (id, field, value) => {
+    setData((prev) => ({
+      ...prev,
+      education: prev.education.map((edu) =>
+        edu.id === id ? { ...edu, [field]: value } : edu
+      ),
+    }))
+  }
+
+  const removeEducation = (id) => {
+    setData((prev) => ({
+      ...prev,
+      education: prev.education.filter((edu) => edu.id !== id),
+    }))
+  }
+
+  // Skills handlers
+  const addSkill = () => {
+    setData((prev) => ({
+      ...prev,
+      skills: [...prev.skills, ''],
+    }))
+  }
+
+  const updateSkill = (index, value) => {
+    setData((prev) => ({
+      ...prev,
+      skills: prev.skills.map((s, i) => (i === index ? value : s)),
+    }))
+  }
+
+  const removeSkill = (index) => {
+    setData((prev) => ({
+      ...prev,
+      skills: prev.skills.filter((_, i) => i !== index),
+    }))
+  }
+
+  // Certification handlers
+  const addCertification = () => {
+    setData((prev) => ({
+      ...prev,
+      certifications: [
+        ...prev.certifications,
+        { id: Date.now(), name: '', issuer: '', date: '' },
+      ],
+    }))
+  }
+
+  const updateCertification = (id, field, value) => {
+    setData((prev) => ({
+      ...prev,
+      certifications: prev.certifications.map((cert) =>
+        cert.id === id ? { ...cert, [field]: value } : cert
+      ),
+    }))
+  }
+
+  const removeCertification = (id) => {
+    setData((prev) => ({
+      ...prev,
+      certifications: prev.certifications.filter((cert) => cert.id !== id),
+    }))
+  }
+
+  // Language handlers
+  const addLanguage = () => {
+    setData((prev) => ({
+      ...prev,
+      languages: [
+        ...prev.languages,
+        { id: Date.now(), language: '', proficiency: '' },
+      ],
+    }))
+  }
+
+  const updateLanguage = (id, field, value) => {
+    setData((prev) => ({
+      ...prev,
+      languages: prev.languages.map((lang) =>
+        lang.id === id ? { ...lang, [field]: value } : lang
+      ),
+    }))
+  }
+
+  const removeLanguage = (id) => {
+    setData((prev) => ({
+      ...prev,
+      languages: prev.languages.filter((lang) => lang.id !== id),
+    }))
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Personal Information */}
+      <Section title="Personal Information" icon={FaUser} defaultOpen={true}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="sm:col-span-2">
+            <InputField
+              label="Full Name"
+              value={data.personalInfo.fullName}
+              onChange={(e) => updatePersonalInfo('fullName', e.target.value)}
+              placeholder="John Doe"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <InputField
+              label="Professional Title"
+              value={data.personalInfo.title}
+              onChange={(e) => updatePersonalInfo('title', e.target.value)}
+              placeholder="Senior Software Engineer"
+            />
+          </div>
+          <InputField
+            label="Email"
+            type="email"
+            value={data.personalInfo.email}
+            onChange={(e) => updatePersonalInfo('email', e.target.value)}
+            placeholder="john@example.com"
+          />
+          <InputField
+            label="Phone"
+            type="tel"
+            value={data.personalInfo.phone}
+            onChange={(e) => updatePersonalInfo('phone', e.target.value)}
+            placeholder="+1 (555) 123-4567"
+          />
+          <InputField
+            label="Location"
+            value={data.personalInfo.location}
+            onChange={(e) => updatePersonalInfo('location', e.target.value)}
+            placeholder="San Francisco, CA"
+          />
+          <InputField
+            label="LinkedIn"
+            value={data.personalInfo.linkedin}
+            onChange={(e) => updatePersonalInfo('linkedin', e.target.value)}
+            placeholder="linkedin.com/in/johndoe"
+          />
+          <div className="sm:col-span-2">
+            <InputField
+              label="Website/Portfolio"
+              value={data.personalInfo.website}
+              onChange={(e) => updatePersonalInfo('website', e.target.value)}
+              placeholder="johndoe.dev"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <TextArea
+              label="Professional Summary"
+              value={data.personalInfo.summary}
+              onChange={(e) => updatePersonalInfo('summary', e.target.value)}
+              placeholder="A brief summary of your professional background, key achievements, and career goals..."
+              rows={4}
+            />
+          </div>
+        </div>
+      </Section>
+
+      {/* Work Experience */}
+      <Section title="Work Experience" icon={FaBriefcase}>
+        <div className="space-y-4">
+          {data.experience.map((exp, index) => (
+            <div
+              key={exp.id}
+              className="p-4 bg-gray-50 rounded-lg border border-gray-200 relative"
+            >
+              {data.experience.length > 1 && (
+                <button
+                  onClick={() => removeExperience(exp.id)}
+                  className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors"
+                >
+                  <FaTrash size={14} />
+                </button>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <InputField
+                  label="Company"
+                  value={exp.company}
+                  onChange={(e) => updateExperience(exp.id, 'company', e.target.value)}
+                  placeholder="Google"
+                />
+                <InputField
+                  label="Position"
+                  value={exp.position}
+                  onChange={(e) => updateExperience(exp.id, 'position', e.target.value)}
+                  placeholder="Senior Engineer"
+                />
+                <InputField
+                  label="Start Date"
+                  value={exp.startDate}
+                  onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
+                  placeholder="Jan 2020"
+                />
+                <div>
+                  <InputField
+                    label="End Date"
+                    value={exp.current ? 'Present' : exp.endDate}
+                    onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
+                    placeholder="Dec 2023"
+                  />
+                  <label className="flex items-center gap-2 mt-1.5">
+                    <input
+                      type="checkbox"
+                      checked={exp.current}
+                      onChange={(e) =>
+                        updateExperience(exp.id, 'current', e.target.checked)
+                      }
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-xs text-gray-600">Currently working here</span>
+                  </label>
+                </div>
+                <div className="sm:col-span-2">
+                  <TextArea
+                    label="Description"
+                    value={exp.description}
+                    onChange={(e) =>
+                      updateExperience(exp.id, 'description', e.target.value)
+                    }
+                    placeholder="• Led a team of 5 engineers to deliver a microservices architecture&#10;• Improved system performance by 40% through optimization&#10;• Mentored junior developers and conducted code reviews"
+                    rows={4}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={addExperience}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
+          >
+            <FaPlus size={12} />
+            Add Experience
+          </button>
+        </div>
+      </Section>
+
+      {/* Education */}
+      <Section title="Education" icon={FaGraduationCap}>
+        <div className="space-y-4">
+          {data.education.map((edu) => (
+            <div
+              key={edu.id}
+              className="p-4 bg-gray-50 rounded-lg border border-gray-200 relative"
+            >
+              {data.education.length > 1 && (
+                <button
+                  onClick={() => removeEducation(edu.id)}
+                  className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors"
+                >
+                  <FaTrash size={14} />
+                </button>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <InputField
+                    label="Institution"
+                    value={edu.institution}
+                    onChange={(e) =>
+                      updateEducation(edu.id, 'institution', e.target.value)
+                    }
+                    placeholder="Stanford University"
+                  />
+                </div>
+                <InputField
+                  label="Degree"
+                  value={edu.degree}
+                  onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)}
+                  placeholder="Bachelor of Science"
+                />
+                <InputField
+                  label="Field of Study"
+                  value={edu.field}
+                  onChange={(e) => updateEducation(edu.id, 'field', e.target.value)}
+                  placeholder="Computer Science"
+                />
+                <InputField
+                  label="Start Date"
+                  value={edu.startDate}
+                  onChange={(e) => updateEducation(edu.id, 'startDate', e.target.value)}
+                  placeholder="2016"
+                />
+                <InputField
+                  label="End Date"
+                  value={edu.endDate}
+                  onChange={(e) => updateEducation(edu.id, 'endDate', e.target.value)}
+                  placeholder="2020"
+                />
+                <InputField
+                  label="GPA (optional)"
+                  value={edu.gpa}
+                  onChange={(e) => updateEducation(edu.id, 'gpa', e.target.value)}
+                  placeholder="3.9/4.0"
+                />
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={addEducation}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
+          >
+            <FaPlus size={12} />
+            Add Education
+          </button>
+        </div>
+      </Section>
+
+      {/* Skills */}
+      <Section title="Skills" icon={FaTools}>
+        <div className="space-y-2">
+          {data.skills.map((skill, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <input
+                type="text"
+                value={skill}
+                onChange={(e) => updateSkill(index, e.target.value)}
+                placeholder="e.g. JavaScript, React, Node.js"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+              />
+              {data.skills.length > 1 && (
+                <button
+                  onClick={() => removeSkill(index)}
+                  className="text-red-400 hover:text-red-600 transition-colors p-2"
+                >
+                  <FaTrash size={12} />
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            onClick={addSkill}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm mt-2"
+          >
+            <FaPlus size={12} />
+            Add Skill
+          </button>
+          <p className="text-xs text-gray-500 mt-1">
+            Tip: Add one skill per line for best formatting, or separate with commas
+          </p>
+        </div>
+      </Section>
+
+      {/* Certifications */}
+      <Section title="Certifications" icon={FaCertificate}>
+        <div className="space-y-4">
+          {data.certifications.map((cert) => (
+            <div
+              key={cert.id}
+              className="p-4 bg-gray-50 rounded-lg border border-gray-200 relative"
+            >
+              {data.certifications.length > 1 && (
+                <button
+                  onClick={() => removeCertification(cert.id)}
+                  className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors"
+                >
+                  <FaTrash size={14} />
+                </button>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <InputField
+                    label="Certification Name"
+                    value={cert.name}
+                    onChange={(e) =>
+                      updateCertification(cert.id, 'name', e.target.value)
+                    }
+                    placeholder="AWS Solutions Architect"
+                  />
+                </div>
+                <InputField
+                  label="Issuing Organization"
+                  value={cert.issuer}
+                  onChange={(e) =>
+                    updateCertification(cert.id, 'issuer', e.target.value)
+                  }
+                  placeholder="Amazon Web Services"
+                />
+                <InputField
+                  label="Date"
+                  value={cert.date}
+                  onChange={(e) =>
+                    updateCertification(cert.id, 'date', e.target.value)
+                  }
+                  placeholder="March 2023"
+                />
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={addCertification}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
+          >
+            <FaPlus size={12} />
+            Add Certification
+          </button>
+        </div>
+      </Section>
+
+      {/* Languages */}
+      <Section title="Languages" icon={FaLanguage}>
+        <div className="space-y-4">
+          {data.languages.map((lang) => (
+            <div
+              key={lang.id}
+              className="p-3 bg-gray-50 rounded-lg border border-gray-200 relative"
+            >
+              {data.languages.length > 1 && (
+                <button
+                  onClick={() => removeLanguage(lang.id)}
+                  className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors"
+                >
+                  <FaTrash size={14} />
+                </button>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <InputField
+                  label="Language"
+                  value={lang.language}
+                  onChange={(e) => updateLanguage(lang.id, 'language', e.target.value)}
+                  placeholder="English"
+                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Proficiency
+                  </label>
+                  <select
+                    value={lang.proficiency}
+                    onChange={(e) =>
+                      updateLanguage(lang.id, 'proficiency', e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                  >
+                    <option value="">Select level</option>
+                    <option value="Native">Native</option>
+                    <option value="Fluent">Fluent</option>
+                    <option value="Advanced">Advanced</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Basic">Basic</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={addLanguage}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
+          >
+            <FaPlus size={12} />
+            Add Language
+          </button>
+        </div>
+      </Section>
+    </div>
+  )
+}
