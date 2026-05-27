@@ -5,9 +5,62 @@ import ResumeForm from './components/ResumeForm'
 import TemplateSelector from './components/TemplateSelector'
 import Recommendations from './components/Recommendations'
 import { templates } from './components/templates'
-import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt } from 'react-icons/fa'
+import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser } from 'react-icons/fa'
 
-const initialData = {
+const sampleData = {
+  personalInfo: {
+    fullName: 'Alex Johnson',
+    title: 'Senior Software Engineer',
+    email: 'alex.johnson@email.com',
+    phone: '+1 (555) 123-4567',
+    location: 'San Francisco, CA',
+    linkedin: 'linkedin.com/in/alexjohnson',
+    website: 'alexjohnson.dev',
+    summary: 'Results-driven software engineer with 8+ years of experience building scalable web applications. Led cross-functional teams to deliver products serving 2M+ users. Passionate about clean code, mentoring, and driving engineering excellence.',
+  },
+  experience: [
+    {
+      id: 1,
+      company: 'Google',
+      position: 'Senior Software Engineer',
+      startDate: 'Jan 2021',
+      endDate: '',
+      current: true,
+      description: '• Led migration of monolithic app to microservices, reducing deploy time by 70%\n• Mentored 4 junior engineers and established code review standards\n• Architected real-time data pipeline processing 10M+ events/day',
+    },
+    {
+      id: 2,
+      company: 'Stripe',
+      position: 'Software Engineer',
+      startDate: 'Mar 2018',
+      endDate: 'Dec 2020',
+      current: false,
+      description: '• Built payment processing features handling $2B+ in annual transactions\n• Improved API response times by 40% through caching optimization\n• Contributed to open-source SDK used by 50K+ developers',
+    },
+  ],
+  education: [
+    {
+      id: 1,
+      institution: 'Stanford University',
+      degree: 'Master of Science',
+      field: 'Computer Science',
+      startDate: '2016',
+      endDate: '2018',
+      gpa: '3.9/4.0',
+    },
+  ],
+  skills: ['JavaScript', 'TypeScript', 'React', 'Node.js', 'Python', 'AWS', 'Kubernetes', 'GraphQL', 'PostgreSQL', 'System Design'],
+  certifications: [
+    { id: 1, name: 'AWS Solutions Architect Professional', issuer: 'Amazon Web Services', date: 'Mar 2023' },
+    { id: 2, name: 'Google Cloud Professional Engineer', issuer: 'Google Cloud', date: 'Nov 2022' },
+  ],
+  languages: [
+    { id: 1, language: 'English', proficiency: 'Native' },
+    { id: 2, language: 'Spanish', proficiency: 'Advanced' },
+  ],
+}
+
+const emptyData = {
   personalInfo: {
     fullName: '',
     title: '',
@@ -30,15 +83,26 @@ const initialData = {
 }
 
 function App() {
-  const [resumeData, setResumeData] = useState(initialData)
+  const [resumeData, setResumeData] = useState(sampleData)
   const [selectedTemplate, setSelectedTemplate] = useState('modern')
   const [activeView, setActiveView] = useState('form')
+  const [usingSample, setUsingSample] = useState(true)
   const resumeRef = useRef(null)
 
   const handlePrint = useReactToPrint({
     contentRef: resumeRef,
     documentTitle: `${resumeData.personalInfo.fullName || 'Resume'}_Resume`,
   })
+
+  const toggleSampleData = () => {
+    if (usingSample) {
+      setResumeData(emptyData)
+      setUsingSample(false)
+    } else {
+      setResumeData(sampleData)
+      setUsingSample(true)
+    }
+  }
 
   const SelectedTemplateComponent = templates.find((t) => t.id === selectedTemplate)?.component
 
@@ -116,6 +180,16 @@ function App() {
                 Preview
               </button>
             </div>
+
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={toggleSampleData}
+              className="hidden sm:flex items-center gap-2 bg-white text-gray-600 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all border border-gray-200 font-medium text-[13px] hover:text-gray-800"
+            >
+              {usingSample ? <FaEraser size={13} /> : <FaMagic size={13} />}
+              {usingSample ? 'Clear' : 'Sample'}
+            </motion.button>
 
             <motion.button
               whileHover={{ scale: 1.03, y: -1 }}
