@@ -88,6 +88,37 @@ function TemplateSkeleton({ id }) {
           </div>
         </>
       )
+    case 'professional':
+      return (
+        <>
+          <div className="h-1 bg-gradient-to-r from-teal-400 to-blue-400 rounded-t"></div>
+          <div className="flex-1 p-1.5 flex gap-1">
+            <div className="flex-1">
+              <div className="w-10 h-1.5 bg-white/60 rounded mb-1"></div>
+              <div className="w-full h-0.5 bg-white/20 rounded mb-0.5"></div>
+              <div className="w-3/4 h-0.5 bg-white/20 rounded mb-1.5"></div>
+              <div className="w-6 h-0.5 bg-white/30 rounded mb-1"></div>
+              <div className="w-full h-0.5 bg-white/15 rounded"></div>
+            </div>
+            <div className="w-[30%] space-y-1 border-l border-white/10 pl-1">
+              <div className="w-full h-0.5 bg-white/25 rounded"></div>
+              <div className="w-full h-0.5 bg-white/25 rounded"></div>
+              <div className="w-3/4 h-0.5 bg-white/15 rounded"></div>
+            </div>
+          </div>
+        </>
+      )
+    case 'elegant':
+      return (
+        <div className="flex flex-col h-full items-center justify-center p-1.5">
+          <div className="w-4 h-4 rounded-full bg-white/30 mb-1"></div>
+          <div className="w-12 h-1.5 bg-white/60 rounded mb-0.5"></div>
+          <div className="w-8 h-0.5 bg-white/30 rounded mb-1.5"></div>
+          <div className="w-10 h-px bg-white/20 mb-1.5"></div>
+          <div className="w-full h-0.5 bg-white/15 rounded mb-0.5"></div>
+          <div className="w-3/4 h-0.5 bg-white/15 rounded"></div>
+        </div>
+      )
     default:
       return null
   }
@@ -103,7 +134,7 @@ export default function TemplateSelector({ selectedTemplate, onSelect }) {
           </div>
           <div>
             <h3 className="font-semibold text-gray-800 text-[13px]">Choose Template</h3>
-            <p className="text-[11px] text-gray-400">5 professional designs</p>
+            <p className="text-[11px] text-gray-400">7 professional designs</p>
           </div>
         </div>
         <span className="text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100 font-medium">
@@ -111,9 +142,9 @@ export default function TemplateSelector({ selectedTemplate, onSelect }) {
         </span>
       </div>
 
-      {/* Scrollable row for 5 templates */}
+      {/* Scrollable row for templates */}
       <div className="p-4">
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
           {templates.map((template) => (
             <motion.button
               key={template.id}

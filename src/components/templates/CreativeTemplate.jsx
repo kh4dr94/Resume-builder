@@ -10,15 +10,21 @@ export default function CreativeTemplate({ data }) {
   const filledLanguages = languages.filter((lang) => lang.language)
 
   return (
-    <div className="bg-white w-full text-[11px] leading-relaxed" style={{ minHeight: '297mm', color: '#1a1a1a' }}>
+    <div className="bg-white w-full text-[11px] leading-relaxed break-words overflow-hidden" style={{ minHeight: '297mm', color: '#1a1a1a' }}>
 
       {/* Two-column layout */}
       <div className="flex" style={{ minHeight: '297mm' }}>
         {/* Left sidebar */}
         <div className="w-[35%] bg-slate-800 text-white px-6 py-8">
+          {/* Photo */}
+          {personalInfo.photo && (
+            <div className="mb-5 flex justify-center">
+              <img src={personalInfo.photo} alt="" className="w-24 h-24 rounded-full object-cover border-3 border-emerald-400" />
+            </div>
+          )}
           {/* Name */}
           <div className="mb-6 pb-4 border-b border-slate-600">
-            <h1 className="text-[22px] font-bold leading-tight mb-1">
+            <h1 className="text-[22px] font-bold leading-tight mb-1 break-words">
               {personalInfo.fullName || 'Your Name'}
             </h1>
             {personalInfo.title && (

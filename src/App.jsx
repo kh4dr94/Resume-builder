@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import { motion, AnimatePresence } from 'framer-motion'
 import ResumeForm from './components/ResumeForm'
@@ -17,6 +17,7 @@ const sampleData = {
     linkedin: 'linkedin.com/in/alexjohnson',
     website: 'alexjohnson.dev',
     summary: 'Results-driven software engineer with 8+ years of experience building scalable web applications. Led cross-functional teams to deliver products serving 2M+ users. Passionate about clean code, mentoring, and driving engineering excellence.',
+    photo: '',
   },
   experience: [
     {
@@ -70,6 +71,7 @@ const emptyData = {
     linkedin: '',
     website: '',
     summary: '',
+    photo: '',
   },
   experience: [
     { id: 1, company: '', position: '', startDate: '', endDate: '', current: false, description: '' },
@@ -87,7 +89,27 @@ function App() {
   const [selectedTemplate, setSelectedTemplate] = useState('modern')
   const [activeView, setActiveView] = useState('form')
   const [usingSample, setUsingSample] = useState(true)
+  const [previewScale, setPreviewScale] = useState(0.55)
   const resumeRef = useRef(null)
+  const previewContainerRef = useRef(null)
+
+  // Auto-scale preview to fit container width
+  useEffect(() => {
+    const container = previewContainerRef.current
+    if (!container) return
+
+    const updateScale = () => {
+      const containerWidth = container.clientWidth - 32 // padding
+      const a4Width = 794 // 210mm in px at 96dpi
+      const scale = Math.min(containerWidth / a4Width, 1)
+      setPreviewScale(scale)
+    }
+
+    updateScale()
+    const observer = new ResizeObserver(updateScale)
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [])
 
   const handlePrint = useReactToPrint({
     contentRef: resumeRef,
@@ -262,16 +284,18 @@ function App() {
                   </div>
                 </div>
 
-                {/* Preview content */}
-                <div className="p-6 overflow-auto max-h-[calc(100vh-160px)] scrollbar-thin bg-[#e8eaed]/40">
-                  <div
-                    className="shadow-2xl shadow-gray-300/40 rounded overflow-hidden mx-auto"
-                    style={{ maxWidth: '210mm' }}
-                    ref={resumeRef}
-                  >
-                    {SelectedTemplateComponent && (
-                      <SelectedTemplateComponent data={resumeData} />
-                    )}
+                {/* Preview content - scale to fit */}
+                <div ref={previewContainerRef} className="overflow-auto max-h-[calc(100vh-160px)] scrollbar-thin bg-[#e8eaed]/40 p-4">
+                  <div style={{ width: '210mm', transform: `scale(${previewScale})`, transformOrigin: 'top center', margin: '0 auto', height: `calc(297mm * ${previewScale})` }}>
+                    <div
+                      className="shadow-2xl shadow-gray-300/40 rounded overflow-hidden bg-white break-words"
+                      style={{ width: '210mm', minHeight: '297mm' }}
+                      ref={resumeRef}
+                    >
+                      {SelectedTemplateComponent && (
+                        <SelectedTemplateComponent data={resumeData} />
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.div>

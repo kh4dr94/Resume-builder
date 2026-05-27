@@ -10,6 +10,7 @@ import {
   FaPlus,
   FaTrash,
   FaChevronDown,
+  FaCamera,
 } from 'react-icons/fa'
 
 function Section({ title, icon: Icon, children, defaultOpen = false, count = 0, subtitle = '' }) {
@@ -226,6 +227,59 @@ export default function ResumeForm({ data, setData }) {
       {/* Personal Information */}
       <Section title="Personal Information" subtitle="Basic details & contact" icon={FaUser} defaultOpen={true}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {/* Photo upload */}
+          <div className="sm:col-span-2 flex items-center gap-4 mb-2">
+            <div className="relative">
+              {data.personalInfo.photo ? (
+                <img
+                  src={data.personalInfo.photo}
+                  alt="Profile"
+                  className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                  <FaCamera className="text-gray-400" size={16} />
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <label className="block text-[12px] font-semibold text-gray-600 mb-1 uppercase tracking-wide">
+                Profile Photo <span className="text-gray-400 font-normal normal-case">(optional)</span>
+              </label>
+              <div className="flex items-center gap-2">
+                <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-semibold hover:bg-blue-100 transition-colors border border-blue-100">
+                  <FaCamera size={10} />
+                  Upload Photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0]
+                      if (file) {
+                        const reader = new FileReader()
+                        reader.onloadend = () => {
+                          updatePersonalInfo('photo', reader.result)
+                        }
+                        reader.readAsDataURL(file)
+                      }
+                    }}
+                  />
+                </label>
+                {data.personalInfo.photo && (
+                  <button
+                    onClick={() => updatePersonalInfo('photo', '')}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-red-500 text-[11px] font-medium hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <FaTrash size={9} />
+                    Remove
+                  </button>
+                )}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1">Shown in supported templates</p>
+            </div>
+          </div>
+
           <div className="sm:col-span-2">
             <InputField
               label="Full Name"

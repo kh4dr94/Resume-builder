@@ -3,6 +3,8 @@ import ClassicTemplate from './ClassicTemplate'
 import CreativeTemplate from './CreativeTemplate'
 import MinimalTemplate from './MinimalTemplate'
 import ExecutiveTemplate from './ExecutiveTemplate'
+import ProfessionalTemplate from './ProfessionalTemplate'
+import ElegantTemplate from './ElegantTemplate'
 
 export const templates = [
   {
@@ -40,6 +42,20 @@ export const templates = [
     color: 'from-[#1a1a2e] to-[#d4a853]',
     component: ExecutiveTemplate,
   },
+  {
+    id: 'professional',
+    name: 'Professional',
+    description: 'Teal accents with sidebar skills panel',
+    color: 'from-teal-500 to-cyan-600',
+    component: ProfessionalTemplate,
+  },
+  {
+    id: 'elegant',
+    name: 'Elegant',
+    description: 'Rose accents with decorative serif style',
+    color: 'from-rose-300 to-pink-500',
+    component: ElegantTemplate,
+  },
 ]
 
-export { ModernTemplate, ClassicTemplate, CreativeTemplate, MinimalTemplate, ExecutiveTemplate }
+export { ModernTemplate, ClassicTemplate, CreativeTemplate, MinimalTemplate, ExecutiveTemplate, ProfessionalTemplate, ElegantTemplate }

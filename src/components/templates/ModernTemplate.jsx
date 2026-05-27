@@ -11,50 +11,57 @@ export default function ModernTemplate({ data }) {
 
   return (
     <div
-      className="bg-white w-full font-sans text-[11px] leading-relaxed"
+      className="bg-white w-full font-sans text-[11px] leading-relaxed break-words overflow-hidden"
       style={{ padding: '0', minHeight: '297mm', color: '#1a1a1a' }}
     >
       {/* Header - Modern gradient */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-10 py-8">
-        <h1 className="text-[28px] font-bold tracking-wide mb-1">
-          {personalInfo.fullName || 'Your Name'}
-        </h1>
-        {personalInfo.title && (
-          <p className="text-[14px] text-blue-100 font-medium tracking-wider uppercase mb-4">
-            {personalInfo.title}
-          </p>
-        )}
-        <div className="flex flex-wrap gap-x-5 gap-y-1 text-[10px] text-blue-100">
-          {personalInfo.email && (
-            <span className="flex items-center gap-1.5">
-              <FaEnvelope size={10} />
-              {personalInfo.email}
-            </span>
+        <div className="flex items-start gap-5">
+          {personalInfo.photo && (
+            <img src={personalInfo.photo} alt="" className="w-20 h-20 rounded-full object-cover border-3 border-white/30 shrink-0" />
           )}
-          {personalInfo.phone && (
-            <span className="flex items-center gap-1.5">
-              <FaPhone size={10} />
-              {personalInfo.phone}
-            </span>
-          )}
-          {personalInfo.location && (
-            <span className="flex items-center gap-1.5">
-              <FaMapMarkerAlt size={10} />
-              {personalInfo.location}
-            </span>
-          )}
-          {personalInfo.linkedin && (
-            <span className="flex items-center gap-1.5">
-              <FaLinkedin size={10} />
-              {personalInfo.linkedin}
-            </span>
-          )}
-          {personalInfo.website && (
-            <span className="flex items-center gap-1.5">
-              <FaGlobe size={10} />
-              {personalInfo.website}
-            </span>
-          )}
+          <div className="flex-1 min-w-0">
+            <h1 className="text-[28px] font-bold tracking-wide mb-1 truncate">
+              {personalInfo.fullName || 'Your Name'}
+            </h1>
+            {personalInfo.title && (
+              <p className="text-[14px] text-blue-100 font-medium tracking-wider uppercase mb-4 truncate">
+                {personalInfo.title}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-x-5 gap-y-1 text-[10px] text-blue-100">
+              {personalInfo.email && (
+                <span className="flex items-center gap-1.5 truncate max-w-[200px]">
+                  <FaEnvelope size={10} className="shrink-0" />
+                  <span className="truncate">{personalInfo.email}</span>
+                </span>
+              )}
+              {personalInfo.phone && (
+                <span className="flex items-center gap-1.5">
+                  <FaPhone size={10} className="shrink-0" />
+                  {personalInfo.phone}
+                </span>
+              )}
+              {personalInfo.location && (
+                <span className="flex items-center gap-1.5">
+                  <FaMapMarkerAlt size={10} className="shrink-0" />
+                  {personalInfo.location}
+                </span>
+              )}
+              {personalInfo.linkedin && (
+                <span className="flex items-center gap-1.5 truncate max-w-[200px]">
+                  <FaLinkedin size={10} className="shrink-0" />
+                  <span className="truncate">{personalInfo.linkedin}</span>
+                </span>
+              )}
+              {personalInfo.website && (
+                <span className="flex items-center gap-1.5 truncate max-w-[150px]">
+                  <FaGlobe size={10} className="shrink-0" />
+                  <span className="truncate">{personalInfo.website}</span>
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
