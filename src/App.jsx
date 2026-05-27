@@ -7,8 +7,11 @@ import Recommendations from './components/Recommendations'
 import ProfileManager, { loadProfiles, saveProfiles, loadActiveProfileId, saveActiveProfileId } from './components/ProfileManager'
 import SectionOrderPanel, { DEFAULT_SECTION_ORDER } from './components/SectionOrderPanel'
 import ThemePicker, { COLOR_THEMES } from './components/ThemePicker'
+import ATSScore from './components/ATSScore'
+import KeyboardShortcuts from './components/KeyboardShortcuts'
+import WordCount from './components/WordCount'
 import { templates } from './components/templates'
-import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave } from 'react-icons/fa'
+import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave, FaFileExport, FaFileImport, FaKeyboard } from 'react-icons/fa'
 
 const sampleData = {
   personalInfo: {
@@ -171,8 +174,10 @@ function App() {
   const [saveStatus, setSaveStatus] = useState('')
   const [history, setHistory] = useState([activeProfile?.data || sampleData])
   const [historyIndex, setHistoryIndex] = useState(0)
+  const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const resumeRef = useRef(null)
   const previewContainerRef = useRef(null)
+  const importInputRef = useRef(null)
 
   // Auto-save to localStorage (profiles + legacy keys for backward compat)
   useEffect(() => {
@@ -332,10 +337,19 @@ function App() {
     const handleKey = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo() }
       if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redo() }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); handlePrint() }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') { e.preventDefault(); setDarkMode(dm => !dm) }
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tag = document.activeElement?.tagName?.toLowerCase()
+        if (tag !== 'input' && tag !== 'textarea') {
+          e.preventDefault()
+          setShortcutsOpen(s => !s)
+        }
+      }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [undo, redo])
+  }, [undo, redo, handlePrint, darkMode])
 
   // Auto-scale preview to fit container width
   useEffect(() => {
@@ -359,6 +373,58 @@ function App() {
     contentRef: resumeRef,
     documentTitle: `${resumeData.personalInfo.fullName || 'Resume'}_Resume`,
   })
+
+  // Export all profiles as JSON
+  const handleExport = useCallback(() => {
+    const exportData = {
+      version: '4.0',
+      exportedAt: new Date().toISOString(),
+      profiles: profiles,
+      activeProfileId: activeProfileId,
+    }
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `resume-profiles-${new Date().toISOString().slice(0, 10)}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, [profiles, activeProfileId])
+
+  // Import profiles from JSON
+  const handleImport = useCallback((e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      try {
+        const importedData = JSON.parse(event.target.result)
+        if (importedData.profiles && Array.isArray(importedData.profiles)) {
+          setProfiles(importedData.profiles)
+          saveProfiles(importedData.profiles)
+          const newActiveId = importedData.activeProfileId || importedData.profiles[0]?.id
+          if (newActiveId) {
+            const target = importedData.profiles.find(p => p.id === newActiveId) || importedData.profiles[0]
+            setActiveProfileId(target.id)
+            saveActiveProfileId(target.id)
+            setResumeData(target.data || sampleData)
+            setSelectedTemplate(target.template || 'modern')
+            setSectionOrder(target.sectionOrder || DEFAULT_SECTION_ORDER)
+            setColorTheme(target.colorTheme || COLOR_THEMES[0])
+            setHistory([target.data || sampleData])
+            setHistoryIndex(0)
+          }
+        }
+      } catch (err) {
+        alert('Invalid JSON file. Please select a valid resume export file.')
+      }
+    }
+    reader.readAsText(file)
+    // Reset input value so same file can be re-imported
+    e.target.value = ''
+  }, [])
 
   const toggleSampleData = () => {
     if (usingSample) {
@@ -460,6 +526,46 @@ function App() {
               </span>
             </div>
 
+            {/* Export/Import buttons */}
+            <div className="hidden sm:flex items-center gap-1">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleExport}
+                className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-400 hover:text-green-400' : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-green-600'}`}
+                title="Export profiles"
+              >
+                <FaFileExport size={12} />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => importInputRef.current?.click()}
+                className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-400 hover:text-blue-400' : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-blue-600'}`}
+                title="Import profiles"
+              >
+                <FaFileImport size={12} />
+              </motion.button>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleImport}
+                className="hidden"
+              />
+            </div>
+
+            {/* Keyboard shortcuts button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShortcutsOpen(true)}
+              className={`hidden sm:flex w-8 h-8 rounded-xl items-center justify-center transition-all border text-sm font-bold ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-400 hover:text-purple-400' : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-purple-600'}`}
+              title="Keyboard shortcuts (?)"
+            >
+              ?
+            </motion.button>
+
             {/* Dark mode toggle */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -554,6 +660,9 @@ function App() {
                 darkMode={darkMode}
               />
 
+              {/* ATS Score */}
+              <ATSScore data={resumeData} darkMode={darkMode} />
+
               {/* Color Theme Picker */}
               <ThemePicker
                 colorTheme={colorTheme}
@@ -576,6 +685,9 @@ function App() {
             }`}
           >
             <div className="sticky top-[76px]">
+              {/* Word Count Bar */}
+              <WordCount data={resumeData} darkMode={darkMode} />
+
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -643,6 +755,9 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcuts isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} darkMode={darkMode} />
     </div>
   )
 }
