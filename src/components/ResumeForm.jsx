@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   FaUser,
   FaBriefcase,
@@ -12,29 +13,48 @@ import {
   FaChevronUp,
 } from 'react-icons/fa'
 
-function Section({ title, icon: Icon, children, defaultOpen = false }) {
+function Section({ title, icon: Icon, children, defaultOpen = false, count = 0 }) {
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
+    >
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center">
             <Icon className="text-blue-600" size={16} />
           </div>
           <span className="font-semibold text-gray-800">{title}</span>
+          {count > 0 && (
+            <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full font-medium">
+              {count}
+            </span>
+          )}
         </div>
-        {open ? (
-          <FaChevronUp className="text-gray-400" size={14} />
-        ) : (
+        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <FaChevronDown className="text-gray-400" size={14} />
-        )}
+        </motion.div>
       </button>
-      {open && <div className="px-5 pb-5 border-t border-gray-100 pt-4">{children}</div>}
-    </div>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 pb-5 border-t border-gray-100 pt-4">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
 
