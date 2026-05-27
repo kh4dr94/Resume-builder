@@ -8,8 +8,17 @@ const ACTIVE_PROFILE_KEY = 'resumeBuilder_activeProfile'
 export function loadProfiles() {
   try {
     const saved = localStorage.getItem(PROFILES_KEY)
-    if (saved) return JSON.parse(saved)
-  } catch (e) {}
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      // Validate it's an array of profiles with expected shape
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id && parsed[0].data) {
+        return parsed
+      }
+    }
+  } catch (e) {
+    // Corrupted data - clear it
+    try { localStorage.removeItem(PROFILES_KEY) } catch (err) {}
+  }
   return null
 }
 

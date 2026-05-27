@@ -371,7 +371,7 @@ function App() {
 
   const handlePrint = useReactToPrint({
     contentRef: resumeRef,
-    documentTitle: `${resumeData.personalInfo.fullName || 'Resume'}_Resume`,
+    documentTitle: `${resumeData?.personalInfo?.fullName || 'Resume'}_Resume`,
   })
 
   // Export all profiles as JSON
@@ -443,11 +443,11 @@ function App() {
   const SelectedTemplateComponent = templates.find((t) => t.id === selectedTemplate)?.component
 
   const filledSections = [
-    resumeData.personalInfo.fullName,
-    resumeData.personalInfo.summary,
-    resumeData.experience.some((e) => e.company || e.position),
-    resumeData.education.some((e) => e.institution || e.degree),
-    resumeData.skills.some((s) => s.trim() !== ''),
+    resumeData.personalInfo?.fullName,
+    resumeData.personalInfo?.summary,
+    (resumeData.experience || []).some((e) => e.company || e.position),
+    (resumeData.education || []).some((e) => e.institution || e.degree),
+    (resumeData.skills || []).some((s) => s.trim() !== ''),
   ].filter(Boolean).length
 
   return (
