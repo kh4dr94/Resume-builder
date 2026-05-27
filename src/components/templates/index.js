@@ -5,6 +5,11 @@ import MinimalTemplate from './MinimalTemplate'
 import ExecutiveTemplate from './ExecutiveTemplate'
 import ProfessionalTemplate from './ProfessionalTemplate'
 import ElegantTemplate from './ElegantTemplate'
+import BoldTemplate from './BoldTemplate'
+import TechTemplate from './TechTemplate'
+import AcademicTemplate from './AcademicTemplate'
+import InfographicTemplate from './InfographicTemplate'
+import DarkModeTemplate from './DarkModeTemplate'
 
 export const templates = [
   {
@@ -56,6 +61,41 @@ export const templates = [
     color: 'from-rose-300 to-pink-500',
     component: ElegantTemplate,
   },
+  {
+    id: 'bold',
+    name: 'Bold',
+    description: 'High contrast dark with orange accents',
+    color: 'from-orange-500 to-red-600',
+    component: BoldTemplate,
+  },
+  {
+    id: 'tech',
+    name: 'Tech',
+    description: 'Developer terminal with Catppuccin theme',
+    color: 'from-[#1e1e2e] to-[#cba6f7]',
+    component: TechTemplate,
+  },
+  {
+    id: 'academic',
+    name: 'Academic',
+    description: 'Formal serif layout for research & academia',
+    color: 'from-gray-500 to-gray-700',
+    component: AcademicTemplate,
+  },
+  {
+    id: 'infographic',
+    name: 'Infographic',
+    description: 'Visual skill bars with violet sidebar',
+    color: 'from-violet-500 to-indigo-700',
+    component: InfographicTemplate,
+  },
+  {
+    id: 'darkmode',
+    name: 'Dark Mode',
+    description: 'Sleek dark UI with neon cyan & purple',
+    color: 'from-cyan-400 to-purple-600',
+    component: DarkModeTemplate,
+  },
 ]
 
-export { ModernTemplate, ClassicTemplate, CreativeTemplate, MinimalTemplate, ExecutiveTemplate, ProfessionalTemplate, ElegantTemplate }
+export { ModernTemplate, ClassicTemplate, CreativeTemplate, MinimalTemplate, ExecutiveTemplate, ProfessionalTemplate, ElegantTemplate, BoldTemplate, TechTemplate, AcademicTemplate, InfographicTemplate, DarkModeTemplate }

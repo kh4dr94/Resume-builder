@@ -119,6 +119,86 @@ function TemplateSkeleton({ id }) {
           <div className="w-3/4 h-0.5 bg-white/15 rounded"></div>
         </div>
       )
+    case 'bold':
+      return (
+        <>
+          <div className="h-1 bg-gradient-to-r from-orange-400 to-red-400 rounded-t"></div>
+          <div className="flex-1 p-1.5 bg-black/10 rounded-b">
+            <div className="w-14 h-2 bg-white/70 rounded mb-1"></div>
+            <div className="w-8 h-0.5 bg-orange-300/60 rounded mb-2"></div>
+            <div className="bg-white/5 rounded p-1 mb-1 border border-white/10">
+              <div className="w-full h-0.5 bg-white/20 rounded mb-0.5"></div>
+              <div className="w-3/4 h-0.5 bg-white/15 rounded"></div>
+            </div>
+          </div>
+        </>
+      )
+    case 'tech':
+      return (
+        <div className="flex flex-col h-full">
+          <div className="bg-black/20 rounded-t p-1.5 flex items-center gap-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-red-300/60"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-yellow-300/60"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-green-300/60"></div>
+          </div>
+          <div className="flex-1 p-1.5">
+            <div className="w-6 h-0.5 bg-green-300/50 rounded mb-1"></div>
+            <div className="w-12 h-1.5 bg-purple-300/60 rounded mb-1.5"></div>
+            <div className="w-full h-0.5 bg-white/15 rounded mb-0.5"></div>
+            <div className="w-5/6 h-0.5 bg-white/15 rounded"></div>
+          </div>
+        </div>
+      )
+    case 'academic':
+      return (
+        <div className="flex flex-col h-full p-1.5">
+          <div className="flex justify-center mb-1">
+            <div className="w-12 h-1.5 bg-white/60 rounded"></div>
+          </div>
+          <div className="w-full h-px bg-white/40 mb-1.5"></div>
+          <div className="w-5 h-0.5 bg-white/30 rounded mb-1"></div>
+          <div className="w-full h-0.5 bg-white/20 rounded mb-0.5"></div>
+          <div className="w-5/6 h-0.5 bg-white/20 rounded mb-1.5"></div>
+          <div className="w-5 h-0.5 bg-white/30 rounded mb-1"></div>
+          <div className="w-full h-0.5 bg-white/15 rounded"></div>
+        </div>
+      )
+    case 'infographic':
+      return (
+        <div className="flex h-full">
+          <div className="w-[40%] bg-white/15 rounded-l p-1">
+            <div className="w-4 h-4 rounded-full bg-white/30 mx-auto mb-1"></div>
+            <div className="w-full h-1 bg-white/20 rounded-full mb-0.5"></div>
+            <div className="w-3/4 h-1 bg-white/15 rounded-full mb-0.5"></div>
+            <div className="w-5/6 h-1 bg-white/10 rounded-full"></div>
+          </div>
+          <div className="w-[60%] p-1.5">
+            <div className="w-8 h-1 bg-white/40 rounded mb-1"></div>
+            <div className="w-full h-0.5 bg-white/20 rounded mb-0.5"></div>
+            <div className="w-3/4 h-0.5 bg-white/20 rounded mb-1.5"></div>
+            <div className="w-6 h-1 bg-white/30 rounded mb-1"></div>
+            <div className="w-full h-0.5 bg-white/15 rounded"></div>
+          </div>
+        </div>
+      )
+    case 'darkmode':
+      return (
+        <>
+          <div className="h-1 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 rounded-t"></div>
+          <div className="flex-1 p-1.5 bg-black/10 rounded-b">
+            <div className="w-12 h-1.5 bg-white/60 rounded mb-0.5"></div>
+            <div className="w-8 h-0.5 bg-cyan-300/50 rounded mb-2"></div>
+            <div className="bg-white/5 rounded p-1 mb-1">
+              <div className="w-full h-0.5 bg-white/20 rounded mb-0.5"></div>
+              <div className="w-3/4 h-0.5 bg-white/15 rounded"></div>
+            </div>
+            <div className="flex gap-1">
+              <div className="w-4 h-1.5 bg-cyan-300/20 rounded"></div>
+              <div className="w-4 h-1.5 bg-purple-300/20 rounded"></div>
+            </div>
+          </div>
+        </>
+      )
     default:
       return null
   }
@@ -134,7 +214,7 @@ export default function TemplateSelector({ selectedTemplate, onSelect }) {
           </div>
           <div>
             <h3 className="font-semibold text-gray-800 text-[13px]">Choose Template</h3>
-            <p className="text-[11px] text-gray-400">7 professional designs</p>
+            <p className="text-[11px] text-gray-400">12 professional designs</p>
           </div>
         </div>
         <span className="text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100 font-medium">
@@ -144,7 +224,7 @@ export default function TemplateSelector({ selectedTemplate, onSelect }) {
 
       {/* Scrollable row for templates */}
       <div className="p-4">
-        <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
           {templates.map((template) => (
             <motion.button
               key={template.id}
