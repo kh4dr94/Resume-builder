@@ -338,6 +338,24 @@ export default function ResumeForm({ data, setData }) {
               placeholder="A brief summary of your professional background, key achievements, and career goals..."
               rows={4}
             />
+            {/* Word & character count */}
+            <div className="flex items-center gap-3 mt-1.5 px-1">
+              <span className={`text-[10px] font-mono ${
+                (data.personalInfo.summary?.split(/\s+/).filter(Boolean).length || 0) > 50 ? 'text-amber-500' : 'text-gray-400'
+              }`}>
+                {data.personalInfo.summary?.split(/\s+/).filter(Boolean).length || 0} words
+              </span>
+              <span className="text-gray-300">•</span>
+              <span className={`text-[10px] font-mono ${
+                (data.personalInfo.summary?.length || 0) > 300 ? 'text-amber-500' : 'text-gray-400'
+              }`}>
+                {data.personalInfo.summary?.length || 0} chars
+              </span>
+              <span className="text-gray-300">•</span>
+              <span className="text-[10px] text-gray-400">
+                {(data.personalInfo.summary?.split(/\s+/).filter(Boolean).length || 0) <= 50 ? 'Aim for 30-50 words' : 'Consider trimming'}
+              </span>
+            </div>
           </div>
         </div>
       </Section>

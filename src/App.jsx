@@ -5,7 +5,7 @@ import ResumeForm from './components/ResumeForm'
 import TemplateSelector from './components/TemplateSelector'
 import Recommendations from './components/Recommendations'
 import { templates } from './components/templates'
-import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser } from 'react-icons/fa'
+import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave } from 'react-icons/fa'
 
 const sampleData = {
   personalInfo: {
@@ -84,14 +84,104 @@ const emptyData = {
   languages: [{ id: 1, language: '', proficiency: '' }],
 }
 
+// Load from localStorage or use sample data
+function loadSavedData() {
+  try {
+    const saved = localStorage.getItem('resumeBuilder_data')
+    if (saved) return JSON.parse(saved)
+  } catch (e) {}
+  return null
+}
+
+function loadSavedTemplate() {
+  try {
+    return localStorage.getItem('resumeBuilder_template') || 'modern'
+  } catch (e) {}
+  return 'modern'
+}
+
+function loadDarkMode() {
+  try {
+    return localStorage.getItem('resumeBuilder_darkMode') === 'true'
+  } catch (e) {}
+  return false
+}
+
 function App() {
-  const [resumeData, setResumeData] = useState(sampleData)
-  const [selectedTemplate, setSelectedTemplate] = useState('modern')
+  const savedData = loadSavedData()
+  const [resumeData, setResumeData] = useState(savedData || sampleData)
+  const [selectedTemplate, setSelectedTemplate] = useState(loadSavedTemplate())
   const [activeView, setActiveView] = useState('form')
-  const [usingSample, setUsingSample] = useState(true)
+  const [usingSample, setUsingSample] = useState(!savedData)
   const [previewScale, setPreviewScale] = useState(0.55)
+  const [darkMode, setDarkMode] = useState(loadDarkMode())
+  const [saveStatus, setSaveStatus] = useState('')
+  const [history, setHistory] = useState([savedData || sampleData])
+  const [historyIndex, setHistoryIndex] = useState(0)
   const resumeRef = useRef(null)
   const previewContainerRef = useRef(null)
+
+  // Auto-save to localStorage
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem('resumeBuilder_data', JSON.stringify(resumeData))
+        localStorage.setItem('resumeBuilder_template', selectedTemplate)
+        localStorage.setItem('resumeBuilder_darkMode', darkMode.toString())
+        setSaveStatus('saved')
+        setTimeout(() => setSaveStatus(''), 2000)
+      } catch (e) {}
+    }, 1000) // debounce 1s
+    return () => clearTimeout(timer)
+  }, [resumeData, selectedTemplate, darkMode])
+
+  // Dark mode body class
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode)
+  }, [darkMode])
+
+  // Undo/Redo - track history
+  const updateResumeData = useCallback((newData) => {
+    if (typeof newData === 'function') {
+      setResumeData((prev) => {
+        const result = newData(prev)
+        setHistory((h) => [...h.slice(0, historyIndex + 1), result].slice(-30))
+        setHistoryIndex((i) => Math.min(i + 1, 29))
+        return result
+      })
+    } else {
+      setResumeData(newData)
+      setHistory((h) => [...h.slice(0, historyIndex + 1), newData].slice(-30))
+      setHistoryIndex((i) => Math.min(i + 1, 29))
+    }
+    setUsingSample(false)
+  }, [historyIndex])
+
+  const undo = useCallback(() => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1
+      setHistoryIndex(newIndex)
+      setResumeData(history[newIndex])
+    }
+  }, [historyIndex, history])
+
+  const redo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1
+      setHistoryIndex(newIndex)
+      setResumeData(history[newIndex])
+    }
+  }, [historyIndex, history])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo() }
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redo() }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [undo, redo])
 
   // Auto-scale preview to fit container width
   useEffect(() => {
@@ -120,9 +210,13 @@ function App() {
     if (usingSample) {
       setResumeData(emptyData)
       setUsingSample(false)
+      setHistory([emptyData])
+      setHistoryIndex(0)
     } else {
       setResumeData(sampleData)
       setUsingSample(true)
+      setHistory([sampleData])
+      setHistoryIndex(0)
     }
   }
 
@@ -137,9 +231,9 @@ function App() {
   ].filter(Boolean).length
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-[#f8fafc]'}`}>
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-xl sticky top-0 z-50 border-b border-gray-200/80">
+      <header className={`backdrop-blur-xl sticky top-0 z-50 border-b transition-colors duration-300 ${darkMode ? 'bg-gray-900/80 border-gray-700/80' : 'bg-white/80 border-gray-200/80'}`}>
         <div className="max-w-[1400px] mx-auto px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3.5">
             <motion.div
@@ -150,7 +244,7 @@ function App() {
               <FaRocket className="text-white" size={16} />
             </motion.div>
             <div>
-              <h1 className="text-[17px] font-bold text-gray-900 tracking-tight">
+              <h1 className={`text-[17px] font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Resume Builder
               </h1>
               <p className="text-[11px] text-gray-400 font-medium -mt-0.5">
@@ -159,32 +253,78 @@ function App() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Save status */}
+            <AnimatePresence>
+              {saveStatus && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="hidden sm:flex items-center gap-1.5 text-[10px] text-green-500 font-medium"
+                >
+                  <FaSave size={9} />
+                  Auto-saved
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Undo/Redo */}
+            <div className="hidden sm:flex items-center gap-1">
+              <button
+                onClick={undo}
+                disabled={historyIndex <= 0}
+                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${historyIndex <= 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
+                title="Undo (Ctrl+Z)"
+              >
+                <FaUndo size={11} />
+              </button>
+              <button
+                onClick={redo}
+                disabled={historyIndex >= history.length - 1}
+                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${historyIndex >= history.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700'} ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
+                title="Redo (Ctrl+Y)"
+              >
+                <FaRedo size={11} />
+              </button>
+            </div>
+
             {/* Progress indicator */}
-            <div className="hidden md:flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-100">
+            <div className={`hidden md:flex items-center gap-2 rounded-lg px-3 py-1.5 border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-100'}`}>
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
                     className={`w-2 h-2 rounded-full transition-colors ${
-                      i < filledSections ? 'bg-blue-500' : 'bg-gray-200'
+                      i < filledSections ? 'bg-blue-500' : darkMode ? 'bg-gray-600' : 'bg-gray-200'
                     }`}
                   />
                 ))}
               </div>
-              <span className="text-[10px] text-gray-500 font-medium ml-1">
-                {filledSections}/5 sections
+              <span className={`text-[10px] font-medium ml-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                {filledSections}/5
               </span>
             </div>
 
+            {/* Dark mode toggle */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setDarkMode(!darkMode)}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-yellow-400' : 'bg-gray-50 border-gray-200 text-gray-600'}`}
+              title="Toggle dark mode"
+            >
+              {darkMode ? <FaSun size={14} /> : <FaMoon size={14} />}
+            </motion.button>
+
             {/* Mobile view toggle */}
-            <div className="flex lg:hidden bg-gray-100 rounded-xl p-1">
+            <div className={`flex lg:hidden rounded-xl p-1 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
               <button
                 onClick={() => setActiveView('form')}
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
                   activeView === 'form'
-                    ? 'bg-white shadow-sm text-blue-600 ring-1 ring-gray-200/50'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? `${darkMode ? 'bg-gray-700 text-blue-400' : 'bg-white shadow-sm text-blue-600'} ring-1 ring-gray-200/50`
+                    : `${darkMode ? 'text-gray-400' : 'text-gray-500'} hover:text-gray-700`
                 }`}
               >
                 <FaEdit size={11} />
@@ -194,8 +334,8 @@ function App() {
                 onClick={() => setActiveView('preview')}
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
                   activeView === 'preview'
-                    ? 'bg-white shadow-sm text-blue-600 ring-1 ring-gray-200/50'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? `${darkMode ? 'bg-gray-700 text-blue-400' : 'bg-white shadow-sm text-blue-600'} ring-1 ring-gray-200/50`
+                    : `${darkMode ? 'text-gray-400' : 'text-gray-500'} hover:text-gray-700`
                 }`}
               >
                 <FaEye size={11} />
@@ -207,7 +347,7 @@ function App() {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={toggleSampleData}
-              className="hidden sm:flex items-center gap-2 bg-white text-gray-600 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all border border-gray-200 font-medium text-[13px] hover:text-gray-800"
+              className={`hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all border font-medium text-[13px] ${darkMode ? 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
             >
               {usingSample ? <FaEraser size={13} /> : <FaMagic size={13} />}
               {usingSample ? 'Clear' : 'Sample'}
@@ -220,8 +360,7 @@ function App() {
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30 font-semibold text-[13px]"
             >
               <FaFilePdf size={14} />
-              <span className="hidden sm:inline">Download PDF</span>
-              <span className="sm:hidden">PDF</span>
+              <span className="hidden sm:inline">PDF</span>
             </motion.button>
           </div>
         </div>
@@ -247,7 +386,7 @@ function App() {
               <Recommendations data={resumeData} />
 
               {/* Form */}
-              <ResumeForm data={resumeData} setData={setResumeData} />
+              <ResumeForm data={resumeData} setData={updateResumeData} darkMode={darkMode} />
             </div>
           </div>
 
@@ -262,7 +401,7 @@ function App() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200/60"
+                className={`rounded-2xl shadow-xl overflow-hidden border transition-colors duration-300 ${darkMode ? 'bg-gray-800 border-gray-700 shadow-gray-900/50' : 'bg-white border-gray-200/60 shadow-gray-200/50'}`}
               >
                 {/* Preview toolbar */}
                 <div className="bg-gray-50/80 px-5 py-3 border-b border-gray-200/80 flex items-center justify-between">
@@ -305,22 +444,22 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200/60 bg-white/60 backdrop-blur-sm mt-16">
+      <footer className={`border-t backdrop-blur-sm mt-16 transition-colors duration-300 ${darkMode ? 'border-gray-700/60 bg-gray-900/60' : 'border-gray-200/60 bg-white/60'}`}>
         <div className="max-w-[1400px] mx-auto px-6 py-5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-gray-400">
+              <div className={`flex items-center gap-1.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                 <FaMagic size={11} />
                 <span className="text-[11px] font-medium">Built with React + Tailwind CSS</span>
               </div>
-              <div className="hidden sm:block h-3 w-px bg-gray-200"></div>
-              <div className="hidden sm:flex items-center gap-1.5 text-gray-400">
+              <div className={`hidden sm:block h-3 w-px ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+              <div className={`hidden sm:flex items-center gap-1.5 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                 <FaShieldAlt size={10} />
-                <span className="text-[11px] font-medium">100% client-side — your data never leaves your browser</span>
+                <span className="text-[11px] font-medium">100% client-side — auto-saves locally</span>
               </div>
             </div>
-            <p className="text-[11px] text-gray-300 font-medium">
-              v2.0
+            <p className={`text-[11px] font-medium ${darkMode ? 'text-gray-600' : 'text-gray-300'}`}>
+              v3.0
             </p>
           </div>
         </div>
