@@ -1,6 +1,6 @@
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaLinkedin, FaGlobe } from 'react-icons/fa'
 
-export default function MinimalTemplate({ data }) {
+export default function MinimalTemplate({ data, sectionOrder, colorTheme }) {
   const { personalInfo, experience, education, skills, certifications, languages } = data
 
   const filledSkills = skills.filter((s) => s.trim() !== '')

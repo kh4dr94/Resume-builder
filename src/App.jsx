@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ResumeForm from './components/ResumeForm'
 import TemplateSelector from './components/TemplateSelector'
 import Recommendations from './components/Recommendations'
+import ProfileManager, { loadProfiles, saveProfiles, loadActiveProfileId, saveActiveProfileId } from './components/ProfileManager'
+import SectionOrderPanel, { DEFAULT_SECTION_ORDER } from './components/SectionOrderPanel'
+import ThemePicker, { COLOR_THEMES } from './components/ThemePicker'
 import { templates } from './components/templates'
 import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave } from 'react-icons/fa'
 
@@ -84,7 +87,7 @@ const emptyData = {
   languages: [{ id: 1, language: '', proficiency: '' }],
 }
 
-// Load from localStorage or use sample data
+// Load from localStorage or use sample data (backward compat)
 function loadSavedData() {
   try {
     const saved = localStorage.getItem('resumeBuilder_data')
@@ -107,38 +110,189 @@ function loadDarkMode() {
   return false
 }
 
-function App() {
+function loadSectionOrder() {
+  try {
+    const saved = localStorage.getItem('resumeBuilder_sectionOrder')
+    if (saved) return JSON.parse(saved)
+  } catch (e) {}
+  return DEFAULT_SECTION_ORDER
+}
+
+function loadColorTheme() {
+  try {
+    const saved = localStorage.getItem('resumeBuilder_colorTheme')
+    if (saved) return JSON.parse(saved)
+  } catch (e) {}
+  return COLOR_THEMES[0]
+}
+
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9)
+}
+
+function initProfiles() {
+  const existingProfiles = loadProfiles()
+  if (existingProfiles && existingProfiles.length > 0) {
+    return existingProfiles
+  }
+  // Migrate existing data into a default profile
   const savedData = loadSavedData()
-  const [resumeData, setResumeData] = useState(savedData || sampleData)
-  const [selectedTemplate, setSelectedTemplate] = useState(loadSavedTemplate())
+  const defaultProfile = {
+    id: generateId(),
+    name: 'My Resume',
+    data: savedData || sampleData,
+    template: loadSavedTemplate(),
+    sectionOrder: loadSectionOrder(),
+    colorTheme: loadColorTheme(),
+  }
+  saveProfiles([defaultProfile])
+  saveActiveProfileId(defaultProfile.id)
+  return [defaultProfile]
+}
+
+function App() {
+  const [profiles, setProfiles] = useState(initProfiles)
+  const [activeProfileId, setActiveProfileId] = useState(() => {
+    const savedId = loadActiveProfileId()
+    if (savedId && profiles.find(p => p.id === savedId)) return savedId
+    return profiles[0]?.id
+  })
+
+  const activeProfile = profiles.find(p => p.id === activeProfileId) || profiles[0]
+
+  const [resumeData, setResumeData] = useState(activeProfile?.data || sampleData)
+  const [selectedTemplate, setSelectedTemplate] = useState(activeProfile?.template || loadSavedTemplate())
+  const [sectionOrder, setSectionOrder] = useState(activeProfile?.sectionOrder || DEFAULT_SECTION_ORDER)
+  const [colorTheme, setColorTheme] = useState(activeProfile?.colorTheme || COLOR_THEMES[0])
   const [activeView, setActiveView] = useState('form')
-  const [usingSample, setUsingSample] = useState(!savedData)
+  const [usingSample, setUsingSample] = useState(!activeProfile?.data)
   const [previewScale, setPreviewScale] = useState(0.55)
   const [darkMode, setDarkMode] = useState(loadDarkMode())
   const [saveStatus, setSaveStatus] = useState('')
-  const [history, setHistory] = useState([savedData || sampleData])
+  const [history, setHistory] = useState([activeProfile?.data || sampleData])
   const [historyIndex, setHistoryIndex] = useState(0)
   const resumeRef = useRef(null)
   const previewContainerRef = useRef(null)
 
-  // Auto-save to localStorage
+  // Auto-save to localStorage (profiles + legacy keys for backward compat)
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
+        // Update the active profile in the profiles array
+        const updatedProfiles = profiles.map(p =>
+          p.id === activeProfileId
+            ? { ...p, data: resumeData, template: selectedTemplate, sectionOrder, colorTheme }
+            : p
+        )
+        saveProfiles(updatedProfiles)
+        saveActiveProfileId(activeProfileId)
+        // Also save to legacy keys for backward compat
         localStorage.setItem('resumeBuilder_data', JSON.stringify(resumeData))
         localStorage.setItem('resumeBuilder_template', selectedTemplate)
         localStorage.setItem('resumeBuilder_darkMode', darkMode.toString())
+        localStorage.setItem('resumeBuilder_sectionOrder', JSON.stringify(sectionOrder))
+        localStorage.setItem('resumeBuilder_colorTheme', JSON.stringify(colorTheme))
         setSaveStatus('saved')
         setTimeout(() => setSaveStatus(''), 2000)
       } catch (e) {}
     }, 1000) // debounce 1s
     return () => clearTimeout(timer)
-  }, [resumeData, selectedTemplate, darkMode])
+  }, [resumeData, selectedTemplate, darkMode, sectionOrder, colorTheme, profiles, activeProfileId])
 
   // Dark mode body class
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
   }, [darkMode])
+
+  // Sync profiles state when profiles change externally
+  useEffect(() => {
+    setProfiles(prev => prev.map(p =>
+      p.id === activeProfileId
+        ? { ...p, data: resumeData, template: selectedTemplate, sectionOrder, colorTheme }
+        : p
+    ))
+  }, [resumeData, selectedTemplate, sectionOrder, colorTheme])
+
+  // Profile management
+  const handleSwitchProfile = useCallback((profileId) => {
+    // Save current state to current profile first
+    setProfiles(prev => {
+      const updated = prev.map(p =>
+        p.id === activeProfileId
+          ? { ...p, data: resumeData, template: selectedTemplate, sectionOrder, colorTheme }
+          : p
+      )
+      saveProfiles(updated)
+      return updated
+    })
+
+    const target = profiles.find(p => p.id === profileId)
+    if (target) {
+      setActiveProfileId(profileId)
+      saveActiveProfileId(profileId)
+      setResumeData(target.data || sampleData)
+      setSelectedTemplate(target.template || 'modern')
+      setSectionOrder(target.sectionOrder || DEFAULT_SECTION_ORDER)
+      setColorTheme(target.colorTheme || COLOR_THEMES[0])
+      setHistory([target.data || sampleData])
+      setHistoryIndex(0)
+      setUsingSample(!target.data)
+    }
+  }, [activeProfileId, resumeData, selectedTemplate, sectionOrder, colorTheme, profiles])
+
+  const handleCreateProfile = useCallback((name) => {
+    const newProfile = {
+      id: generateId(),
+      name,
+      data: emptyData,
+      template: 'modern',
+      sectionOrder: DEFAULT_SECTION_ORDER,
+      colorTheme: COLOR_THEMES[0],
+    }
+    setProfiles(prev => {
+      const updated = [...prev, newProfile]
+      saveProfiles(updated)
+      return updated
+    })
+    // Switch to new profile
+    setActiveProfileId(newProfile.id)
+    saveActiveProfileId(newProfile.id)
+    setResumeData(emptyData)
+    setSelectedTemplate('modern')
+    setSectionOrder(DEFAULT_SECTION_ORDER)
+    setColorTheme(COLOR_THEMES[0])
+    setHistory([emptyData])
+    setHistoryIndex(0)
+    setUsingSample(false)
+  }, [])
+
+  const handleDeleteProfile = useCallback((profileId) => {
+    setProfiles(prev => {
+      const updated = prev.filter(p => p.id !== profileId)
+      saveProfiles(updated)
+      // If deleting active profile, switch to first remaining
+      if (profileId === activeProfileId && updated.length > 0) {
+        const fallback = updated[0]
+        setActiveProfileId(fallback.id)
+        saveActiveProfileId(fallback.id)
+        setResumeData(fallback.data || sampleData)
+        setSelectedTemplate(fallback.template || 'modern')
+        setSectionOrder(fallback.sectionOrder || DEFAULT_SECTION_ORDER)
+        setColorTheme(fallback.colorTheme || COLOR_THEMES[0])
+        setHistory([fallback.data || sampleData])
+        setHistoryIndex(0)
+      }
+      return updated
+    })
+  }, [activeProfileId])
+
+  const handleRenameProfile = useCallback((profileId, newName) => {
+    setProfiles(prev => {
+      const updated = prev.map(p => p.id === profileId ? { ...p, name: newName } : p)
+      saveProfiles(updated)
+      return updated
+    })
+  }, [])
 
   // Undo/Redo - track history
   const updateResumeData = useCallback((newData) => {
@@ -376,10 +530,35 @@ function App() {
             }`}
           >
             <div className="space-y-5">
+              {/* Profile Manager */}
+              <ProfileManager
+                profiles={profiles}
+                activeProfileId={activeProfileId}
+                onSwitch={handleSwitchProfile}
+                onCreate={handleCreateProfile}
+                onDelete={handleDeleteProfile}
+                onRename={handleRenameProfile}
+                darkMode={darkMode}
+              />
+
               {/* Template Selector */}
               <TemplateSelector
                 selectedTemplate={selectedTemplate}
                 onSelect={setSelectedTemplate}
+              />
+
+              {/* Section Order Panel */}
+              <SectionOrderPanel
+                sectionOrder={sectionOrder}
+                onReorder={setSectionOrder}
+                darkMode={darkMode}
+              />
+
+              {/* Color Theme Picker */}
+              <ThemePicker
+                colorTheme={colorTheme}
+                onSelect={setColorTheme}
+                darkMode={darkMode}
               />
 
               {/* Recommendations */}
@@ -432,7 +611,7 @@ function App() {
                       ref={resumeRef}
                     >
                       {SelectedTemplateComponent && (
-                        <SelectedTemplateComponent data={resumeData} />
+                        <SelectedTemplateComponent data={resumeData} sectionOrder={sectionOrder} colorTheme={colorTheme} />
                       )}
                     </div>
                   </div>
@@ -459,7 +638,7 @@ function App() {
               </div>
             </div>
             <p className={`text-[11px] font-medium ${darkMode ? 'text-gray-600' : 'text-gray-300'}`}>
-              v3.0
+              v4.0
             </p>
           </div>
         </div>
