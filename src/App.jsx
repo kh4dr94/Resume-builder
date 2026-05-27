@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react'
 import { useReactToPrint } from 'react-to-print'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import ResumeForm from './components/ResumeForm'
 import TemplateSelector from './components/TemplateSelector'
 import Recommendations from './components/Recommendations'
 import { templates } from './components/templates'
-import { FaFilePdf, FaEye, FaEdit, FaRocket } from 'react-icons/fa'
+import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt } from 'react-icons/fa'
 
 const initialData = {
   personalInfo: {
@@ -19,26 +19,10 @@ const initialData = {
     summary: '',
   },
   experience: [
-    {
-      id: 1,
-      company: '',
-      position: '',
-      startDate: '',
-      endDate: '',
-      current: false,
-      description: '',
-    },
+    { id: 1, company: '', position: '', startDate: '', endDate: '', current: false, description: '' },
   ],
   education: [
-    {
-      id: 1,
-      institution: '',
-      degree: '',
-      field: '',
-      startDate: '',
-      endDate: '',
-      gpa: '',
-    },
+    { id: 1, institution: '', degree: '', field: '', startDate: '', endDate: '', gpa: '' },
   ],
   skills: [''],
   certifications: [{ id: 1, name: '', issuer: '', date: '' }],
@@ -56,66 +40,90 @@ function App() {
     documentTitle: `${resumeData.personalInfo.fullName || 'Resume'}_Resume`,
   })
 
-  const SelectedTemplateComponent = templates.find(
-    (t) => t.id === selectedTemplate
-  )?.component
+  const SelectedTemplateComponent = templates.find((t) => t.id === selectedTemplate)?.component
+
+  const filledSections = [
+    resumeData.personalInfo.fullName,
+    resumeData.personalInfo.summary,
+    resumeData.experience.some((e) => e.company || e.position),
+    resumeData.education.some((e) => e.institution || e.degree),
+    resumeData.skills.some((s) => s.trim() !== ''),
+  ].filter(Boolean).length
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+    <div className="min-h-screen bg-[#f8fafc]">
       {/* Header */}
-      <header className="glass sticky top-0 z-50 border-b border-white/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="bg-white/80 backdrop-blur-xl sticky top-0 z-50 border-b border-gray-200/80">
+        <div className="max-w-[1400px] mx-auto px-6 py-3.5 flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
             <motion.div
-              whileHover={{ rotate: 5, scale: 1.05 }}
-              className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200"
+              whileHover={{ rotate: -5, scale: 1.08 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+              className="w-10 h-10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20"
             >
-              <FaRocket className="text-white" size={18} />
+              <FaRocket className="text-white" size={16} />
             </motion.div>
             <div>
-              <h1 className="text-lg font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
+              <h1 className="text-[17px] font-bold text-gray-900 tracking-tight">
                 Resume Builder
               </h1>
-              <p className="text-[10px] text-gray-500 font-medium">
-                Professional resumes in minutes
+              <p className="text-[11px] text-gray-400 font-medium -mt-0.5">
+                Create • Customize • Download
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            {/* Progress indicator */}
+            <div className="hidden md:flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-100">
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      i < filledSections ? 'bg-blue-500' : 'bg-gray-200'
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-[10px] text-gray-500 font-medium ml-1">
+                {filledSections}/5 sections
+              </span>
+            </div>
+
             {/* Mobile view toggle */}
-            <div className="flex lg:hidden bg-gray-100/80 rounded-lg p-1 backdrop-blur">
+            <div className="flex lg:hidden bg-gray-100 rounded-xl p-1">
               <button
                 onClick={() => setActiveView('form')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
                   activeView === 'form'
-                    ? 'bg-white shadow-sm text-blue-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white shadow-sm text-blue-600 ring-1 ring-gray-200/50'
+                    : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                <FaEdit size={12} />
+                <FaEdit size={11} />
                 Edit
               </button>
               <button
                 onClick={() => setActiveView('preview')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
                   activeView === 'preview'
-                    ? 'bg-white shadow-sm text-blue-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white shadow-sm text-blue-600 ring-1 ring-gray-200/50'
+                    : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                <FaEye size={12} />
+                <FaEye size={11} />
                 Preview
               </button>
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.03, y: -1 }}
+              whileTap={{ scale: 0.97 }}
               onClick={handlePrint}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-200/50 hover:shadow-xl hover:shadow-blue-200/60 font-medium text-sm"
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30 font-semibold text-[13px]"
             >
-              <FaFilePdf size={15} />
+              <FaFilePdf size={14} />
               <span className="hidden sm:inline">Download PDF</span>
               <span className="sm:hidden">PDF</span>
             </motion.button>
@@ -124,56 +132,69 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex gap-6">
+      <main className="max-w-[1400px] mx-auto px-6 py-8">
+        <div className="flex gap-8">
           {/* Left Panel - Form */}
           <div
-            className={`w-full lg:w-[45%] xl:w-5/12 space-y-4 ${
+            className={`w-full lg:w-[440px] xl:w-[480px] shrink-0 ${
               activeView === 'preview' ? 'hidden lg:block' : ''
             }`}
           >
-            {/* Template Selector */}
-            <TemplateSelector
-              selectedTemplate={selectedTemplate}
-              onSelect={setSelectedTemplate}
-            />
+            <div className="space-y-5">
+              {/* Template Selector */}
+              <TemplateSelector
+                selectedTemplate={selectedTemplate}
+                onSelect={setSelectedTemplate}
+              />
 
-            {/* Recommendations */}
-            <Recommendations data={resumeData} />
+              {/* Recommendations */}
+              <Recommendations data={resumeData} />
 
-            {/* Form */}
-            <ResumeForm data={resumeData} setData={setResumeData} />
+              {/* Form */}
+              <ResumeForm data={resumeData} setData={setResumeData} />
+            </div>
           </div>
 
           {/* Right Panel - Preview */}
           <div
-            className={`w-full lg:w-[55%] xl:w-7/12 ${
+            className={`w-full lg:flex-1 min-w-0 ${
               activeView === 'form' ? 'hidden lg:block' : ''
             }`}
           >
-            <div className="sticky top-20">
+            <div className="sticky top-[76px]">
               <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-200/60"
               >
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100/80 px-5 py-3 border-b border-gray-200 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                {/* Preview toolbar */}
+                <div className="bg-gray-50/80 px-5 py-3 border-b border-gray-200/80 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
                     <div className="flex gap-1.5">
-                      <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                      <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-                      <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#28CA42]"></div>
                     </div>
-                    <span className="text-xs font-medium text-gray-500 ml-2">
-                      Live Preview — {templates.find((t) => t.id === selectedTemplate)?.name} Template
+                    <div className="h-4 w-px bg-gray-200"></div>
+                    <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                      {templates.find((t) => t.id === selectedTemplate)?.name} Template
                     </span>
                   </div>
-                  <span className="text-[10px] text-gray-400 bg-gray-200/50 px-2 py-0.5 rounded">
-                    A4
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-gray-400 bg-white px-2 py-0.5 rounded-md border border-gray-100 font-mono">
+                      A4 • 210×297mm
+                    </span>
+                  </div>
                 </div>
-                <div className="p-4 overflow-auto max-h-[calc(100vh-140px)] scrollbar-thin bg-gray-100/50">
-                  <div className="shadow-lg rounded-sm overflow-hidden" ref={resumeRef}>
+
+                {/* Preview content */}
+                <div className="p-6 overflow-auto max-h-[calc(100vh-160px)] scrollbar-thin bg-[#e8eaed]/40">
+                  <div
+                    className="shadow-2xl shadow-gray-300/40 rounded overflow-hidden mx-auto"
+                    style={{ maxWidth: '210mm' }}
+                    ref={resumeRef}
+                  >
                     {SelectedTemplateComponent && (
                       <SelectedTemplateComponent data={resumeData} />
                     )}
@@ -186,14 +207,24 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 border-t border-gray-200/60 bg-white/50 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <p className="text-xs text-gray-400">
-            Built with React + Tailwind CSS
-          </p>
-          <p className="text-xs text-gray-400">
-            Your data stays in your browser — nothing is sent to any server
-          </p>
+      <footer className="border-t border-gray-200/60 bg-white/60 backdrop-blur-sm mt-16">
+        <div className="max-w-[1400px] mx-auto px-6 py-5">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 text-gray-400">
+                <FaMagic size={11} />
+                <span className="text-[11px] font-medium">Built with React + Tailwind CSS</span>
+              </div>
+              <div className="hidden sm:block h-3 w-px bg-gray-200"></div>
+              <div className="hidden sm:flex items-center gap-1.5 text-gray-400">
+                <FaShieldAlt size={10} />
+                <span className="text-[11px] font-medium">100% client-side — your data never leaves your browser</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-gray-300 font-medium">
+              v2.0
+            </p>
+          </div>
         </div>
       </footer>
     </div>

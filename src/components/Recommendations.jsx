@@ -104,18 +104,18 @@ export default function Recommendations({ data }) {
   const score = Math.min(100, Math.round((passed.length / allTips.filter(t => t.type === 'warning').length) * 100))
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-gray-200/80 overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        className="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
-            <FaLightbulb className="text-amber-500" size={16} />
+          <div className="w-9 h-9 bg-gradient-to-br from-amber-50 to-orange-100/80 rounded-xl flex items-center justify-center ring-1 ring-amber-100/50">
+            <FaLightbulb className="text-amber-500" size={14} />
           </div>
           <div className="text-left">
-            <h3 className="font-semibold text-gray-800 text-sm">Smart Recommendations</h3>
-            <p className="text-xs text-gray-500">
+            <h3 className="font-semibold text-gray-800 text-[13px]">Smart Recommendations</h3>
+            <p className="text-[11px] text-gray-400">
               {warnings.length > 0
                 ? `${warnings.length} improvement${warnings.length > 1 ? 's' : ''} suggested`
                 : 'Looking great!'}

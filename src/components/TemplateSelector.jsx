@@ -4,14 +4,14 @@ import { templates } from './templates'
 
 export default function TemplateSelector({ selectedTemplate, onSelect }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-gray-200/80 overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
-        <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
-          <FaPalette className="text-purple-600" size={16} />
+        <div className="w-9 h-9 bg-gradient-to-br from-purple-50 to-fuchsia-100/80 rounded-xl flex items-center justify-center ring-1 ring-purple-100/50">
+          <FaPalette className="text-purple-600" size={14} />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-800 text-sm">Choose Template</h3>
-          <p className="text-xs text-gray-500">Select a design that fits your style</p>
+          <h3 className="font-semibold text-gray-800 text-[13px]">Choose Template</h3>
+          <p className="text-[11px] text-gray-400">Select a design that fits your style</p>
         </div>
       </div>
       <div className="p-4 grid grid-cols-3 gap-3">

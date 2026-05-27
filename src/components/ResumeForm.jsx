@@ -10,35 +10,41 @@ import {
   FaPlus,
   FaTrash,
   FaChevronDown,
-  FaChevronUp,
 } from 'react-icons/fa'
 
-function Section({ title, icon: Icon, children, defaultOpen = false, count = 0 }) {
+function Section({ title, icon: Icon, children, defaultOpen = false, count = 0, subtitle = '' }) {
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
-    >
+    <div className="bg-white rounded-2xl border border-gray-200/80 overflow-hidden transition-all duration-200 hover:border-gray-300/80 hover:shadow-sm">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center">
-            <Icon className="text-blue-600" size={16} />
+          <div className="w-9 h-9 bg-gradient-to-br from-blue-50 to-indigo-100/80 rounded-xl flex items-center justify-center ring-1 ring-blue-100/50">
+            <Icon className="text-blue-600" size={15} />
           </div>
-          <span className="font-semibold text-gray-800">{title}</span>
-          {count > 0 && (
-            <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full font-medium">
-              {count}
-            </span>
-          )}
+          <div className="text-left">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-[13px] text-gray-800">{title}</span>
+              {count > 0 && (
+                <span className="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-md font-bold ring-1 ring-blue-100/50">
+                  {count}
+                </span>
+              )}
+            </div>
+            {subtitle && (
+              <span className="text-[11px] text-gray-400 font-normal">{subtitle}</span>
+            )}
+          </div>
         </div>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <FaChevronDown className="text-gray-400" size={14} />
+        <motion.div
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2, ease: 'easeInOut' }}
+          className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center"
+        >
+          <FaChevronDown className="text-gray-400" size={11} />
         </motion.div>
       </button>
       <AnimatePresence>
@@ -50,24 +56,26 @@ function Section({ title, icon: Icon, children, defaultOpen = false, count = 0 }
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 border-t border-gray-100 pt-4">{children}</div>
+            <div className="px-5 pb-5 pt-3 border-t border-gray-100">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   )
 }
 
-function InputField({ label, value, onChange, type = 'text', placeholder = '' }) {
+function InputField({ label, value, onChange, type = 'text', placeholder = '', icon = null }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-[12px] font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+        {label}
+      </label>
       <input
         type={type}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+        className="w-full px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800 placeholder:text-gray-300"
       />
     </div>
   )
@@ -76,15 +84,42 @@ function InputField({ label, value, onChange, type = 'text', placeholder = '' })
 function TextArea({ label, value, onChange, placeholder = '', rows = 3 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-[12px] font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+        {label}
+      </label>
       <textarea
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         rows={rows}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm resize-none"
+        className="w-full px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800 placeholder:text-gray-300 resize-none leading-relaxed"
       />
     </div>
+  )
+}
+
+function AddButton({ onClick, label }) {
+  return (
+    <motion.button
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+      onClick={onClick}
+      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-[12px] mt-2 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+    >
+      <FaPlus size={10} />
+      {label}
+    </motion.button>
+  )
+}
+
+function RemoveButton({ onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className="absolute top-3 right-3 w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-100 transition-all"
+    >
+      <FaTrash size={11} />
+    </button>
   )
 }
 
@@ -96,21 +131,12 @@ export default function ResumeForm({ data, setData }) {
     }))
   }
 
-  // Experience handlers
   const addExperience = () => {
     setData((prev) => ({
       ...prev,
       experience: [
         ...prev.experience,
-        {
-          id: Date.now(),
-          company: '',
-          position: '',
-          startDate: '',
-          endDate: '',
-          current: false,
-          description: '',
-        },
+        { id: Date.now(), company: '', position: '', startDate: '', endDate: '', current: false, description: '' },
       ],
     }))
   }
@@ -118,34 +144,20 @@ export default function ResumeForm({ data, setData }) {
   const updateExperience = (id, field, value) => {
     setData((prev) => ({
       ...prev,
-      experience: prev.experience.map((exp) =>
-        exp.id === id ? { ...exp, [field]: value } : exp
-      ),
+      experience: prev.experience.map((exp) => (exp.id === id ? { ...exp, [field]: value } : exp)),
     }))
   }
 
   const removeExperience = (id) => {
-    setData((prev) => ({
-      ...prev,
-      experience: prev.experience.filter((exp) => exp.id !== id),
-    }))
+    setData((prev) => ({ ...prev, experience: prev.experience.filter((exp) => exp.id !== id) }))
   }
 
-  // Education handlers
   const addEducation = () => {
     setData((prev) => ({
       ...prev,
       education: [
         ...prev.education,
-        {
-          id: Date.now(),
-          institution: '',
-          degree: '',
-          field: '',
-          startDate: '',
-          endDate: '',
-          gpa: '',
-        },
+        { id: Date.now(), institution: '', degree: '', field: '', startDate: '', endDate: '', gpa: '' },
       ],
     }))
   }
@@ -153,100 +165,67 @@ export default function ResumeForm({ data, setData }) {
   const updateEducation = (id, field, value) => {
     setData((prev) => ({
       ...prev,
-      education: prev.education.map((edu) =>
-        edu.id === id ? { ...edu, [field]: value } : edu
-      ),
+      education: prev.education.map((edu) => (edu.id === id ? { ...edu, [field]: value } : edu)),
     }))
   }
 
   const removeEducation = (id) => {
-    setData((prev) => ({
-      ...prev,
-      education: prev.education.filter((edu) => edu.id !== id),
-    }))
+    setData((prev) => ({ ...prev, education: prev.education.filter((edu) => edu.id !== id) }))
   }
 
-  // Skills handlers
   const addSkill = () => {
-    setData((prev) => ({
-      ...prev,
-      skills: [...prev.skills, ''],
-    }))
+    setData((prev) => ({ ...prev, skills: [...prev.skills, ''] }))
   }
 
   const updateSkill = (index, value) => {
-    setData((prev) => ({
-      ...prev,
-      skills: prev.skills.map((s, i) => (i === index ? value : s)),
-    }))
+    setData((prev) => ({ ...prev, skills: prev.skills.map((s, i) => (i === index ? value : s)) }))
   }
 
   const removeSkill = (index) => {
-    setData((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((_, i) => i !== index),
-    }))
+    setData((prev) => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }))
   }
 
-  // Certification handlers
   const addCertification = () => {
     setData((prev) => ({
       ...prev,
-      certifications: [
-        ...prev.certifications,
-        { id: Date.now(), name: '', issuer: '', date: '' },
-      ],
+      certifications: [...prev.certifications, { id: Date.now(), name: '', issuer: '', date: '' }],
     }))
   }
 
   const updateCertification = (id, field, value) => {
     setData((prev) => ({
       ...prev,
-      certifications: prev.certifications.map((cert) =>
-        cert.id === id ? { ...cert, [field]: value } : cert
-      ),
+      certifications: prev.certifications.map((cert) => (cert.id === id ? { ...cert, [field]: value } : cert)),
     }))
   }
 
   const removeCertification = (id) => {
-    setData((prev) => ({
-      ...prev,
-      certifications: prev.certifications.filter((cert) => cert.id !== id),
-    }))
+    setData((prev) => ({ ...prev, certifications: prev.certifications.filter((cert) => cert.id !== id) }))
   }
 
-  // Language handlers
   const addLanguage = () => {
     setData((prev) => ({
       ...prev,
-      languages: [
-        ...prev.languages,
-        { id: Date.now(), language: '', proficiency: '' },
-      ],
+      languages: [...prev.languages, { id: Date.now(), language: '', proficiency: '' }],
     }))
   }
 
   const updateLanguage = (id, field, value) => {
     setData((prev) => ({
       ...prev,
-      languages: prev.languages.map((lang) =>
-        lang.id === id ? { ...lang, [field]: value } : lang
-      ),
+      languages: prev.languages.map((lang) => (lang.id === id ? { ...lang, [field]: value } : lang)),
     }))
   }
 
   const removeLanguage = (id) => {
-    setData((prev) => ({
-      ...prev,
-      languages: prev.languages.filter((lang) => lang.id !== id),
-    }))
+    setData((prev) => ({ ...prev, languages: prev.languages.filter((lang) => lang.id !== id) }))
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Personal Information */}
-      <Section title="Personal Information" icon={FaUser} defaultOpen={true}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <Section title="Personal Information" subtitle="Basic details & contact" icon={FaUser} defaultOpen={true}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div className="sm:col-span-2">
             <InputField
               label="Full Name"
@@ -291,7 +270,7 @@ export default function ResumeForm({ data, setData }) {
           />
           <div className="sm:col-span-2">
             <InputField
-              label="Website/Portfolio"
+              label="Website / Portfolio"
               value={data.personalInfo.website}
               onChange={(e) => updatePersonalInfo('website', e.target.value)}
               placeholder="johndoe.dev"
@@ -310,22 +289,20 @@ export default function ResumeForm({ data, setData }) {
       </Section>
 
       {/* Work Experience */}
-      <Section title="Work Experience" icon={FaBriefcase}>
+      <Section
+        title="Work Experience"
+        subtitle="Your professional history"
+        icon={FaBriefcase}
+        count={data.experience.filter((e) => e.company || e.position).length}
+      >
         <div className="space-y-4">
           {data.experience.map((exp, index) => (
             <div
               key={exp.id}
-              className="p-4 bg-gray-50 rounded-lg border border-gray-200 relative"
+              className="relative p-4 bg-gradient-to-b from-gray-50/80 to-gray-50/40 rounded-xl border border-gray-200/60"
             >
-              {data.experience.length > 1 && (
-                <button
-                  onClick={() => removeExperience(exp.id)}
-                  className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors"
-                >
-                  <FaTrash size={14} />
-                </button>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {data.experience.length > 1 && <RemoveButton onClick={() => removeExperience(exp.id)} />}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <InputField
                   label="Company"
                   value={exp.company}
@@ -351,66 +328,52 @@ export default function ResumeForm({ data, setData }) {
                     onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
                     placeholder="Dec 2023"
                   />
-                  <label className="flex items-center gap-2 mt-1.5">
+                  <label className="flex items-center gap-2 mt-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={exp.current}
-                      onChange={(e) =>
-                        updateExperience(exp.id, 'current', e.target.checked)
-                      }
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      onChange={(e) => updateExperience(exp.id, 'current', e.target.checked)}
+                      className="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500/30"
                     />
-                    <span className="text-xs text-gray-600">Currently working here</span>
+                    <span className="text-[11px] text-gray-500 font-medium">Currently working here</span>
                   </label>
                 </div>
                 <div className="sm:col-span-2">
                   <TextArea
-                    label="Description"
+                    label="Description & Achievements"
                     value={exp.description}
-                    onChange={(e) =>
-                      updateExperience(exp.id, 'description', e.target.value)
-                    }
-                    placeholder="• Led a team of 5 engineers to deliver a microservices architecture&#10;• Improved system performance by 40% through optimization&#10;• Mentored junior developers and conducted code reviews"
+                    onChange={(e) => updateExperience(exp.id, 'description', e.target.value)}
+                    placeholder="• Led a team of 5 engineers&#10;• Improved performance by 40%&#10;• Mentored junior developers"
                     rows={4}
                   />
                 </div>
               </div>
             </div>
           ))}
-          <button
-            onClick={addExperience}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
-          >
-            <FaPlus size={12} />
-            Add Experience
-          </button>
+          <AddButton onClick={addExperience} label="Add Experience" />
         </div>
       </Section>
 
       {/* Education */}
-      <Section title="Education" icon={FaGraduationCap}>
+      <Section
+        title="Education"
+        subtitle="Academic background"
+        icon={FaGraduationCap}
+        count={data.education.filter((e) => e.institution || e.degree).length}
+      >
         <div className="space-y-4">
           {data.education.map((edu) => (
             <div
               key={edu.id}
-              className="p-4 bg-gray-50 rounded-lg border border-gray-200 relative"
+              className="relative p-4 bg-gradient-to-b from-gray-50/80 to-gray-50/40 rounded-xl border border-gray-200/60"
             >
-              {data.education.length > 1 && (
-                <button
-                  onClick={() => removeEducation(edu.id)}
-                  className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors"
-                >
-                  <FaTrash size={14} />
-                </button>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {data.education.length > 1 && <RemoveButton onClick={() => removeEducation(edu.id)} />}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="sm:col-span-2">
                   <InputField
                     label="Institution"
                     value={edu.institution}
-                    onChange={(e) =>
-                      updateEducation(edu.id, 'institution', e.target.value)
-                    }
+                    onChange={(e) => updateEducation(edu.id, 'institution', e.target.value)}
                     placeholder="Stanford University"
                   />
                 </div>
@@ -447,124 +410,98 @@ export default function ResumeForm({ data, setData }) {
               </div>
             </div>
           ))}
-          <button
-            onClick={addEducation}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
-          >
-            <FaPlus size={12} />
-            Add Education
-          </button>
+          <AddButton onClick={addEducation} label="Add Education" />
         </div>
       </Section>
 
       {/* Skills */}
-      <Section title="Skills" icon={FaTools}>
-        <div className="space-y-2">
+      <Section
+        title="Skills"
+        subtitle="Technical & soft skills"
+        icon={FaTools}
+        count={data.skills.filter((s) => s.trim() !== '').length}
+      >
+        <div className="space-y-2.5">
           {data.skills.map((skill, index) => (
             <div key={index} className="flex items-center gap-2">
               <input
                 type="text"
                 value={skill}
                 onChange={(e) => updateSkill(index, e.target.value)}
-                placeholder="e.g. JavaScript, React, Node.js"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                placeholder={`Skill ${index + 1} (e.g. JavaScript, React, Leadership)`}
+                className="flex-1 px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800 placeholder:text-gray-300"
               />
               {data.skills.length > 1 && (
                 <button
                   onClick={() => removeSkill(index)}
-                  className="text-red-400 hover:text-red-600 transition-colors p-2"
+                  className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-100 transition-all shrink-0"
                 >
-                  <FaTrash size={12} />
+                  <FaTrash size={10} />
                 </button>
               )}
             </div>
           ))}
-          <button
-            onClick={addSkill}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm mt-2"
-          >
-            <FaPlus size={12} />
-            Add Skill
-          </button>
-          <p className="text-xs text-gray-500 mt-1">
-            Tip: Add one skill per line for best formatting, or separate with commas
-          </p>
+          <AddButton onClick={addSkill} label="Add Skill" />
         </div>
       </Section>
 
       {/* Certifications */}
-      <Section title="Certifications" icon={FaCertificate}>
+      <Section
+        title="Certifications"
+        subtitle="Professional credentials"
+        icon={FaCertificate}
+        count={data.certifications.filter((c) => c.name).length}
+      >
         <div className="space-y-4">
           {data.certifications.map((cert) => (
             <div
               key={cert.id}
-              className="p-4 bg-gray-50 rounded-lg border border-gray-200 relative"
+              className="relative p-4 bg-gradient-to-b from-gray-50/80 to-gray-50/40 rounded-xl border border-gray-200/60"
             >
-              {data.certifications.length > 1 && (
-                <button
-                  onClick={() => removeCertification(cert.id)}
-                  className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors"
-                >
-                  <FaTrash size={14} />
-                </button>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {data.certifications.length > 1 && <RemoveButton onClick={() => removeCertification(cert.id)} />}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="sm:col-span-2">
                   <InputField
                     label="Certification Name"
                     value={cert.name}
-                    onChange={(e) =>
-                      updateCertification(cert.id, 'name', e.target.value)
-                    }
+                    onChange={(e) => updateCertification(cert.id, 'name', e.target.value)}
                     placeholder="AWS Solutions Architect"
                   />
                 </div>
                 <InputField
                   label="Issuing Organization"
                   value={cert.issuer}
-                  onChange={(e) =>
-                    updateCertification(cert.id, 'issuer', e.target.value)
-                  }
+                  onChange={(e) => updateCertification(cert.id, 'issuer', e.target.value)}
                   placeholder="Amazon Web Services"
                 />
                 <InputField
                   label="Date"
                   value={cert.date}
-                  onChange={(e) =>
-                    updateCertification(cert.id, 'date', e.target.value)
-                  }
+                  onChange={(e) => updateCertification(cert.id, 'date', e.target.value)}
                   placeholder="March 2023"
                 />
               </div>
             </div>
           ))}
-          <button
-            onClick={addCertification}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
-          >
-            <FaPlus size={12} />
-            Add Certification
-          </button>
+          <AddButton onClick={addCertification} label="Add Certification" />
         </div>
       </Section>
 
       {/* Languages */}
-      <Section title="Languages" icon={FaLanguage}>
-        <div className="space-y-4">
+      <Section
+        title="Languages"
+        subtitle="Language proficiencies"
+        icon={FaLanguage}
+        count={data.languages.filter((l) => l.language).length}
+      >
+        <div className="space-y-3">
           {data.languages.map((lang) => (
             <div
               key={lang.id}
-              className="p-3 bg-gray-50 rounded-lg border border-gray-200 relative"
+              className="relative p-4 bg-gradient-to-b from-gray-50/80 to-gray-50/40 rounded-xl border border-gray-200/60"
             >
-              {data.languages.length > 1 && (
-                <button
-                  onClick={() => removeLanguage(lang.id)}
-                  className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition-colors"
-                >
-                  <FaTrash size={14} />
-                </button>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {data.languages.length > 1 && <RemoveButton onClick={() => removeLanguage(lang.id)} />}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <InputField
                   label="Language"
                   value={lang.language}
@@ -572,15 +509,13 @@ export default function ResumeForm({ data, setData }) {
                   placeholder="English"
                 />
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[12px] font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
                     Proficiency
                   </label>
                   <select
                     value={lang.proficiency}
-                    onChange={(e) =>
-                      updateLanguage(lang.id, 'proficiency', e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                    onChange={(e) => updateLanguage(lang.id, 'proficiency', e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800"
                   >
                     <option value="">Select level</option>
                     <option value="Native">Native</option>
@@ -593,13 +528,7 @@ export default function ResumeForm({ data, setData }) {
               </div>
             </div>
           ))}
-          <button
-            onClick={addLanguage}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
-          >
-            <FaPlus size={12} />
-            Add Language
-          </button>
+          <AddButton onClick={addLanguage} label="Add Language" />
         </div>
       </Section>
     </div>
