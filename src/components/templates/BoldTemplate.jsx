@@ -1,6 +1,6 @@
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaLinkedin, FaGlobe } from 'react-icons/fa'
 
-export default function BoldTemplate({ data }) {
+export default function BoldTemplate({ data, sectionOrder, colorTheme }) {
   const { personalInfo, experience, education, skills, certifications, languages } = data
   const filledSkills = skills.filter((s) => s.trim() !== '')
   const filledExperience = experience.filter((exp) => exp.company || exp.position)

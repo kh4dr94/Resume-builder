@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ResumeForm from './components/ResumeForm'
 import TemplateSelector from './components/TemplateSelector'
 import Recommendations from './components/Recommendations'
+import ProfileManager from './components/ProfileManager'
+import ThemePicker, { colorThemes } from './components/ThemePicker'
+import SectionOrderPanel, { DEFAULT_SECTION_ORDER } from './components/SectionOrderPanel'
 import { templates } from './components/templates'
 import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave } from 'react-icons/fa'
 
@@ -84,94 +87,132 @@ const emptyData = {
   languages: [{ id: 1, language: '', proficiency: '' }],
 }
 
-// Load from localStorage or use sample data
-function loadSavedData() {
+// localStorage helpers
+function loadState(key, fallback) {
   try {
-    const saved = localStorage.getItem('resumeBuilder_data')
+    const saved = localStorage.getItem(key)
     if (saved) return JSON.parse(saved)
   } catch (e) {}
-  return null
+  return fallback
 }
 
-function loadSavedTemplate() {
+function saveToStorage(key, value) {
   try {
-    return localStorage.getItem('resumeBuilder_template') || 'modern'
+    localStorage.setItem(key, JSON.stringify(value))
   } catch (e) {}
-  return 'modern'
-}
-
-function loadDarkMode() {
-  try {
-    return localStorage.getItem('resumeBuilder_darkMode') === 'true'
-  } catch (e) {}
-  return false
 }
 
 function App() {
-  const savedData = loadSavedData()
-  const [resumeData, setResumeData] = useState(savedData || sampleData)
-  const [selectedTemplate, setSelectedTemplate] = useState(loadSavedTemplate())
+  // --- Profiles state ---
+  const [profiles, setProfiles] = useState(() =>
+    loadState('resumeBuilder_profiles', [
+      { id: 'default', name: 'My Resume', data: loadState('resumeBuilder_data', null) || sampleData },
+    ])
+  )
+  const [activeProfileId, setActiveProfileId] = useState(() =>
+    loadState('resumeBuilder_activeProfile', 'default')
+  )
+
+  // --- Theme & section order ---
+  const [selectedTemplate, setSelectedTemplate] = useState(() =>
+    loadState('resumeBuilder_template', 'modern')
+  )
+  const [activeColorTheme, setActiveColorTheme] = useState(() =>
+    loadState('resumeBuilder_colorTheme', 'default')
+  )
+  const [sectionOrder, setSectionOrder] = useState(() =>
+    loadState('resumeBuilder_sectionOrder', [...DEFAULT_SECTION_ORDER])
+  )
+
+  // --- UI state ---
   const [activeView, setActiveView] = useState('form')
-  const [usingSample, setUsingSample] = useState(!savedData)
   const [previewScale, setPreviewScale] = useState(0.55)
-  const [darkMode, setDarkMode] = useState(loadDarkMode())
+  const [darkMode, setDarkMode] = useState(() =>
+    loadState('resumeBuilder_darkMode', false)
+  )
   const [saveStatus, setSaveStatus] = useState('')
-  const [history, setHistory] = useState([savedData || sampleData])
+
+  // --- History for undo/redo ---
+  const activeProfile = profiles.find((p) => p.id === activeProfileId) || profiles[0]
+  const resumeData = activeProfile?.data || sampleData
+  const [history, setHistory] = useState([resumeData])
   const [historyIndex, setHistoryIndex] = useState(0)
+
   const resumeRef = useRef(null)
   const previewContainerRef = useRef(null)
 
-  // Auto-save to localStorage
+  // Reset history when switching profiles
+  useEffect(() => {
+    setHistory([resumeData])
+    setHistoryIndex(0)
+  }, [activeProfileId])
+
+  // Auto-save all state to localStorage
   useEffect(() => {
     const timer = setTimeout(() => {
-      try {
-        localStorage.setItem('resumeBuilder_data', JSON.stringify(resumeData))
-        localStorage.setItem('resumeBuilder_template', selectedTemplate)
-        localStorage.setItem('resumeBuilder_darkMode', darkMode.toString())
-        setSaveStatus('saved')
-        setTimeout(() => setSaveStatus(''), 2000)
-      } catch (e) {}
-    }, 1000) // debounce 1s
+      saveToStorage('resumeBuilder_profiles', profiles)
+      saveToStorage('resumeBuilder_activeProfile', activeProfileId)
+      saveToStorage('resumeBuilder_template', selectedTemplate)
+      saveToStorage('resumeBuilder_colorTheme', activeColorTheme)
+      saveToStorage('resumeBuilder_sectionOrder', sectionOrder)
+      saveToStorage('resumeBuilder_darkMode', darkMode)
+      // Keep legacy key for backward compatibility
+      saveToStorage('resumeBuilder_data', resumeData)
+      setSaveStatus('saved')
+      setTimeout(() => setSaveStatus(''), 2000)
+    }, 1000)
     return () => clearTimeout(timer)
-  }, [resumeData, selectedTemplate, darkMode])
+  }, [profiles, activeProfileId, selectedTemplate, activeColorTheme, sectionOrder, darkMode])
 
   // Dark mode body class
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
   }, [darkMode])
 
-  // Undo/Redo - track history
+  // Update resume data for active profile (with history tracking)
   const updateResumeData = useCallback((newData) => {
     if (typeof newData === 'function') {
-      setResumeData((prev) => {
-        const result = newData(prev)
-        setHistory((h) => [...h.slice(0, historyIndex + 1), result].slice(-30))
-        setHistoryIndex((i) => Math.min(i + 1, 29))
-        return result
-      })
+      setProfiles((prev) =>
+        prev.map((p) => {
+          if (p.id !== activeProfileId) return p
+          const result = newData(p.data)
+          setHistory((h) => [...h.slice(0, historyIndex + 1), result].slice(-30))
+          setHistoryIndex((i) => Math.min(i + 1, 29))
+          return { ...p, data: result }
+        })
+      )
     } else {
-      setResumeData(newData)
+      setProfiles((prev) =>
+        prev.map((p) =>
+          p.id === activeProfileId ? { ...p, data: newData } : p
+        )
+      )
       setHistory((h) => [...h.slice(0, historyIndex + 1), newData].slice(-30))
       setHistoryIndex((i) => Math.min(i + 1, 29))
     }
-    setUsingSample(false)
-  }, [historyIndex])
+  }, [activeProfileId, historyIndex])
 
   const undo = useCallback(() => {
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1
       setHistoryIndex(newIndex)
-      setResumeData(history[newIndex])
+      const data = history[newIndex]
+      setProfiles((prev) =>
+        prev.map((p) => (p.id === activeProfileId ? { ...p, data } : p))
+      )
     }
-  }, [historyIndex, history])
+  }, [historyIndex, history, activeProfileId])
 
   const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1
       setHistoryIndex(newIndex)
-      setResumeData(history[newIndex])
+      const data = history[newIndex]
+      setProfiles((prev) =>
+        prev.map((p) => (p.id === activeProfileId ? { ...p, data } : p))
+      )
     }
-  }, [historyIndex, history])
+  }, [historyIndex, history, activeProfileId])
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -183,44 +224,85 @@ function App() {
     return () => window.removeEventListener('keydown', handleKey)
   }, [undo, redo])
 
-  // Auto-scale preview to fit container width
+  // Auto-scale preview to fit container
   useEffect(() => {
     const container = previewContainerRef.current
     if (!container) return
-
     const updateScale = () => {
-      const containerWidth = container.clientWidth - 32 // padding
-      const a4Width = 794 // 210mm in px at 96dpi
+      const containerWidth = container.clientWidth - 32
+      const a4Width = 794
       const scale = Math.min(containerWidth / a4Width, 1)
       setPreviewScale(scale)
     }
-
     updateScale()
     const observer = new ResizeObserver(updateScale)
     observer.observe(container)
     return () => observer.disconnect()
   }, [])
 
+  // --- Profile handlers ---
+  const handleCreateProfile = (name) => {
+    const newProfile = {
+      id: `profile_${Date.now()}`,
+      name,
+      data: JSON.parse(JSON.stringify(emptyData)),
+    }
+    setProfiles((prev) => [...prev, newProfile])
+    setActiveProfileId(newProfile.id)
+  }
+
+  const handleDuplicateProfile = (id) => {
+    const source = profiles.find((p) => p.id === id)
+    if (!source) return
+    const newProfile = {
+      id: `profile_${Date.now()}`,
+      name: `${source.name} (Copy)`,
+      data: JSON.parse(JSON.stringify(source.data)),
+    }
+    setProfiles((prev) => [...prev, newProfile])
+    setActiveProfileId(newProfile.id)
+  }
+
+  const handleDeleteProfile = (id) => {
+    if (profiles.length <= 1) return
+    const remaining = profiles.filter((p) => p.id !== id)
+    setProfiles(remaining)
+    if (activeProfileId === id) {
+      setActiveProfileId(remaining[0].id)
+    }
+  }
+
+  const handleRenameProfile = (id, newName) => {
+    setProfiles((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, name: newName } : p))
+    )
+  }
+
+  const handleSwitchProfile = (id) => {
+    setActiveProfileId(id)
+  }
+
+  // --- Print ---
   const handlePrint = useReactToPrint({
     contentRef: resumeRef,
     documentTitle: `${resumeData.personalInfo.fullName || 'Resume'}_Resume`,
   })
 
+  // --- Sample toggle ---
+  const usingSample = JSON.stringify(resumeData) === JSON.stringify(sampleData)
   const toggleSampleData = () => {
     if (usingSample) {
-      setResumeData(emptyData)
-      setUsingSample(false)
-      setHistory([emptyData])
-      setHistoryIndex(0)
+      updateResumeData(emptyData)
     } else {
-      setResumeData(sampleData)
-      setUsingSample(true)
-      setHistory([sampleData])
-      setHistoryIndex(0)
+      updateResumeData(sampleData)
     }
   }
 
+  // --- Get selected template component ---
   const SelectedTemplateComponent = templates.find((t) => t.id === selectedTemplate)?.component
+
+  // Get active color theme
+  const currentColorTheme = colorThemes.find((t) => t.id === activeColorTheme) || colorThemes[0]
 
   const filledSections = [
     resumeData.personalInfo.fullName,
@@ -376,10 +458,33 @@ function App() {
             }`}
           >
             <div className="space-y-5">
+              {/* Profile Manager */}
+              <ProfileManager
+                profiles={profiles}
+                activeProfileId={activeProfileId}
+                onSwitch={handleSwitchProfile}
+                onCreate={handleCreateProfile}
+                onDuplicate={handleDuplicateProfile}
+                onDelete={handleDeleteProfile}
+                onRename={handleRenameProfile}
+              />
+
               {/* Template Selector */}
               <TemplateSelector
                 selectedTemplate={selectedTemplate}
                 onSelect={setSelectedTemplate}
+              />
+
+              {/* Color Theme Picker */}
+              <ThemePicker
+                activeThemeId={activeColorTheme}
+                onSelect={setActiveColorTheme}
+              />
+
+              {/* Section Order (Drag & Drop) */}
+              <SectionOrderPanel
+                sectionOrder={sectionOrder}
+                onReorder={setSectionOrder}
               />
 
               {/* Recommendations */}
@@ -417,6 +522,11 @@ function App() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
+                    {activeColorTheme !== 'default' && (
+                      <span className="text-[10px] text-purple-500 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100 font-medium">
+                        {currentColorTheme.name}
+                      </span>
+                    )}
                     <span className="text-[10px] text-gray-400 bg-white px-2 py-0.5 rounded-md border border-gray-100 font-mono">
                       A4 • 210×297mm
                     </span>
@@ -432,7 +542,11 @@ function App() {
                       ref={resumeRef}
                     >
                       {SelectedTemplateComponent && (
-                        <SelectedTemplateComponent data={resumeData} />
+                        <SelectedTemplateComponent
+                          data={resumeData}
+                          sectionOrder={sectionOrder}
+                          colorTheme={currentColorTheme}
+                        />
                       )}
                     </div>
                   </div>
@@ -459,7 +573,7 @@ function App() {
               </div>
             </div>
             <p className={`text-[11px] font-medium ${darkMode ? 'text-gray-600' : 'text-gray-300'}`}>
-              v3.0
+              v4.0
             </p>
           </div>
         </div>
