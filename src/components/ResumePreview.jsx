@@ -7,20 +7,8 @@ import {
   FaGlobe,
 } from 'react-icons/fa'
 
-const ResumePreview = forwardRef(({ data }, ref) => {
+const ResumePreview = forwardRef(({ data, theme, sectionOrder }, ref) => {
   const { personalInfo, experience, education, skills, certifications, languages } = data
-
-  const hasContent = (section) => {
-    if (Array.isArray(section)) {
-      return section.some((item) => {
-        if (typeof item === 'string') return item.trim() !== ''
-        return Object.entries(item).some(
-          ([key, val]) => key !== 'id' && val && val.toString().trim() !== ''
-        )
-      })
-    }
-    return false
-  }
 
   const filledSkills = skills.filter((s) => s.trim() !== '')
   const filledExperience = experience.filter(
@@ -32,30 +20,204 @@ const ResumePreview = forwardRef(({ data }, ref) => {
   const filledCertifications = certifications.filter((cert) => cert.name)
   const filledLanguages = languages.filter((lang) => lang.language)
 
+  const sectionRenderers = {
+    summary: () =>
+      personalInfo.summary && (
+        <div key="summary" className="mb-5">
+          <h2
+            className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-2"
+            style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
+          >
+            Professional Summary
+          </h2>
+          <p style={{ color: theme.textSecondary }} className="leading-[1.6]">
+            {personalInfo.summary}
+          </p>
+        </div>
+      ),
+    experience: () =>
+      filledExperience.length > 0 && (
+        <div key="experience" className="mb-5">
+          <h2
+            className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-3"
+            style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
+          >
+            Professional Experience
+          </h2>
+          <div className="space-y-4">
+            {filledExperience.map((exp) => (
+              <div key={exp.id}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-[12px]" style={{ color: theme.textPrimary }}>
+                      {exp.position}
+                    </h3>
+                    <p className="italic" style={{ color: theme.textSecondary }}>
+                      {exp.company}
+                    </p>
+                  </div>
+                  <span className="text-[10px] whitespace-nowrap ml-4" style={{ color: theme.textMuted }}>
+                    {exp.startDate}
+                    {(exp.endDate || exp.current) &&
+                      ` — ${exp.current ? 'Present' : exp.endDate}`}
+                  </span>
+                </div>
+                {exp.description && (
+                  <div className="mt-1.5 whitespace-pre-line leading-[1.6]" style={{ color: theme.textSecondary }}>
+                    {exp.description}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    education: () =>
+      filledEducation.length > 0 && (
+        <div key="education" className="mb-5">
+          <h2
+            className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-3"
+            style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
+          >
+            Education
+          </h2>
+          <div className="space-y-3">
+            {filledEducation.map((edu) => (
+              <div key={edu.id} className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-bold text-[12px]" style={{ color: theme.textPrimary }}>
+                    {edu.degree}
+                    {edu.field && ` in ${edu.field}`}
+                  </h3>
+                  <p className="italic" style={{ color: theme.textSecondary }}>
+                    {edu.institution}
+                  </p>
+                  {edu.gpa && (
+                    <p className="text-[10px]" style={{ color: theme.textMuted }}>
+                      GPA: {edu.gpa}
+                    </p>
+                  )}
+                </div>
+                <span className="text-[10px] whitespace-nowrap ml-4" style={{ color: theme.textMuted }}>
+                  {edu.startDate}
+                  {edu.endDate && ` — ${edu.endDate}`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    skills: () =>
+      filledSkills.length > 0 && (
+        <div key="skills" className="mb-5">
+          <h2
+            className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-2"
+            style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
+          >
+            Skills
+          </h2>
+          <div className="flex flex-wrap gap-2 mt-1">
+            {filledSkills.map((skill, index) => (
+              <span
+                key={index}
+                className="px-2.5 py-1 rounded text-[10px]"
+                style={{
+                  backgroundColor: theme.skillBg,
+                  border: `1px solid ${theme.skillBorder}`,
+                  color: theme.textSecondary,
+                }}
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      ),
+    certifications: () =>
+      filledCertifications.length > 0 && (
+        <div key="certifications" className="mb-5">
+          <h2
+            className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-3"
+            style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
+          >
+            Certifications
+          </h2>
+          <div className="space-y-2">
+            {filledCertifications.map((cert) => (
+              <div key={cert.id} className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-bold text-[11px]" style={{ color: theme.textPrimary }}>
+                    {cert.name}
+                  </h3>
+                  {cert.issuer && (
+                    <p className="text-[10px]" style={{ color: theme.textSecondary }}>
+                      {cert.issuer}
+                    </p>
+                  )}
+                </div>
+                {cert.date && (
+                  <span className="text-[10px] ml-4" style={{ color: theme.textMuted }}>
+                    {cert.date}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    languages: () =>
+      filledLanguages.length > 0 && (
+        <div key="languages" className="mb-5">
+          <h2
+            className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-2"
+            style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
+          >
+            Languages
+          </h2>
+          <div className="flex flex-wrap gap-x-6 gap-y-1 mt-1">
+            {filledLanguages.map((lang) => (
+              <span key={lang.id} style={{ color: theme.textSecondary }}>
+                <span className="font-medium">{lang.language}</span>
+                {lang.proficiency && (
+                  <span style={{ color: theme.textMuted }}> — {lang.proficiency}</span>
+                )}
+              </span>
+            ))}
+          </div>
+        </div>
+      ),
+  }
+
   return (
     <div
       ref={ref}
       className="bg-white w-full max-w-[210mm] mx-auto font-['Georgia',serif] text-[11px] leading-relaxed"
-      style={{ 
+      style={{
         padding: '40px 48px',
         minHeight: '297mm',
-        color: '#1a1a1a',
+        color: theme.textPrimary,
       }}
     >
       {/* Header */}
-      <div className="text-center mb-6 pb-4 border-b-2 border-gray-800">
+      <div
+        className="text-center mb-6 pb-4"
+        style={{ borderBottom: `2px solid ${theme.headerBorder}` }}
+      >
         <h1
           className="text-[28px] font-bold tracking-wide uppercase mb-1"
-          style={{ color: '#1a1a1a', fontFamily: "'Georgia', serif" }}
+          style={{ color: theme.primary, fontFamily: "'Georgia', serif" }}
         >
           {personalInfo.fullName || 'Your Name'}
         </h1>
         {personalInfo.title && (
-          <p className="text-[14px] text-gray-600 font-medium tracking-wider uppercase mb-3">
+          <p
+            className="text-[14px] font-medium tracking-wider uppercase mb-3"
+            style={{ color: theme.textSecondary }}
+          >
             {personalInfo.title}
           </p>
         )}
-        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-[10px] text-gray-600">
+        <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-[10px]" style={{ color: theme.textMuted }}>
           {personalInfo.email && (
             <span className="flex items-center gap-1">
               <FaEnvelope size={10} />
@@ -89,143 +251,8 @@ const ResumePreview = forwardRef(({ data }, ref) => {
         </div>
       </div>
 
-      {/* Summary */}
-      {personalInfo.summary && (
-        <div className="mb-5">
-          <h2 className="text-[13px] font-bold uppercase tracking-wider border-b border-gray-300 pb-1 mb-2 text-gray-800">
-            Professional Summary
-          </h2>
-          <p className="text-gray-700 leading-[1.6]">{personalInfo.summary}</p>
-        </div>
-      )}
-
-      {/* Experience */}
-      {filledExperience.length > 0 && (
-        <div className="mb-5">
-          <h2 className="text-[13px] font-bold uppercase tracking-wider border-b border-gray-300 pb-1 mb-3 text-gray-800">
-            Professional Experience
-          </h2>
-          <div className="space-y-4">
-            {filledExperience.map((exp) => (
-              <div key={exp.id}>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-bold text-[12px] text-gray-900">
-                      {exp.position}
-                    </h3>
-                    <p className="text-gray-600 italic">{exp.company}</p>
-                  </div>
-                  <span className="text-[10px] text-gray-500 whitespace-nowrap ml-4">
-                    {exp.startDate}
-                    {(exp.endDate || exp.current) &&
-                      ` — ${exp.current ? 'Present' : exp.endDate}`}
-                  </span>
-                </div>
-                {exp.description && (
-                  <div className="mt-1.5 text-gray-700 whitespace-pre-line leading-[1.6]">
-                    {exp.description}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Education */}
-      {filledEducation.length > 0 && (
-        <div className="mb-5">
-          <h2 className="text-[13px] font-bold uppercase tracking-wider border-b border-gray-300 pb-1 mb-3 text-gray-800">
-            Education
-          </h2>
-          <div className="space-y-3">
-            {filledEducation.map((edu) => (
-              <div key={edu.id} className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-bold text-[12px] text-gray-900">
-                    {edu.degree}
-                    {edu.field && ` in ${edu.field}`}
-                  </h3>
-                  <p className="text-gray-600 italic">{edu.institution}</p>
-                  {edu.gpa && (
-                    <p className="text-gray-500 text-[10px]">GPA: {edu.gpa}</p>
-                  )}
-                </div>
-                <span className="text-[10px] text-gray-500 whitespace-nowrap ml-4">
-                  {edu.startDate}
-                  {edu.endDate && ` — ${edu.endDate}`}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Skills */}
-      {filledSkills.length > 0 && (
-        <div className="mb-5">
-          <h2 className="text-[13px] font-bold uppercase tracking-wider border-b border-gray-300 pb-1 mb-2 text-gray-800">
-            Skills
-          </h2>
-          <div className="flex flex-wrap gap-2 mt-1">
-            {filledSkills.map((skill, index) => (
-              <span
-                key={index}
-                className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded text-[10px] border border-gray-200"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Certifications */}
-      {filledCertifications.length > 0 && (
-        <div className="mb-5">
-          <h2 className="text-[13px] font-bold uppercase tracking-wider border-b border-gray-300 pb-1 mb-3 text-gray-800">
-            Certifications
-          </h2>
-          <div className="space-y-2">
-            {filledCertifications.map((cert) => (
-              <div key={cert.id} className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-bold text-[11px] text-gray-900">
-                    {cert.name}
-                  </h3>
-                  {cert.issuer && (
-                    <p className="text-gray-600 text-[10px]">{cert.issuer}</p>
-                  )}
-                </div>
-                {cert.date && (
-                  <span className="text-[10px] text-gray-500 ml-4">
-                    {cert.date}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Languages */}
-      {filledLanguages.length > 0 && (
-        <div className="mb-5">
-          <h2 className="text-[13px] font-bold uppercase tracking-wider border-b border-gray-300 pb-1 mb-2 text-gray-800">
-            Languages
-          </h2>
-          <div className="flex flex-wrap gap-x-6 gap-y-1 mt-1">
-            {filledLanguages.map((lang) => (
-              <span key={lang.id} className="text-gray-700">
-                <span className="font-medium">{lang.language}</span>
-                {lang.proficiency && (
-                  <span className="text-gray-500"> — {lang.proficiency}</span>
-                )}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Render sections in order */}
+      {sectionOrder.map((sectionId) => sectionRenderers[sectionId]?.())}
 
       {/* Empty State */}
       {!personalInfo.fullName &&
