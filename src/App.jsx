@@ -11,6 +11,11 @@ import ATSScore from './components/ATSScore'
 import KeyboardShortcuts from './components/KeyboardShortcuts'
 import WordCount from './components/WordCount'
 import { templates } from './components/templates'
+import ZoomControls from './components/ZoomControls'
+import QuickFill from './components/QuickFill'
+import ComparisonView from './components/ComparisonView'
+import DocxExport from './components/DocxExport'
+import AnalyticsDashboard from './components/AnalyticsDashboard'
 import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave, FaFileExport, FaFileImport, FaKeyboard } from 'react-icons/fa'
 
 const sampleData = {
@@ -170,6 +175,7 @@ function App() {
   const [activeView, setActiveView] = useState('form')
   const [usingSample, setUsingSample] = useState(!activeProfile?.data)
   const [previewScale, setPreviewScale] = useState(0.55)
+  const [manualZoom, setManualZoom] = useState(null)
   const [darkMode, setDarkMode] = useState(loadDarkMode())
   const [saveStatus, setSaveStatus] = useState('')
   const [history, setHistory] = useState([activeProfile?.data || sampleData])
@@ -372,7 +378,7 @@ function App() {
     const observer = new ResizeObserver(updateScale)
     observer.observe(container)
     return () => observer.disconnect()
-  }, [])
+  }, [manualZoom])
 
   // Export all profiles as JSON
   const handleExport = useCallback(() => {
@@ -439,6 +445,34 @@ function App() {
       setHistoryIndex(0)
     }
   }
+
+  // Zoom controls
+  const effectiveScale = manualZoom !== null ? manualZoom : previewScale
+  const handleZoomIn = useCallback(() => {
+    setManualZoom(prev => Math.min((prev !== null ? prev : previewScale) + 0.1, 1))
+  }, [previewScale])
+  const handleZoomOut = useCallback(() => {
+    setManualZoom(prev => Math.max((prev !== null ? prev : previewScale) - 0.1, 0.3))
+  }, [previewScale])
+  const handleZoomReset = useCallback(() => {
+    setManualZoom(null)
+  }, [])
+
+  // Quick Fill handler
+  const handleQuickFill = useCallback((extracted) => {
+    updateResumeData((prev) => {
+      const updated = { ...prev, personalInfo: { ...prev.personalInfo } }
+      if (extracted.name) updated.personalInfo.fullName = extracted.name
+      if (extracted.title) updated.personalInfo.title = extracted.title
+      if (extracted.summary) updated.personalInfo.summary = extracted.summary
+      if (extracted.skills.length > 0) {
+        const existing = (prev.skills || []).filter(s => s.trim())
+        const newSkills = [...new Set([...existing, ...extracted.skills])]
+        updated.skills = newSkills
+      }
+      return updated
+    })
+  }, [updateResumeData])
 
   const SelectedTemplateComponent = templates.find((t) => t.id === selectedTemplate)?.component
 
@@ -528,6 +562,7 @@ function App() {
 
             {/* Export/Import buttons */}
             <div className="hidden sm:flex items-center gap-1">
+              <ComparisonView profiles={profiles} darkMode={darkMode} />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -613,6 +648,8 @@ function App() {
               {usingSample ? 'Clear' : 'Sample'}
             </motion.button>
 
+            <DocxExport data={resumeData} darkMode={darkMode} />
+
             <motion.button
               whileHover={{ scale: 1.03, y: -1 }}
               whileTap={{ scale: 0.97 }}
@@ -646,6 +683,14 @@ function App() {
                 onRename={handleRenameProfile}
                 darkMode={darkMode}
               />
+
+              {/* Quick Fill */}
+              <div className="flex items-center gap-2">
+                <QuickFill onApply={handleQuickFill} darkMode={darkMode} />
+              </div>
+
+              {/* Analytics Dashboard */}
+              <AnalyticsDashboard data={resumeData} darkMode={darkMode} />
 
               {/* Template Selector */}
               <TemplateSelector
@@ -708,6 +753,12 @@ function App() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
+                    <ZoomControls
+                      scale={effectiveScale}
+                      onZoomIn={handleZoomIn}
+                      onZoomOut={handleZoomOut}
+                      onReset={handleZoomReset}
+                    />
                     <span className="text-[10px] text-gray-400 bg-white px-2 py-0.5 rounded-md border border-gray-100 font-mono">
                       A4 • 210×297mm
                     </span>
@@ -716,7 +767,7 @@ function App() {
 
                 {/* Preview content - scale to fit */}
                 <div ref={previewContainerRef} className="overflow-auto max-h-[calc(100vh-160px)] scrollbar-thin bg-[#e8eaed]/40 p-4">
-                  <div style={{ width: '210mm', transform: `scale(${previewScale})`, transformOrigin: 'top center', margin: '0 auto', height: `calc(297mm * ${previewScale})` }}>
+                  <div style={{ width: '210mm', transform: `scale(${effectiveScale})`, transformOrigin: 'top center', margin: '0 auto', height: `calc(297mm * ${effectiveScale})` }}>
                     <div
                       className="shadow-2xl shadow-gray-300/40 rounded overflow-hidden bg-white break-words"
                       style={{ width: '210mm', minHeight: '297mm' }}
