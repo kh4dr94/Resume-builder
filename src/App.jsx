@@ -573,8 +573,8 @@ function App() {
             >
               <FaRocket className="text-white" size={14} />
             </motion.div>
-            <div className="hidden sm:block">
-              <h1 className={`text-[15px] sm:text-[17px] font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <div>
+              <h1 className={`text-[13px] sm:text-[17px] font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Resume Builder
               </h1>
               <p className="hidden sm:block text-[11px] text-gray-400 font-medium -mt-0.5">
@@ -682,10 +682,10 @@ function App() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setDarkMode(!darkMode)}
-              className={`hidden sm:flex w-9 h-9 rounded-xl items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-yellow-400' : 'bg-gray-50 border-gray-200 text-gray-600'}`}
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-yellow-400' : 'bg-gray-50 border-gray-200 text-gray-600'}`}
               title="Toggle dark mode"
             >
-              {darkMode ? <FaSun size={14} /> : <FaMoon size={14} />}
+              {darkMode ? <FaSun size={13} /> : <FaMoon size={13} />}
             </motion.button>
 
             {/* Mobile tools menu button */}
@@ -700,28 +700,26 @@ function App() {
             </motion.button>
 
             {/* Mobile view toggle - compact on small screens */}
-            <div className={`flex lg:hidden rounded-lg sm:rounded-xl p-0.5 sm:p-1 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+            <div className={`flex lg:hidden rounded-lg p-0.5 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
               <button
                 onClick={() => setActiveView('form')}
-                className={`flex items-center gap-1 px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-semibold transition-all ${
+                className={`flex items-center px-2 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
                   activeView === 'form'
-                    ? `${darkMode ? 'bg-gray-700 text-blue-400' : 'bg-white shadow-sm text-blue-600'} ring-1 ring-gray-200/50`
-                    : `${darkMode ? 'text-gray-400' : 'text-gray-500'} hover:text-gray-700`
+                    ? `${darkMode ? 'bg-gray-700 text-blue-400' : 'bg-white shadow-sm text-blue-600'}`
+                    : `${darkMode ? 'text-gray-400' : 'text-gray-500'}`
                 }`}
               >
                 <FaEdit size={10} />
-                <span className="hidden xs:inline">Edit</span>
               </button>
               <button
                 onClick={() => setActiveView('preview')}
-                className={`flex items-center gap-1 px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-semibold transition-all ${
+                className={`flex items-center px-2 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
                   activeView === 'preview'
-                    ? `${darkMode ? 'bg-gray-700 text-blue-400' : 'bg-white shadow-sm text-blue-600'} ring-1 ring-gray-200/50`
-                    : `${darkMode ? 'text-gray-400' : 'text-gray-500'} hover:text-gray-700`
+                    ? `${darkMode ? 'bg-gray-700 text-blue-400' : 'bg-white shadow-sm text-blue-600'}`
+                    : `${darkMode ? 'text-gray-400' : 'text-gray-500'}`
                 }`}
               >
                 <FaEye size={10} />
-                <span className="hidden xs:inline">Preview</span>
               </button>
             </div>
 
