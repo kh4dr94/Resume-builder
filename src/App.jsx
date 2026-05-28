@@ -20,6 +20,10 @@ import JobMatcher from './components/JobMatcher'
 import VersionHistory from './components/VersionHistory'
 import CustomSections from './components/CustomSections'
 import PageBreakIndicator from './components/PageBreakIndicator'
+import CoverLetterGenerator from './components/CoverLetterGenerator'
+import ShareResume from './components/ShareResume'
+import PrintSettings from './components/PrintSettings'
+import WelcomeTour from './components/WelcomeTour'
 import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave, FaFileExport, FaFileImport, FaKeyboard } from 'react-icons/fa'
 
 const sampleData = {
@@ -568,6 +572,8 @@ function App() {
 
             {/* Export/Import buttons */}
             <div className="hidden sm:flex items-center gap-1">
+              <CoverLetterGenerator data={resumeData} darkMode={darkMode} />
+              <ShareResume darkMode={darkMode} />
               <ComparisonView profiles={profiles} darkMode={darkMode} />
               <JobMatcher data={resumeData} darkMode={darkMode} />
               <motion.button
@@ -656,6 +662,8 @@ function App() {
             </motion.button>
 
             <DocxExport data={resumeData} darkMode={darkMode} />
+
+            <PrintSettings darkMode={darkMode} />
 
             <motion.button
               whileHover={{ scale: 1.03, y: -1 }}
@@ -826,6 +834,9 @@ function App() {
 
       {/* Keyboard Shortcuts Modal */}
       <KeyboardShortcuts isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} darkMode={darkMode} />
+
+      {/* Welcome Tour - shows only on first visit */}
+      <WelcomeTour />
     </div>
   )
 }

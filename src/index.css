@@ -45,10 +45,123 @@
     background: white !important;
     margin: 0 !important;
     padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   @page {
     size: A4;
     margin: 0;
+  }
+
+  /* Hide all UI chrome */
+  header,
+  footer,
+  nav,
+  .no-print,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  /* Hide left panel / sidebar */
+  .lg\:w-\[440px\],
+  .xl\:w-\[480px\] {
+    display: none !important;
+  }
+
+  /* Make preview fill the page */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+
+  main > div {
+    display: block !important;
+  }
+
+  /* Reset transform on preview */
+  [style*="transform: scale"] {
+    transform: none !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  /* The resume content */
+  [style*="width: 210mm"] {
+    width: 100% !important;
+    transform: none !important;
+    margin: 0 !important;
+    height: auto !important;
+  }
+
+  /* Remove preview container styling */
+  .rounded-2xl,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Page break handling */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Avoid breaking inside sections */
+  section,
+  article,
+  .experience-item,
+  .education-item {
+    page-break-inside: avoid;
+  }
+
+  /* Allow long content to flow to next page */
+  .resume-content {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Hide scrollbar areas in print */
+  .overflow-auto,
+  .overflow-y-auto,
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  /* Compact margin class */
+  .print-margin-compact {
+    padding: 8mm !important;
+  }
+
+  /* Standard margin class */
+  .print-margin-standard {
+    padding: 15mm !important;
+  }
+
+  /* Wide margin class */
+  .print-margin-wide {
+    padding: 22mm !important;
+  }
+
+  /* Ensure links are visible */
+  a[href]::after {
+    content: none;
+  }
+
+  /* Fix backgrounds and gradients */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
