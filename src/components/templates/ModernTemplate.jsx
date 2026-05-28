@@ -15,6 +15,7 @@ export default function ModernTemplate({ data, sectionOrder, colorTheme }) {
   const filledEducation = education.filter((edu) => edu.institution || edu.degree)
   const filledCertifications = certifications.filter((cert) => cert.name)
   const filledLanguages = languages.filter((lang) => lang.language)
+  const customSections = (data.customSections || []).filter(s => s.title || s.content)
 
   const sections = {
     summary: personalInfo.summary && (
@@ -188,6 +189,19 @@ export default function ModernTemplate({ data, sectionOrder, colorTheme }) {
       <div className="px-10 py-6">
         {/* Render sections in order */}
         {order.map((sectionId) => sections[sectionId])}
+
+        {/* Custom Sections */}
+        {customSections.map((section) => (
+          <div key={section.id} className="mb-6">
+            <h2 className="text-[13px] font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: primary }}>
+              <div className="w-6 h-0.5 rounded" style={{ backgroundColor: primary }}></div>
+              {section.title || 'Custom Section'}
+            </h2>
+            {section.content && (
+              <p className="text-gray-700 leading-[1.7] pl-8 whitespace-pre-line">{section.content}</p>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Empty State */}

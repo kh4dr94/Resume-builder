@@ -174,6 +174,18 @@ export default function ClassicTemplate({ data, sectionOrder, colorTheme }) {
       {/* Render sections in order */}
       {order.map((sectionId) => sections[sectionId])}
 
+      {/* Custom Sections */}
+      {(data.customSections || []).filter(s => s.title || s.content).map((section) => (
+        <div key={section.id} className="mb-6">
+          <h2 className="text-[15px] font-bold border-b-2 pb-1 mb-3 uppercase tracking-wide" style={{ color: primary, borderColor: primary }}>
+            {section.title || 'Custom Section'}
+          </h2>
+          {section.content && (
+            <p className="text-gray-700 leading-[1.7] whitespace-pre-line">{section.content}</p>
+          )}
+        </div>
+      ))}
+
       {/* Empty State */}
       {!personalInfo.fullName && !personalInfo.summary && filledExperience.length === 0 && filledEducation.length === 0 && filledSkills.length === 0 && (
         <div className="text-center py-16 text-gray-400">

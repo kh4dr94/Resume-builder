@@ -16,6 +16,10 @@ import QuickFill from './components/QuickFill'
 import ComparisonView from './components/ComparisonView'
 import DocxExport from './components/DocxExport'
 import AnalyticsDashboard from './components/AnalyticsDashboard'
+import JobMatcher from './components/JobMatcher'
+import VersionHistory from './components/VersionHistory'
+import CustomSections from './components/CustomSections'
+import PageBreakIndicator from './components/PageBreakIndicator'
 import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave, FaFileExport, FaFileImport, FaKeyboard } from 'react-icons/fa'
 
 const sampleData = {
@@ -70,6 +74,7 @@ const sampleData = {
     { id: 1, language: 'English', proficiency: 'Native' },
     { id: 2, language: 'Spanish', proficiency: 'Advanced' },
   ],
+  customSections: [],
 }
 
 const emptyData = {
@@ -93,6 +98,7 @@ const emptyData = {
   skills: [''],
   certifications: [{ id: 1, name: '', issuer: '', date: '' }],
   languages: [{ id: 1, language: '', proficiency: '' }],
+  customSections: [],
 }
 
 // Load from localStorage or use sample data (backward compat)
@@ -563,6 +569,7 @@ function App() {
             {/* Export/Import buttons */}
             <div className="hidden sm:flex items-center gap-1">
               <ComparisonView profiles={profiles} darkMode={darkMode} />
+              <JobMatcher data={resumeData} darkMode={darkMode} />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -692,6 +699,9 @@ function App() {
               {/* Analytics Dashboard */}
               <AnalyticsDashboard data={resumeData} darkMode={darkMode} />
 
+              {/* Version History */}
+              <VersionHistory data={resumeData} onRestore={updateResumeData} darkMode={darkMode} />
+
               {/* Template Selector */}
               <TemplateSelector
                 selectedTemplate={selectedTemplate}
@@ -720,6 +730,12 @@ function App() {
 
               {/* Form */}
               <ResumeForm data={resumeData} setData={updateResumeData} darkMode={darkMode} />
+
+              {/* Custom Sections */}
+              <CustomSections
+                customSections={resumeData.customSections || []}
+                onChange={(sections) => updateResumeData((prev) => ({ ...prev, customSections: sections }))}
+              />
             </div>
           </div>
 
@@ -767,7 +783,7 @@ function App() {
 
                 {/* Preview content - scale to fit */}
                 <div ref={previewContainerRef} className="overflow-auto max-h-[calc(100vh-160px)] scrollbar-thin bg-[#e8eaed]/40 p-4">
-                  <div style={{ width: '210mm', transform: `scale(${effectiveScale})`, transformOrigin: 'top center', margin: '0 auto', height: `calc(297mm * ${effectiveScale})` }}>
+                  <div className="relative" style={{ width: '210mm', transform: `scale(${effectiveScale})`, transformOrigin: 'top center', margin: '0 auto', height: `calc(297mm * ${effectiveScale})` }}>
                     <div
                       className="shadow-2xl shadow-gray-300/40 rounded overflow-hidden bg-white break-words"
                       style={{ width: '210mm', minHeight: '297mm' }}
@@ -777,6 +793,7 @@ function App() {
                         <SelectedTemplateComponent data={resumeData} sectionOrder={sectionOrder} colorTheme={colorTheme} />
                       )}
                     </div>
+                    <PageBreakIndicator resumeRef={resumeRef} scale={1} darkMode={darkMode} />
                   </div>
                 </div>
               </motion.div>
