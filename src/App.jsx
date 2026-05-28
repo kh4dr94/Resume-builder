@@ -24,6 +24,10 @@ import CoverLetterGenerator from './components/CoverLetterGenerator'
 import ShareResume from './components/ShareResume'
 import PrintSettings from './components/PrintSettings'
 import WelcomeTour from './components/WelcomeTour'
+import GrammarChecker from './components/GrammarChecker'
+import TailoringWizard from './components/TailoringWizard'
+import LanguageSelector from './components/LanguageSelector'
+import AchievementQuantifier from './components/AchievementQuantifier'
 import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave, FaFileExport, FaFileImport, FaKeyboard } from 'react-icons/fa'
 
 const sampleData = {
@@ -484,6 +488,67 @@ function App() {
     })
   }, [updateResumeData])
 
+  // Grammar fix handler
+  const handleGrammarFix = useCallback((issue) => {
+    if (!issue.fix) return
+    updateResumeData((prev) => {
+      const updated = JSON.parse(JSON.stringify(prev))
+      // Try to fix in summary
+      if (updated.personalInfo?.summary?.includes(issue.fix.find)) {
+        updated.personalInfo.summary = updated.personalInfo.summary.replace(issue.fix.find, issue.fix.replace)
+        return updated
+      }
+      // Try to fix in experience
+      if (updated.experience) {
+        for (let i = 0; i < updated.experience.length; i++) {
+          if (updated.experience[i].description?.includes(issue.fix.find)) {
+            updated.experience[i].description = updated.experience[i].description.replace(issue.fix.find, issue.fix.replace)
+            return updated
+          }
+        }
+      }
+      // Try custom sections
+      if (updated.customSections) {
+        for (let i = 0; i < updated.customSections.length; i++) {
+          if (updated.customSections[i].content?.includes(issue.fix.find)) {
+            updated.customSections[i].content = updated.customSections[i].content.replace(issue.fix.find, issue.fix.replace)
+            return updated
+          }
+        }
+      }
+      return updated
+    })
+  }, [updateResumeData])
+
+  // Tailoring wizard apply handler
+  const handleTailoringSuggestions = useCallback(({ skillsToAdd, bulletsToAdd }) => {
+    updateResumeData((prev) => {
+      const updated = JSON.parse(JSON.stringify(prev))
+      // Add skills
+      if (skillsToAdd.length > 0) {
+        const existing = (updated.skills || []).filter(s => s.trim())
+        updated.skills = [...new Set([...existing, ...skillsToAdd])]
+      }
+      // Add bullets to first experience
+      if (bulletsToAdd.length > 0 && updated.experience?.length > 0) {
+        const exp = updated.experience[0]
+        const newBullets = bulletsToAdd.map(b => `• ${b}`).join('\n')
+        exp.description = exp.description ? `${exp.description}\n${newBullets}` : newBullets
+      }
+      return updated
+    })
+  }, [updateResumeData])
+
+  // Achievement quantifier update handler
+  const handleUpdateExperience = useCallback((expId, newDescription) => {
+    updateResumeData((prev) => {
+      const updated = { ...prev, experience: prev.experience.map(exp =>
+        exp.id === expId ? { ...exp, description: newDescription } : exp
+      )}
+      return updated
+    })
+  }, [updateResumeData])
+
   const SelectedTemplateComponent = templates.find((t) => t.id === selectedTemplate)?.component
 
   const filledSections = [
@@ -576,6 +641,10 @@ function App() {
               <ShareResume darkMode={darkMode} />
               <ComparisonView profiles={profiles} darkMode={darkMode} />
               <JobMatcher data={resumeData} darkMode={darkMode} />
+              <GrammarChecker data={resumeData} darkMode={darkMode} onFix={handleGrammarFix} />
+              <TailoringWizard data={resumeData} darkMode={darkMode} onApplySuggestions={handleTailoringSuggestions} />
+              <AchievementQuantifier data={resumeData} darkMode={darkMode} onUpdateExperience={handleUpdateExperience} />
+              <LanguageSelector darkMode={darkMode} />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
