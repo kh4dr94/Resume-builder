@@ -68,7 +68,7 @@ function Section({ title, icon: Icon, children, defaultOpen = false, count = 0, 
 
 function InputField({ label, value, onChange, type = 'text', placeholder = '', icon = null }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label className="block text-[12px] font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
         {label}
       </label>
@@ -77,7 +77,7 @@ function InputField({ label, value, onChange, type = 'text', placeholder = '', i
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800 placeholder:text-gray-300"
+        className="w-full min-w-0 px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800 placeholder:text-gray-300"
       />
     </div>
   )
@@ -85,7 +85,7 @@ function InputField({ label, value, onChange, type = 'text', placeholder = '', i
 
 function TextArea({ label, value, onChange, placeholder = '', rows = 3 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label className="block text-[12px] font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
         {label}
       </label>
@@ -94,7 +94,7 @@ function TextArea({ label, value, onChange, placeholder = '', rows = 3 }) {
         onChange={onChange}
         placeholder={placeholder}
         rows={rows}
-        className="w-full px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800 placeholder:text-gray-300 resize-none leading-relaxed"
+        className="w-full min-w-0 px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800 placeholder:text-gray-300 resize-none leading-relaxed"
       />
     </div>
   )
