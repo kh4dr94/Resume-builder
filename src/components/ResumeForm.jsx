@@ -12,6 +12,7 @@ import {
   FaChevronDown,
   FaCamera,
 } from 'react-icons/fa'
+import AIAssistant, { AITriggerButton } from './AIAssistant'
 
 function Section({ title, icon: Icon, children, defaultOpen = false, count = 0, subtitle = '' }) {
   const [open, setOpen] = useState(defaultOpen)
@@ -125,6 +126,38 @@ function RemoveButton({ onClick }) {
 }
 
 export default function ResumeForm({ data, setData }) {
+  const [aiModal, setAiModal] = useState(null) // { mode: 'summary'|'bullets'|'skills', expId?: number }
+
+  const openAI = (mode, expId) => {
+    setAiModal({ mode, expId })
+  }
+
+  const closeAI = () => setAiModal(null)
+
+  const handleAIApply = (value) => {
+    if (!aiModal) return
+    if (aiModal.mode === 'summary') {
+      updatePersonalInfo('summary', value)
+      closeAI()
+    } else if (aiModal.mode === 'bullets') {
+      if (aiModal.expId != null) {
+        updateExperience(aiModal.expId, 'description', value)
+      }
+      closeAI()
+    } else if (aiModal.mode === 'skills') {
+      // Add skill without closing (allows adding multiple)
+      setData((prev) => {
+        const skills = prev.skills || []
+        // Replace first empty skill slot, or add new
+        const emptyIndex = skills.findIndex(s => !s || !s.trim())
+        if (emptyIndex >= 0) {
+          return { ...prev, skills: skills.map((s, i) => i === emptyIndex ? value : s) }
+        }
+        return { ...prev, skills: [...skills, value] }
+      })
+    }
+  }
+
   const updatePersonalInfo = (field, value) => {
     setData((prev) => ({
       ...prev,
@@ -331,12 +364,18 @@ export default function ResumeForm({ data, setData }) {
             />
           </div>
           <div className="sm:col-span-2">
-            <TextArea
-              label="Professional Summary"
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-[12px] font-semibold text-gray-600 uppercase tracking-wide">
+                Professional Summary
+              </label>
+              <AITriggerButton onClick={() => openAI('summary')} tooltip="AI Summary Generator" />
+            </div>
+            <textarea
               value={data.personalInfo.summary}
               onChange={(e) => updatePersonalInfo('summary', e.target.value)}
               placeholder="A brief summary of your professional background, key achievements, and career goals..."
               rows={4}
+              className="w-full px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800 placeholder:text-gray-300 resize-none leading-relaxed"
             />
             {/* Word & character count */}
             <div className="flex items-center gap-3 mt-1.5 px-1">
@@ -411,12 +450,18 @@ export default function ResumeForm({ data, setData }) {
                   </label>
                 </div>
                 <div className="sm:col-span-2">
-                  <TextArea
-                    label="Description & Achievements"
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-[12px] font-semibold text-gray-600 uppercase tracking-wide">
+                      Description & Achievements
+                    </label>
+                    <AITriggerButton onClick={() => openAI('bullets', exp.id)} tooltip="AI Bullet Enhancer" />
+                  </div>
+                  <textarea
                     value={exp.description}
                     onChange={(e) => updateExperience(exp.id, 'description', e.target.value)}
                     placeholder="• Led a team of 5 engineers&#10;• Improved performance by 40%&#10;• Mentored junior developers"
                     rows={4}
+                    className="w-full px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white transition-all text-sm text-gray-800 placeholder:text-gray-300 resize-none leading-relaxed"
                   />
                 </div>
               </div>
@@ -494,6 +539,10 @@ export default function ResumeForm({ data, setData }) {
         count={data.skills.filter((s) => s.trim() !== '').length}
       >
         <div className="space-y-2.5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] text-gray-500 font-medium">Add your skills or get AI suggestions</span>
+            <AITriggerButton onClick={() => openAI('skills')} tooltip="AI Skills Suggester" />
+          </div>
           {data.skills.map((skill, index) => (
             <div key={index} className="flex items-center gap-2">
               <input
@@ -603,6 +652,26 @@ export default function ResumeForm({ data, setData }) {
           <AddButton onClick={addLanguage} label="Add Language" />
         </div>
       </Section>
+
+      {/* AI Assistant Modal */}
+      {aiModal && (
+        <AIAssistant
+          mode={aiModal.mode}
+          resumeData={data}
+          fieldValue={
+            aiModal.mode === 'bullets' && aiModal.expId != null
+              ? (data.experience.find(e => e.id === aiModal.expId)?.description || '')
+              : (aiModal.mode === 'summary' ? (data.personalInfo?.summary || '') : '')
+          }
+          position={
+            aiModal.mode === 'bullets' && aiModal.expId != null
+              ? (data.experience.find(e => e.id === aiModal.expId)?.position || '')
+              : ''
+          }
+          onApply={handleAIApply}
+          onClose={closeAI}
+        />
+      )}
     </div>
   )
 }
