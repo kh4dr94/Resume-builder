@@ -332,6 +332,11 @@ function App() {
     }
   }, [historyIndex, history])
 
+  const handlePrint = useReactToPrint({
+    contentRef: resumeRef,
+    documentTitle: `${resumeData?.personalInfo?.fullName || 'Resume'}_Resume`,
+  })
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKey = (e) => {
@@ -368,11 +373,6 @@ function App() {
     observer.observe(container)
     return () => observer.disconnect()
   }, [])
-
-  const handlePrint = useReactToPrint({
-    contentRef: resumeRef,
-    documentTitle: `${resumeData?.personalInfo?.fullName || 'Resume'}_Resume`,
-  })
 
   // Export all profiles as JSON
   const handleExport = useCallback(() => {
