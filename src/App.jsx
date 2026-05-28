@@ -569,11 +569,11 @@ function App() {
             <motion.div
               whileHover={{ rotate: -5, scale: 1.08 }}
               transition={{ type: 'spring', stiffness: 300 }}
-              className="w-10 h-10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20"
+              className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20"
             >
-              <FaRocket className="text-white" size={16} />
+              <FaRocket className="text-white" size={14} />
             </motion.div>
-            <div>
+            <div className="hidden sm:block">
               <h1 className={`text-[15px] sm:text-[17px] font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Resume Builder
               </h1>
@@ -682,7 +682,7 @@ function App() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setDarkMode(!darkMode)}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-yellow-400' : 'bg-gray-50 border-gray-200 text-gray-600'}`}
+              className={`hidden sm:flex w-9 h-9 rounded-xl items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-yellow-400' : 'bg-gray-50 border-gray-200 text-gray-600'}`}
               title="Toggle dark mode"
             >
               {darkMode ? <FaSun size={14} /> : <FaMoon size={14} />}
@@ -693,35 +693,35 @@ function App() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setMobileMenuOpen(true)}
-              className={`flex lg:hidden w-9 h-9 rounded-xl items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-400 hover:text-blue-400' : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-blue-600'}`}
+              className={`flex lg:hidden w-8 h-8 sm:w-9 sm:h-9 rounded-xl items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-400 hover:text-blue-400' : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-blue-600'}`}
               title="Tools menu"
             >
-              <FaEllipsisH size={14} />
+              <FaEllipsisH size={13} />
             </motion.button>
 
-            {/* Mobile view toggle */}
-            <div className={`flex lg:hidden rounded-xl p-1 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+            {/* Mobile view toggle - compact on small screens */}
+            <div className={`flex lg:hidden rounded-lg sm:rounded-xl p-0.5 sm:p-1 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
               <button
                 onClick={() => setActiveView('form')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1 px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-semibold transition-all ${
                   activeView === 'form'
                     ? `${darkMode ? 'bg-gray-700 text-blue-400' : 'bg-white shadow-sm text-blue-600'} ring-1 ring-gray-200/50`
                     : `${darkMode ? 'text-gray-400' : 'text-gray-500'} hover:text-gray-700`
                 }`}
               >
-                <FaEdit size={11} />
-                Edit
+                <FaEdit size={10} />
+                <span className="hidden xs:inline">Edit</span>
               </button>
               <button
                 onClick={() => setActiveView('preview')}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1 px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-semibold transition-all ${
                   activeView === 'preview'
                     ? `${darkMode ? 'bg-gray-700 text-blue-400' : 'bg-white shadow-sm text-blue-600'} ring-1 ring-gray-200/50`
                     : `${darkMode ? 'text-gray-400' : 'text-gray-500'} hover:text-gray-700`
                 }`}
               >
-                <FaEye size={11} />
-                Preview
+                <FaEye size={10} />
+                <span className="hidden xs:inline">Preview</span>
               </button>
             </div>
 
@@ -747,7 +747,7 @@ function App() {
               whileHover={{ scale: 1.03, y: -1 }}
               whileTap={{ scale: 0.97 }}
               onClick={handlePrint}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30 font-semibold text-[13px]"
+              className="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/30 font-semibold text-[12px] sm:text-[13px]"
             >
               <FaFilePdf size={14} />
               <span className="hidden sm:inline">PDF</span>
