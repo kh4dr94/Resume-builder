@@ -28,7 +28,7 @@ import GrammarChecker from './components/GrammarChecker'
 import TailoringWizard from './components/TailoringWizard'
 import LanguageSelector from './components/LanguageSelector'
 import AchievementQuantifier from './components/AchievementQuantifier'
-import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave, FaFileExport, FaFileImport, FaKeyboard } from 'react-icons/fa'
+import { FaFilePdf, FaEye, FaEdit, FaRocket, FaMagic, FaShieldAlt, FaEraser, FaMoon, FaSun, FaUndo, FaRedo, FaSave, FaFileExport, FaFileImport, FaKeyboard, FaEllipsisH, FaTimes } from 'react-icons/fa'
 
 const sampleData = {
   personalInfo: {
@@ -195,6 +195,7 @@ function App() {
   const [history, setHistory] = useState([activeProfile?.data || sampleData])
   const [historyIndex, setHistoryIndex] = useState(0)
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const resumeRef = useRef(null)
   const previewContainerRef = useRef(null)
   const importInputRef = useRef(null)
@@ -563,8 +564,8 @@ function App() {
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-[#f8fafc]'}`}>
       {/* Header */}
       <header className={`backdrop-blur-xl sticky top-0 z-50 border-b transition-colors duration-300 ${darkMode ? 'bg-gray-900/80 border-gray-700/80' : 'bg-white/80 border-gray-200/80'}`}>
-        <div className="max-w-[1400px] mx-auto px-6 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-3.5">
+        <div className="max-w-[1400px] mx-auto px-3 sm:px-6 py-3.5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 sm:gap-3.5">
             <motion.div
               whileHover={{ rotate: -5, scale: 1.08 }}
               transition={{ type: 'spring', stiffness: 300 }}
@@ -573,16 +574,16 @@ function App() {
               <FaRocket className="text-white" size={16} />
             </motion.div>
             <div>
-              <h1 className={`text-[17px] font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h1 className={`text-[15px] sm:text-[17px] font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 Resume Builder
               </h1>
-              <p className="text-[11px] text-gray-400 font-medium -mt-0.5">
+              <p className="hidden sm:block text-[11px] text-gray-400 font-medium -mt-0.5">
                 Create • Customize • Download
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Save status */}
             <AnimatePresence>
               {saveStatus && (
@@ -694,6 +695,17 @@ function App() {
               {darkMode ? <FaSun size={14} /> : <FaMoon size={14} />}
             </motion.button>
 
+            {/* Mobile tools menu button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setMobileMenuOpen(true)}
+              className={`flex sm:hidden w-9 h-9 rounded-xl items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-400 hover:text-blue-400' : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-blue-600'}`}
+              title="Tools menu"
+            >
+              <FaEllipsisH size={14} />
+            </motion.button>
+
             {/* Mobile view toggle */}
             <div className={`flex lg:hidden rounded-xl p-1 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
               <button
@@ -747,6 +759,122 @@ function App() {
         </div>
       </header>
 
+      {/* Mobile Tools Bottom Sheet */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/50 z-[60] sm:hidden"
+            />
+            {/* Bottom Sheet */}
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className={`fixed bottom-0 left-0 right-0 z-[70] sm:hidden rounded-t-2xl shadow-2xl max-h-[70vh] overflow-y-auto ${darkMode ? 'bg-gray-900 border-t border-gray-700' : 'bg-white border-t border-gray-200'}`}
+            >
+              {/* Handle bar */}
+              <div className="flex justify-center pt-3 pb-2">
+                <div className={`w-10 h-1 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`} />
+              </div>
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 pb-3">
+                <h3 className={`text-base font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Tools</h3>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-500 hover:bg-gray-100'}`}
+                >
+                  <FaTimes size={14} />
+                </button>
+              </div>
+              {/* Tools Grid */}
+              <div className="grid grid-cols-4 gap-3 px-5 pb-6">
+                <div className="flex flex-col items-center gap-1.5" onClick={() => setMobileMenuOpen(false)}>
+                  <ShareResume darkMode={darkMode} />
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Share</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5" onClick={() => setMobileMenuOpen(false)}>
+                  <CoverLetterGenerator data={resumeData} darkMode={darkMode} />
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Cover Letter</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5" onClick={() => setMobileMenuOpen(false)}>
+                  <ComparisonView profiles={profiles} darkMode={darkMode} />
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Compare</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5" onClick={() => setMobileMenuOpen(false)}>
+                  <JobMatcher data={resumeData} darkMode={darkMode} />
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Job Match</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5" onClick={() => setMobileMenuOpen(false)}>
+                  <GrammarChecker data={resumeData} darkMode={darkMode} onFix={handleGrammarFix} />
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Grammar</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5" onClick={() => setMobileMenuOpen(false)}>
+                  <TailoringWizard data={resumeData} darkMode={darkMode} onApplySuggestions={handleTailoringSuggestions} />
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Tailor</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5" onClick={() => setMobileMenuOpen(false)}>
+                  <AchievementQuantifier data={resumeData} darkMode={darkMode} onUpdateExperience={handleUpdateExperience} />
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Quantify</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5" onClick={() => setMobileMenuOpen(false)}>
+                  <LanguageSelector darkMode={darkMode} />
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Language</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5">
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => { handleExport(); setMobileMenuOpen(false); }}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-green-400' : 'bg-gray-50 border-gray-200 text-green-600'}`}
+                  >
+                    <FaFileExport size={14} />
+                  </motion.button>
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Export</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5">
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => { importInputRef.current?.click(); setMobileMenuOpen(false); }}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border ${darkMode ? 'bg-gray-800 border-gray-700 text-blue-400' : 'bg-gray-50 border-gray-200 text-blue-600'}`}
+                  >
+                    <FaFileImport size={14} />
+                  </motion.button>
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Import</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5">
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => { undo(); setMobileMenuOpen(false); }}
+                    disabled={historyIndex <= 0}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border ${historyIndex <= 0 ? 'opacity-30' : ''} ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'}`}
+                  >
+                    <FaUndo size={14} />
+                  </motion.button>
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Undo</span>
+                </div>
+                <div className="flex flex-col items-center gap-1.5">
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => { redo(); setMobileMenuOpen(false); }}
+                    disabled={historyIndex >= history.length - 1}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border ${historyIndex >= history.length - 1 ? 'opacity-30' : ''} ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'}`}
+                  >
+                    <FaRedo size={14} />
+                  </motion.button>
+                  <span className={`text-[10px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Redo</span>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* Main Content */}
       <main className="max-w-[1400px] mx-auto px-6 py-8">
         <div className="flex gap-8">
@@ -757,6 +885,31 @@ function App() {
             }`}
           >
             <div className="space-y-5">
+              {/* Mobile Quick Tools Bar */}
+              <div className="flex sm:hidden overflow-x-auto gap-2 pb-2 -mx-1 px-1 scrollbar-hide">
+                <div className="flex-shrink-0">
+                  <ShareResume darkMode={darkMode} />
+                </div>
+                <div className="flex-shrink-0">
+                  <CoverLetterGenerator data={resumeData} darkMode={darkMode} />
+                </div>
+                <div className="flex-shrink-0">
+                  <JobMatcher data={resumeData} darkMode={darkMode} />
+                </div>
+                <div className="flex-shrink-0">
+                  <GrammarChecker data={resumeData} darkMode={darkMode} onFix={handleGrammarFix} />
+                </div>
+                <div className="flex-shrink-0">
+                  <TailoringWizard data={resumeData} darkMode={darkMode} onApplySuggestions={handleTailoringSuggestions} />
+                </div>
+                <div className="flex-shrink-0">
+                  <AchievementQuantifier data={resumeData} darkMode={darkMode} onUpdateExperience={handleUpdateExperience} />
+                </div>
+                <div className="flex-shrink-0">
+                  <LanguageSelector darkMode={darkMode} />
+                </div>
+              </div>
+
               {/* Profile Manager */}
               <ProfileManager
                 profiles={profiles}
