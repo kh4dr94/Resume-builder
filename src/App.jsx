@@ -1016,18 +1016,20 @@ function App() {
                 </div>
 
                 {/* Preview content - scale to fit */}
-                <div ref={previewContainerRef} className="overflow-hidden max-h-[calc(100vh-160px)] scrollbar-thin bg-[#e8eaed]/40 p-2 sm:p-4">
-                  <div className="relative mx-auto overflow-hidden" style={{ width: '210mm', maxWidth: '100%', transform: `scale(${effectiveScale})`, transformOrigin: 'top left', height: `calc(297mm * ${effectiveScale})` }}>
-                    <div
-                      className="shadow-2xl shadow-gray-300/40 rounded overflow-hidden bg-white break-words"
-                      style={{ width: '210mm', minHeight: '297mm' }}
-                      ref={resumeRef}
-                    >
-                      {SelectedTemplateComponent && (
-                        <SelectedTemplateComponent data={resumeData} sectionOrder={sectionOrder} colorTheme={colorTheme} />
-                      )}
+                <div ref={previewContainerRef} className="overflow-auto max-h-[calc(100vh-160px)] scrollbar-thin bg-[#e8eaed]/40 p-2 sm:p-4">
+                  <div className="relative mx-auto" style={{ width: `calc(210mm * ${effectiveScale})`, maxWidth: '100%', height: `calc(297mm * ${effectiveScale})` }}>
+                    <div style={{ width: '210mm', transform: `scale(${effectiveScale})`, transformOrigin: 'top left' }}>
+                      <div
+                        className="shadow-2xl shadow-gray-300/40 rounded overflow-hidden bg-white break-words"
+                        style={{ width: '210mm', minHeight: '297mm' }}
+                        ref={resumeRef}
+                      >
+                        {SelectedTemplateComponent && (
+                          <SelectedTemplateComponent data={resumeData} sectionOrder={sectionOrder} colorTheme={colorTheme} />
+                        )}
+                      </div>
+                      <PageBreakIndicator resumeRef={resumeRef} scale={1} darkMode={darkMode} />
                     </div>
-                    <PageBreakIndicator resumeRef={resumeRef} scale={1} darkMode={darkMode} />
                   </div>
                 </div>
               </motion.div>
