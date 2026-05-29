@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -18,8 +18,23 @@ import ResumeForm from './components/ResumeForm'
 import ResumePreview from './components/ResumePreview'
 import DraggableSection from './components/DraggableSection'
 import ProfileManager from './components/ProfileManager'
-import ThemePicker, { themes } from './components/ThemePicker'
-import { FaFilePdf, FaEye, FaEdit, FaGripVertical } from 'react-icons/fa'
+import TemplateSelector, { templates } from './components/TemplateSelector'
+import MobileToolbar from './components/MobileToolbar'
+import ToolsPanel from './components/ToolsPanel'
+import ResumeAnalytics from './components/ResumeAnalytics'
+import VersionHistory from './components/VersionHistory'
+import QuickFill from './components/QuickFill'
+import {
+  FaFilePdf,
+  FaEye,
+  FaEdit,
+  FaGripVertical,
+  FaMoon,
+  FaSun,
+  FaEllipsisH,
+  FaCog,
+  FaColumns,
+} from 'react-icons/fa'
 
 const DEFAULT_SECTION_ORDER = [
   'summary',
@@ -78,6 +93,7 @@ const createEmptyResumeData = () => ({
 })
 
 const STORAGE_KEY = 'resumeBuilder_state'
+const VERSIONS_KEY = 'resumeBuilder_versions'
 
 function loadState() {
   try {
@@ -99,6 +115,20 @@ function saveState(state) {
   }
 }
 
+function loadVersions() {
+  try {
+    const saved = localStorage.getItem(VERSIONS_KEY)
+    if (saved) return JSON.parse(saved)
+  } catch (e) {}
+  return []
+}
+
+function saveVersions(versions) {
+  try {
+    localStorage.setItem(VERSIONS_KEY, JSON.stringify(versions))
+  } catch (e) {}
+}
+
 function App() {
   const savedState = loadState()
 
@@ -110,27 +140,58 @@ function App() {
   const [activeProfileId, setActiveProfileId] = useState(
     savedState?.activeProfileId || 'default'
   )
-  const [activeThemeId, setActiveThemeId] = useState(
-    savedState?.activeThemeId || 'classic'
+  const [activeTemplateId, setActiveTemplateId] = useState(
+    savedState?.activeTemplateId || 'creative'
   )
   const [sectionOrder, setSectionOrder] = useState(
     savedState?.sectionOrder || [...DEFAULT_SECTION_ORDER]
   )
   const [activeView, setActiveView] = useState('form')
+  const [darkMode, setDarkMode] = useState(savedState?.darkMode || false)
+  const [toolsOpen, setToolsOpen] = useState(false)
+  const [currentLanguage, setCurrentLanguage] = useState(savedState?.currentLanguage || 'en-US')
+  const [versions, setVersions] = useState(loadVersions)
+  const [undoStack, setUndoStack] = useState([])
+  const [redoStack, setRedoStack] = useState([])
   const resumeRef = useRef(null)
+  const lastSaveRef = useRef(Date.now())
 
   // Get active profile data
   const activeProfile = profiles.find((p) => p.id === activeProfileId) || profiles[0]
   const resumeData = activeProfile.data
-  const activeTheme = themes.find((t) => t.id === activeThemeId) || themes[0]
+  const activeTemplate = templates.find((t) => t.id === activeTemplateId) || templates[0]
 
   // Persist state
   useEffect(() => {
-    saveState({ profiles, activeProfileId, activeThemeId, sectionOrder })
-  }, [profiles, activeProfileId, activeThemeId, sectionOrder])
+    saveState({ profiles, activeProfileId, activeTemplateId, sectionOrder, darkMode, currentLanguage })
+  }, [profiles, activeProfileId, activeTemplateId, sectionOrder, darkMode, currentLanguage])
+
+  // Auto-save version every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now()
+      if (now - lastSaveRef.current > 300000) {
+        const newVersion = {
+          id: `v_${now}`,
+          timestamp: now,
+          data: JSON.parse(JSON.stringify(resumeData)),
+          label: null,
+        }
+        const updated = [newVersion, ...versions].slice(0, 10)
+        setVersions(updated)
+        saveVersions(updated)
+        lastSaveRef.current = now
+      }
+    }, 60000)
+    return () => clearInterval(interval)
+  }, [versions, resumeData])
 
   // Update resume data for active profile
   const setResumeData = (updater) => {
+    // Push to undo stack
+    setUndoStack((prev) => [...prev.slice(-20), JSON.parse(JSON.stringify(resumeData))])
+    setRedoStack([])
+
     setProfiles((prev) =>
       prev.map((p) =>
         p.id === activeProfileId
@@ -138,6 +199,107 @@ function App() {
           : p
       )
     )
+  }
+
+  // Undo/Redo
+  const handleUndo = () => {
+    if (undoStack.length === 0) return
+    const previous = undoStack[undoStack.length - 1]
+    setRedoStack((prev) => [...prev, JSON.parse(JSON.stringify(resumeData))])
+    setUndoStack((prev) => prev.slice(0, -1))
+    setProfiles((prev) =>
+      prev.map((p) => (p.id === activeProfileId ? { ...p, data: previous } : p))
+    )
+  }
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return
+    const next = redoStack[redoStack.length - 1]
+    setUndoStack((prev) => [...prev, JSON.parse(JSON.stringify(resumeData))])
+    setRedoStack((prev) => prev.slice(0, -1))
+    setProfiles((prev) =>
+      prev.map((p) => (p.id === activeProfileId ? { ...p, data: next } : p))
+    )
+  }
+
+  // Version History handlers
+  const handleRestoreVersion = (version) => {
+    setUndoStack((prev) => [...prev, JSON.parse(JSON.stringify(resumeData))])
+    setProfiles((prev) =>
+      prev.map((p) => (p.id === activeProfileId ? { ...p, data: version.data } : p))
+    )
+  }
+
+  const handleDeleteVersion = (versionId) => {
+    const updated = versions.filter((v) => v.id !== versionId)
+    setVersions(updated)
+    saveVersions(updated)
+  }
+
+  // Quick Fill
+  const handleQuickFill = (sampleData) => {
+    setUndoStack((prev) => [...prev, JSON.parse(JSON.stringify(resumeData))])
+    setRedoStack([])
+    setProfiles((prev) =>
+      prev.map((p) => (p.id === activeProfileId ? { ...p, data: sampleData } : p))
+    )
+    // Save a version before quick fill
+    const newVersion = {
+      id: `v_${Date.now()}`,
+      timestamp: Date.now(),
+      data: JSON.parse(JSON.stringify(resumeData)),
+      label: 'Before Quick Fill',
+    }
+    const updated = [newVersion, ...versions].slice(0, 10)
+    setVersions(updated)
+    saveVersions(updated)
+  }
+
+  // Export/Import
+  const handleExport = () => {
+    const exportData = {
+      resumeData,
+      templateId: activeTemplateId,
+      sectionOrder,
+      exportedAt: new Date().toISOString(),
+    }
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${resumeData.personalInfo.fullName || 'resume'}_export.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImport = () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json'
+    input.onchange = (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        try {
+          const imported = JSON.parse(ev.target.result)
+          if (imported.resumeData) {
+            setUndoStack((prev) => [...prev, JSON.parse(JSON.stringify(resumeData))])
+            setProfiles((prev) =>
+              prev.map((p) =>
+                p.id === activeProfileId ? { ...p, data: imported.resumeData } : p
+              )
+            )
+            if (imported.templateId) setActiveTemplateId(imported.templateId)
+            if (imported.sectionOrder) setSectionOrder(imported.sectionOrder)
+          }
+        } catch (err) {
+          alert('Invalid file format')
+        }
+      }
+      reader.readAsText(file)
+    }
+    input.click()
   }
 
   // Profile handlers
@@ -195,60 +357,104 @@ function App() {
   })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-blue-50">
+    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-slate-100 to-blue-50'}`}>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">R</span>
+      <header className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm border-b`}>
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-base">R</span>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Resume Builder</h1>
-              <p className="text-xs text-gray-500">Create professional resumes in minutes</p>
+            <div className="hidden sm:block">
+              <h1 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Resume Builder</h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Mobile view toggle */}
-            <div className="flex lg:hidden bg-gray-100 rounded-lg p-1">
+          <div className="flex items-center gap-2">
+            {/* Dark mode toggle */}
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                darkMode
+                  ? 'bg-gray-700 text-yellow-400 hover:bg-gray-600'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {darkMode ? <FaSun size={16} /> : <FaMoon size={16} />}
+            </button>
+
+            {/* Tools button */}
+            <button
+              onClick={() => setToolsOpen(true)}
+              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                darkMode
+                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <FaEllipsisH size={16} />
+            </button>
+
+            {/* View toggle */}
+            <div className={`flex lg:hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg p-0.5`}>
               <button
                 onClick={() => setActiveView('form')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
                   activeView === 'form'
-                    ? 'bg-white shadow text-blue-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? `${darkMode ? 'bg-gray-600 text-white' : 'bg-white shadow text-blue-600'}`
+                    : `${darkMode ? 'text-gray-400' : 'text-gray-600'}`
                 }`}
               >
-                <FaEdit size={14} />
+                <FaEdit size={12} />
                 Edit
               </button>
               <button
                 onClick={() => setActiveView('preview')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
                   activeView === 'preview'
-                    ? 'bg-white shadow text-blue-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? `${darkMode ? 'bg-gray-600 text-white' : 'bg-white shadow text-blue-600'}`
+                    : `${darkMode ? 'text-gray-400' : 'text-gray-600'}`
                 }`}
               >
-                <FaEye size={14} />
+                <FaEye size={12} />
                 Preview
               </button>
             </div>
 
+            {/* Settings */}
+            <button
+              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                darkMode
+                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <FaCog size={16} />
+            </button>
+
+            {/* PDF Download */}
             <button
               onClick={handlePrint}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg font-medium text-sm"
+              className="flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md font-medium text-sm"
             >
-              <FaFilePdf size={16} />
-              Download PDF
+              <FaFilePdf size={14} />
+              <span className="hidden sm:inline">PDF</span>
             </button>
           </div>
         </div>
       </header>
 
+      {/* Mobile Quick Tools Bar */}
+      <MobileToolbar
+        onToolsOpen={() => setToolsOpen(true)}
+        onShareOpen={() => setToolsOpen(true)}
+        onGrammarOpen={() => setToolsOpen(true)}
+        activeView={activeView}
+        onViewChange={setActiveView}
+      />
+
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 py-4 lg:py-6">
         <div className="flex gap-6">
           {/* Form Panel */}
           <div
@@ -256,7 +462,44 @@ function App() {
               activeView === 'preview' ? 'hidden lg:block' : ''
             }`}
           >
-            <div className="space-y-4">
+            <div className="space-y-3">
+              {/* Active Profile Card */}
+              <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-sm border p-4`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 ${darkMode ? 'bg-gray-700' : 'bg-blue-50'} rounded-lg flex items-center justify-center`}>
+                    <FaColumns size={16} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
+                  </div>
+                  <div className="flex-1">
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Active Profile</p>
+                    <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                      {activeProfile.name}
+                    </p>
+                  </div>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+                    {profiles.length}
+                  </span>
+                </div>
+              </div>
+
+              {/* Quick Fill */}
+              <QuickFill onFill={handleQuickFill} />
+
+              {/* Resume Analytics */}
+              <ResumeAnalytics data={resumeData} />
+
+              {/* Version History */}
+              <VersionHistory
+                versions={versions}
+                onRestore={handleRestoreVersion}
+                onDelete={handleDeleteVersion}
+              />
+
+              {/* Template Selector */}
+              <TemplateSelector
+                activeTemplateId={activeTemplateId}
+                onSelect={setActiveTemplateId}
+              />
+
               {/* Profile Manager */}
               <ProfileManager
                 profiles={profiles}
@@ -267,18 +510,12 @@ function App() {
                 onRename={handleRenameProfile}
               />
 
-              {/* Theme Picker */}
-              <ThemePicker
-                activeThemeId={activeThemeId}
-                onSelect={setActiveThemeId}
-              />
-
               {/* Section Order (Drag & Drop) */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2 mb-3">
+              <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-sm border p-4`}>
+                <h3 className={`text-sm font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-700'} flex items-center gap-2 mb-3`}>
                   <FaGripVertical size={12} className="text-green-600" />
                   Section Order
-                  <span className="text-xs font-normal text-gray-400">(drag to reorder)</span>
+                  <span className={`text-xs font-normal ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>(drag to reorder)</span>
                 </h3>
                 <DndContext
                   sensors={sensors}
@@ -292,7 +529,7 @@ function App() {
                     <div className="space-y-1">
                       {sectionOrder.map((sectionId) => (
                         <DraggableSection key={sectionId} id={sectionId}>
-                          <div className="px-3 py-2 bg-gray-50 rounded-lg border border-gray-200 text-sm text-gray-700 font-medium">
+                          <div className={`px-3 py-2 ${darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-gray-50 border-gray-200 text-gray-700'} rounded-lg border text-sm font-medium`}>
                             {SECTION_LABELS[sectionId]}
                           </div>
                         </DraggableSection>
@@ -314,19 +551,19 @@ function App() {
             }`}
           >
             <div className="sticky top-6">
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
-                  <FaEye className="text-gray-400" size={14} />
-                  <span className="text-sm font-medium text-gray-600">Live Preview</span>
-                  <span className="text-xs text-gray-400 ml-auto">
-                    Theme: {activeTheme.name}
+              <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'} rounded-xl shadow-lg overflow-hidden`}>
+                <div className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} px-4 py-2 border-b flex items-center gap-2`}>
+                  <FaEye className={darkMode ? 'text-gray-400' : 'text-gray-400'} size={14} />
+                  <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Live Preview</span>
+                  <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} ml-auto capitalize`}>
+                    Template: {activeTemplate.name}
                   </span>
                 </div>
                 <div className="p-4 overflow-auto max-h-[calc(100vh-160px)]">
                   <ResumePreview
                     ref={resumeRef}
                     data={resumeData}
-                    theme={activeTheme}
+                    theme={activeTemplate}
                     sectionOrder={sectionOrder}
                   />
                 </div>
@@ -335,6 +572,21 @@ function App() {
           </div>
         </div>
       </main>
+
+      {/* Tools Panel */}
+      <ToolsPanel
+        isOpen={toolsOpen}
+        onClose={() => setToolsOpen(false)}
+        resumeData={resumeData}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        canUndo={undoStack.length > 0}
+        canRedo={redoStack.length > 0}
+        onExport={handleExport}
+        onImport={handleImport}
+        currentLanguage={currentLanguage}
+        onLanguageChange={setCurrentLanguage}
+      />
     </div>
   )
 }
