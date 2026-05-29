@@ -457,6 +457,7 @@ function App() {
         onTailorOpen={() => { setToolsInitialSheet('tailor'); setToolsOpen(true) }}
         onQuantifyOpen={() => { setToolsInitialSheet('quantify'); setToolsOpen(true) }}
         onLanguageOpen={() => { setToolsInitialSheet('language'); setToolsOpen(true) }}
+        currentLanguage={currentLanguage}
       />
 
       {/* Main Content */}

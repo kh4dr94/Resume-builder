@@ -8,6 +8,44 @@ import {
   FaGlobe,
 } from 'react-icons/fa'
 
+const LANGUAGE_FLAGS = {
+  'en-US': '🇺🇸',
+  'en-GB': '🇬🇧',
+  'en-AU': '🇦🇺',
+  'en-CA': '🇨🇦',
+  'en-NZ': '🇳🇿',
+  'en-ZA': '🇿🇦',
+  'en-IN': '🇮🇳',
+  'es': '🇪🇸',
+  'es-MX': '🇲🇽',
+  'fr': '🇫🇷',
+  'fr-CA': '🇨🇦',
+  'de': '🇩🇪',
+  'pt': '🇧🇷',
+  'pt-PT': '🇵🇹',
+  'it': '🇮🇹',
+  'nl': '🇳🇱',
+  'pl': '🇵🇱',
+  'ru': '🇷🇺',
+  'tr': '🇹🇷',
+  'ko': '🇰🇷',
+  'zh': '🇨🇳',
+  'zh-TW': '🇹🇼',
+  'ja': '🇯🇵',
+  'ar': '🇸🇦',
+  'hi': '🇮🇳',
+  'th': '🇹🇭',
+  'vi': '🇻🇳',
+  'id': '🇮🇩',
+  'ms': '🇲🇾',
+  'sv': '🇸🇪',
+  'da': '🇩🇰',
+  'no': '🇳🇴',
+  'fi': '🇫🇮',
+  'he': '🇮🇱',
+  'uk': '🇺🇦',
+}
+
 export default function MobileToolbar({
   onShareOpen,
   onCoverLetterOpen,
@@ -16,7 +54,10 @@ export default function MobileToolbar({
   onTailorOpen,
   onQuantifyOpen,
   onLanguageOpen,
+  currentLanguage,
 }) {
+  const currentFlag = LANGUAGE_FLAGS[currentLanguage] || '🇺🇸'
+
   const tools = [
     { id: 'share', icon: FaShareAlt, label: 'Share', action: onShareOpen },
     { id: 'envelope', icon: FaEnvelope, label: 'Letter', action: onCoverLetterOpen },
@@ -24,7 +65,7 @@ export default function MobileToolbar({
     { id: 'grammar', icon: FaSpellCheck, label: 'Grammar', action: onGrammarOpen },
     { id: 'tailor', icon: FaCrosshairs, label: 'Tailor', action: onTailorOpen },
     { id: 'quantify', icon: FaChartBar, label: 'Quantify', action: onQuantifyOpen },
-    { id: 'language', icon: FaGlobe, label: 'Lang', flag: '🇺🇸', action: onLanguageOpen },
+    { id: 'language', icon: FaGlobe, label: 'Lang', flag: currentFlag, action: onLanguageOpen },
   ]
 
   return (
