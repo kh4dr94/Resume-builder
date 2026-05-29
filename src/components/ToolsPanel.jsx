@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from '../TranslationContext'
 import {
   FaShareAlt,
   FaEnvelope,
@@ -1557,6 +1558,7 @@ export default function ToolsPanel({
   onFormatChange,
 }) {
   const [activeSubSheet, setActiveSubSheet] = useState(null)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (isOpen && initialSheet) {
@@ -1575,21 +1577,21 @@ export default function ToolsPanel({
   }
 
   const tools = [
-    { id: 'share', label: 'Share', icon: FaShareAlt, color: 'bg-blue-100 text-blue-600' },
-    { id: 'cover-letter', label: 'Cover Letter', icon: FaEnvelope, color: 'bg-green-100 text-green-600' },
-    { id: 'job-match', label: 'Job Match', icon: FaBullseye, color: 'bg-emerald-100 text-emerald-600' },
-    { id: 'grammar', label: 'Grammar', icon: FaSpellCheck, color: 'bg-red-100 text-red-600' },
-    { id: 'tailor', label: 'Tailor', icon: FaCrosshairs, color: 'bg-indigo-100 text-indigo-600' },
-    { id: 'quantify', label: 'Quantify', icon: FaChartBar, color: 'bg-orange-100 text-orange-600' },
-    { id: 'language', label: 'Language', icon: FaGlobe, color: 'bg-cyan-100 text-cyan-600', flag: '🇺🇸' },
-    { id: 'keywords', label: 'Keywords', icon: FaKey, color: 'bg-yellow-100 text-yellow-600' },
-    { id: 'ats-check', label: 'ATS Check', icon: FaRobot, color: 'bg-purple-100 text-purple-600' },
-    { id: 'summarize', label: 'Summarize', icon: FaMagic, color: 'bg-pink-100 text-pink-600' },
-    { id: 'format', label: 'Format', icon: FaFileAlt, color: 'bg-teal-100 text-teal-600' },
-    { id: 'export', label: 'Export', icon: FaFileExport, color: 'bg-green-100 text-green-600' },
-    { id: 'import', label: 'Import', icon: FaFileImport, color: 'bg-blue-100 text-blue-600' },
-    { id: 'undo', label: 'Undo', icon: FaUndo, color: 'bg-gray-100 text-gray-600', disabled: !canUndo },
-    { id: 'redo', label: 'Redo', icon: FaRedo, color: 'bg-gray-100 text-gray-600', disabled: !canRedo },
+    { id: 'share', label: t('tools.share'), icon: FaShareAlt, color: 'bg-blue-100 text-blue-600' },
+    { id: 'cover-letter', label: t('tools.coverLetter'), icon: FaEnvelope, color: 'bg-green-100 text-green-600' },
+    { id: 'job-match', label: t('tools.jobMatch'), icon: FaBullseye, color: 'bg-emerald-100 text-emerald-600' },
+    { id: 'grammar', label: t('tools.grammar'), icon: FaSpellCheck, color: 'bg-red-100 text-red-600' },
+    { id: 'tailor', label: t('tools.tailor'), icon: FaCrosshairs, color: 'bg-indigo-100 text-indigo-600' },
+    { id: 'quantify', label: t('tools.quantify'), icon: FaChartBar, color: 'bg-orange-100 text-orange-600' },
+    { id: 'language', label: t('tools.language'), icon: FaGlobe, color: 'bg-cyan-100 text-cyan-600', flag: '🇺🇸' },
+    { id: 'keywords', label: t('tools.keywords'), icon: FaKey, color: 'bg-yellow-100 text-yellow-600' },
+    { id: 'ats-check', label: t('tools.atsCheck'), icon: FaRobot, color: 'bg-purple-100 text-purple-600' },
+    { id: 'summarize', label: t('tools.summarize'), icon: FaMagic, color: 'bg-pink-100 text-pink-600' },
+    { id: 'format', label: t('tools.format'), icon: FaFileAlt, color: 'bg-teal-100 text-teal-600' },
+    { id: 'export', label: t('tools.export'), icon: FaFileExport, color: 'bg-green-100 text-green-600' },
+    { id: 'import', label: t('tools.import'), icon: FaFileImport, color: 'bg-blue-100 text-blue-600' },
+    { id: 'undo', label: t('tools.undo'), icon: FaUndo, color: 'bg-gray-100 text-gray-600', disabled: !canUndo },
+    { id: 'redo', label: t('tools.redo'), icon: FaRedo, color: 'bg-gray-100 text-gray-600', disabled: !canRedo },
   ]
 
 
@@ -1629,7 +1631,7 @@ export default function ToolsPanel({
 
   return (
     <>
-      <ToolsBottomSheet isOpen={isOpen && !activeSubSheet} onClose={onClose} title="Tools">
+      <ToolsBottomSheet isOpen={isOpen && !activeSubSheet} onClose={onClose} title={t('tools.title')}>
         <div className="grid grid-cols-4 gap-3">
           {tools.map((tool) => (
             <button
