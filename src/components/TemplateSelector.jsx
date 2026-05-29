@@ -222,8 +222,25 @@ export const templates = [
   },
 ]
 
+const TEMPLATE_NAMES_I18N = {
+  'en-US': { modern: 'Modern', classic: 'Classic', creative: 'Creative', minimal: 'Minimal', executive: 'Executive', professional: 'Professional', elegant: 'Elegant', bold: 'Bold', tech: 'Tech', academic: 'Academic', infographic: 'Infographic', darkmode: 'Dark Mode' },
+  'es': { modern: 'Moderno', classic: 'Clásico', creative: 'Creativo', minimal: 'Minimalista', executive: 'Ejecutivo', professional: 'Profesional', elegant: 'Elegante', bold: 'Audaz', tech: 'Tecnológico', academic: 'Académico', infographic: 'Infográfico', darkmode: 'Modo Oscuro' },
+  'fr': { modern: 'Moderne', classic: 'Classique', creative: 'Créatif', minimal: 'Minimaliste', executive: 'Exécutif', professional: 'Professionnel', elegant: 'Élégant', bold: 'Audacieux', tech: 'Technique', academic: 'Académique', infographic: 'Infographie', darkmode: 'Mode Sombre' },
+  'de': { modern: 'Modern', classic: 'Klassisch', creative: 'Kreativ', minimal: 'Minimalistisch', executive: 'Führungskraft', professional: 'Professionell', elegant: 'Elegant', bold: 'Kühn', tech: 'Technisch', academic: 'Akademisch', infographic: 'Infografik', darkmode: 'Dunkelmodus' },
+  'ja': { modern: 'モダン', classic: 'クラシック', creative: 'クリエイティブ', minimal: 'ミニマル', executive: 'エグゼクティブ', professional: 'プロ', elegant: 'エレガント', bold: 'ボールド', tech: 'テック', academic: 'アカデミック', infographic: 'インフォ', darkmode: 'ダーク' },
+  'zh': { modern: '现代', classic: '经典', creative: '创意', minimal: '极简', executive: '高管', professional: '专业', elegant: '优雅', bold: '大胆', tech: '科技', academic: '学术', infographic: '信息图', darkmode: '深色' },
+  'ko': { modern: '모던', classic: '클래식', creative: '크리에이티브', minimal: '미니멀', executive: '임원', professional: '프로', elegant: '엘레강스', bold: '볼드', tech: '테크', academic: '학술', infographic: '인포', darkmode: '다크' },
+  'ar': { modern: 'حديث', classic: 'كلاسيكي', creative: 'إبداعي', minimal: 'بسيط', executive: 'تنفيذي', professional: 'مهني', elegant: 'أنيق', bold: 'جريء', tech: 'تقني', academic: 'أكاديمي', infographic: 'إنفو', darkmode: 'داكن' },
+  'ru': { modern: 'Современный', classic: 'Классика', creative: 'Креатив', minimal: 'Минимал', executive: 'Руководитель', professional: 'Профи', elegant: 'Элегант', bold: 'Смелый', tech: 'Тех', academic: 'Академ', infographic: 'Инфо', darkmode: 'Тёмный' },
+}
+
+function getTemplateName(templateId, lang) {
+  const langKey = lang?.startsWith('en-') ? 'en-US' : lang?.startsWith('es') ? 'es' : lang?.startsWith('fr') ? 'fr' : (TEMPLATE_NAMES_I18N[lang] ? lang : 'en-US')
+  return TEMPLATE_NAMES_I18N[langKey]?.[templateId] || templateId
+}
+
 export default function TemplateSelector({ activeTemplateId, onSelect }) {
-  const { t } = useTranslation()
+  const { t, language } = useTranslation()
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
       <div className="flex items-center justify-between mb-3">
@@ -236,7 +253,7 @@ export default function TemplateSelector({ activeTemplateId, onSelect }) {
         </h3>
         {activeTemplateId && (
           <span className="text-xs px-2 py-0.5 bg-purple-50 text-purple-600 rounded-full font-medium capitalize">
-            {templates.find(t => t.id === activeTemplateId)?.name}
+            {getTemplateName(activeTemplateId, language)}
           </span>
         )}
       </div>
@@ -275,7 +292,7 @@ export default function TemplateSelector({ activeTemplateId, onSelect }) {
               )}
             </div>
             <span className="text-[10px] text-gray-600 leading-tight text-center font-medium">
-              {template.name}
+              {getTemplateName(template.id, language)}
             </span>
           </button>
         ))}
