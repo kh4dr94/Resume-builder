@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '../TranslationContext'
 import {
   FaUser,
   FaBriefcase,
@@ -119,6 +120,7 @@ const SKILLS_DB = {
 }
 
 function AISummaryInline({ personalInfo, skills, experience, onApply }) {
+  const { t } = useTranslation()
   const [showOptions, setShowOptions] = useState(false)
   const [applied, setApplied] = useState(null)
 
@@ -145,7 +147,7 @@ function AISummaryInline({ personalInfo, skills, experience, onApply }) {
         className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 border border-purple-200 rounded-lg text-xs font-medium text-purple-700 hover:bg-purple-100 active:scale-95 transition-all"
       >
         <FaMagic size={10} />
-        {showOptions ? 'Hide AI Suggestions' : 'AI Generate Summary'}
+        {showOptions ? t('ai.hideSuggestions') : t('ai.generateSummary')}
       </button>
 
       {showOptions && (
@@ -161,7 +163,7 @@ function AISummaryInline({ personalInfo, skills, experience, onApply }) {
                     : 'bg-purple-600 text-white active:bg-purple-700'
                 }`}
               >
-                {applied === summary.id ? '✓ Applied!' : 'Use This'}
+                {applied === summary.id ? `✓ ${t('ai.applied')}` : t('ai.useThis')}
               </button>
             </div>
           ))}
@@ -172,6 +174,7 @@ function AISummaryInline({ personalInfo, skills, experience, onApply }) {
 }
 
 function AISkillsInline({ title, existingSkills, onAddSkill }) {
+  const { t } = useTranslation()
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [added, setAdded] = useState(new Set())
 
@@ -205,13 +208,13 @@ function AISkillsInline({ title, existingSkills, onAddSkill }) {
         className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 border border-purple-200 rounded-lg text-xs font-medium text-purple-700 hover:bg-purple-100 active:scale-95 transition-all"
       >
         <FaMagic size={10} />
-        {showSuggestions ? 'Hide Suggestions' : 'AI Suggest Skills'}
+        {showSuggestions ? t('ai.hideSuggestions') : t('ai.suggestSkills')}
       </button>
 
       {showSuggestions && (
         <div className="mt-2 max-h-40 overflow-y-auto pr-1">
           {filtered.length === 0 ? (
-            <p className="text-xs text-green-600 py-2">✓ All suggested skills already added!</p>
+            <p className="text-xs text-green-600 py-2">✓ {t('ai.allAdded')}</p>
           ) : (
             <div className="flex flex-wrap gap-1.5">
               {filtered.map((skill, idx) => (
@@ -232,6 +235,7 @@ function AISkillsInline({ title, existingSkills, onAddSkill }) {
 }
 
 function AIRewriteInline({ description, onApply }) {
+  const { t } = useTranslation()
   const [rewrites, setRewrites] = useState({})
   const [showAll, setShowAll] = useState(false)
 
@@ -278,7 +282,7 @@ function AIRewriteInline({ description, onApply }) {
         className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 border border-purple-200 rounded-lg text-xs font-medium text-purple-700 hover:bg-purple-100 active:scale-95 transition-all"
       >
         <FaMagic size={10} />
-        {showAll ? 'Hide AI Rewrite' : `AI Rewrite (${bullets.length} bullets)`}
+        {showAll ? t('ai.hideRewrite') : `${t('ai.rewrite')} (${bullets.length} ${t('ai.bullets')})`}
       </button>
 
       {showAll && (
@@ -296,13 +300,13 @@ function AIRewriteInline({ description, onApply }) {
                       onClick={() => handleApply(idx)}
                       className="px-2 py-1 bg-green-600 text-white text-[10px] font-semibold rounded active:bg-green-700"
                     >
-                      <FaCheck className="inline mr-0.5" size={8} /> Apply
+                      <FaCheck className="inline mr-0.5" size={8} /> {t('ai.apply')}
                     </button>
                     <button
                       onClick={() => handleRewrite(idx)}
                       className="px-2 py-1 bg-gray-200 text-gray-700 text-[10px] font-medium rounded active:bg-gray-300"
                     >
-                      <FaRedo className="inline mr-0.5" size={8} /> Retry
+                      <FaRedo className="inline mr-0.5" size={8} /> {t('ai.retry')}
                     </button>
                   </div>
                 </div>
@@ -311,7 +315,7 @@ function AIRewriteInline({ description, onApply }) {
                   onClick={() => handleRewrite(idx)}
                   className="px-2.5 py-1.5 bg-purple-600 text-white text-[10px] font-semibold rounded-md active:bg-purple-700"
                 >
-                  <FaMagic className="inline mr-1" size={9} /> Rewrite
+                  <FaMagic className="inline mr-1" size={9} /> {t('ai.rewrite')}
                 </button>
               )}
             </div>
@@ -323,6 +327,8 @@ function AIRewriteInline({ description, onApply }) {
 }
 
 export default function ResumeForm({ data, setData }) {
+  const { t } = useTranslation()
+
   const updatePersonalInfo = (field, value) => {
     setData((prev) => ({
       ...prev,
@@ -479,11 +485,11 @@ export default function ResumeForm({ data, setData }) {
   return (
     <div className="space-y-4">
       {/* Personal Information */}
-      <Section title="Personal Information" icon={FaUser} defaultOpen={true}>
+      <Section title={t('form.personalInfo')} icon={FaUser} defaultOpen={true}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
             <InputField
-              label="Full Name"
+              label={t('form.fullName')}
               value={data.personalInfo.fullName}
               onChange={(e) => updatePersonalInfo('fullName', e.target.value)}
               placeholder="John Doe"
@@ -491,41 +497,41 @@ export default function ResumeForm({ data, setData }) {
           </div>
           <div className="sm:col-span-2">
             <InputField
-              label="Professional Title"
+              label={t('form.professionalTitle')}
               value={data.personalInfo.title}
               onChange={(e) => updatePersonalInfo('title', e.target.value)}
               placeholder="Senior Software Engineer"
             />
           </div>
           <InputField
-            label="Email"
+            label={t('form.email')}
             type="email"
             value={data.personalInfo.email}
             onChange={(e) => updatePersonalInfo('email', e.target.value)}
             placeholder="john@example.com"
           />
           <InputField
-            label="Phone"
+            label={t('form.phone')}
             type="tel"
             value={data.personalInfo.phone}
             onChange={(e) => updatePersonalInfo('phone', e.target.value)}
             placeholder="+1 (555) 123-4567"
           />
           <InputField
-            label="Location"
+            label={t('form.location')}
             value={data.personalInfo.location}
             onChange={(e) => updatePersonalInfo('location', e.target.value)}
             placeholder="San Francisco, CA"
           />
           <InputField
-            label="LinkedIn"
+            label={t('form.linkedin')}
             value={data.personalInfo.linkedin}
             onChange={(e) => updatePersonalInfo('linkedin', e.target.value)}
             placeholder="linkedin.com/in/johndoe"
           />
           <div className="sm:col-span-2">
             <InputField
-              label="Website/Portfolio"
+              label={t('form.website')}
               value={data.personalInfo.website}
               onChange={(e) => updatePersonalInfo('website', e.target.value)}
               placeholder="johndoe.dev"
@@ -533,7 +539,7 @@ export default function ResumeForm({ data, setData }) {
           </div>
           <div className="sm:col-span-2">
             <TextArea
-              label="Professional Summary"
+              label={t('form.summary')}
               value={data.personalInfo.summary}
               onChange={(e) => updatePersonalInfo('summary', e.target.value)}
               placeholder="A brief summary of your professional background, key achievements, and career goals..."
@@ -550,7 +556,7 @@ export default function ResumeForm({ data, setData }) {
       </Section>
 
       {/* Work Experience */}
-      <Section title="Work Experience" icon={FaBriefcase}>
+      <Section title={t('form.workExperience')} icon={FaBriefcase}>
         <div className="space-y-4">
           {data.experience.map((exp, index) => (
             <div
@@ -567,26 +573,26 @@ export default function ResumeForm({ data, setData }) {
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <InputField
-                  label="Company"
+                  label={t('form.company')}
                   value={exp.company}
                   onChange={(e) => updateExperience(exp.id, 'company', e.target.value)}
                   placeholder="Google"
                 />
                 <InputField
-                  label="Position"
+                  label={t('form.position')}
                   value={exp.position}
                   onChange={(e) => updateExperience(exp.id, 'position', e.target.value)}
                   placeholder="Senior Engineer"
                 />
                 <InputField
-                  label="Start Date"
+                  label={t('form.startDate')}
                   value={exp.startDate}
                   onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
                   placeholder="Jan 2020"
                 />
                 <div>
                   <InputField
-                    label="End Date"
+                    label={t('form.endDate')}
                     value={exp.current ? 'Present' : exp.endDate}
                     onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
                     placeholder="Dec 2023"
@@ -600,12 +606,12 @@ export default function ResumeForm({ data, setData }) {
                       }
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <span className="text-xs text-gray-600">Currently working here</span>
+                    <span className="text-xs text-gray-600">{t('form.currentlyWorking')}</span>
                   </label>
                 </div>
                 <div className="sm:col-span-2">
                   <TextArea
-                    label="Description"
+                    label={t('form.description')}
                     value={exp.description}
                     onChange={(e) =>
                       updateExperience(exp.id, 'description', e.target.value)
@@ -629,13 +635,13 @@ export default function ResumeForm({ data, setData }) {
             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
           >
             <FaPlus size={12} />
-            Add Experience
+            {t('form.addExperience')}
           </button>
         </div>
       </Section>
 
       {/* Education */}
-      <Section title="Education" icon={FaGraduationCap}>
+      <Section title={t('form.education')} icon={FaGraduationCap}>
         <div className="space-y-4">
           {data.education.map((edu) => (
             <div
@@ -653,7 +659,7 @@ export default function ResumeForm({ data, setData }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2">
                   <InputField
-                    label="Institution"
+                    label={t('form.institution')}
                     value={edu.institution}
                     onChange={(e) =>
                       updateEducation(edu.id, 'institution', e.target.value)
@@ -662,31 +668,31 @@ export default function ResumeForm({ data, setData }) {
                   />
                 </div>
                 <InputField
-                  label="Degree"
+                  label={t('form.degree')}
                   value={edu.degree}
                   onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)}
                   placeholder="Bachelor of Science"
                 />
                 <InputField
-                  label="Field of Study"
+                  label={t('form.fieldOfStudy')}
                   value={edu.field}
                   onChange={(e) => updateEducation(edu.id, 'field', e.target.value)}
                   placeholder="Computer Science"
                 />
                 <InputField
-                  label="Start Date"
+                  label={t('form.startDate')}
                   value={edu.startDate}
                   onChange={(e) => updateEducation(edu.id, 'startDate', e.target.value)}
                   placeholder="2016"
                 />
                 <InputField
-                  label="End Date"
+                  label={t('form.endDate')}
                   value={edu.endDate}
                   onChange={(e) => updateEducation(edu.id, 'endDate', e.target.value)}
                   placeholder="2020"
                 />
                 <InputField
-                  label="GPA (optional)"
+                  label={t('form.gpa')}
                   value={edu.gpa}
                   onChange={(e) => updateEducation(edu.id, 'gpa', e.target.value)}
                   placeholder="3.9/4.0"
@@ -699,13 +705,13 @@ export default function ResumeForm({ data, setData }) {
             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
           >
             <FaPlus size={12} />
-            Add Education
+            {t('form.addEducation')}
           </button>
         </div>
       </Section>
 
       {/* Skills */}
-      <Section title="Skills" icon={FaTools}>
+      <Section title={t('form.skills')} icon={FaTools}>
         <div className="space-y-2">
           {data.skills.map((skill, index) => (
             <div key={index} className="flex items-center gap-2">
@@ -731,7 +737,7 @@ export default function ResumeForm({ data, setData }) {
             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm mt-2"
           >
             <FaPlus size={12} />
-            Add Skill
+            {t('form.addSkill')}
           </button>
           <AISkillsInline
             title={data.personalInfo.title}
@@ -744,13 +750,13 @@ export default function ResumeForm({ data, setData }) {
             }}
           />
           <p className="text-xs text-gray-500 mt-1">
-            Tip: Add one skill per line for best formatting, or separate with commas
+            {t('form.skillTip')}
           </p>
         </div>
       </Section>
 
       {/* Certifications */}
-      <Section title="Certifications" icon={FaCertificate}>
+      <Section title={t('form.certifications')} icon={FaCertificate}>
         <div className="space-y-4">
           {data.certifications.map((cert) => (
             <div
@@ -768,7 +774,7 @@ export default function ResumeForm({ data, setData }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2">
                   <InputField
-                    label="Certification Name"
+                    label={t('form.certName')}
                     value={cert.name}
                     onChange={(e) =>
                       updateCertification(cert.id, 'name', e.target.value)
@@ -777,7 +783,7 @@ export default function ResumeForm({ data, setData }) {
                   />
                 </div>
                 <InputField
-                  label="Issuing Organization"
+                  label={t('form.issuer')}
                   value={cert.issuer}
                   onChange={(e) =>
                     updateCertification(cert.id, 'issuer', e.target.value)
@@ -785,7 +791,7 @@ export default function ResumeForm({ data, setData }) {
                   placeholder="Amazon Web Services"
                 />
                 <InputField
-                  label="Date"
+                  label={t('form.date')}
                   value={cert.date}
                   onChange={(e) =>
                     updateCertification(cert.id, 'date', e.target.value)
@@ -800,13 +806,13 @@ export default function ResumeForm({ data, setData }) {
             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
           >
             <FaPlus size={12} />
-            Add Certification
+            {t('form.addCertification')}
           </button>
         </div>
       </Section>
 
       {/* Languages */}
-      <Section title="Languages" icon={FaLanguage}>
+      <Section title={t('form.languages')} icon={FaLanguage}>
         <div className="space-y-4">
           {data.languages.map((lang) => (
             <div
@@ -823,14 +829,14 @@ export default function ResumeForm({ data, setData }) {
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <InputField
-                  label="Language"
+                  label={t('form.language')}
                   value={lang.language}
                   onChange={(e) => updateLanguage(lang.id, 'language', e.target.value)}
                   placeholder="English"
                 />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Proficiency
+                    {t('form.proficiency')}
                   </label>
                   <select
                     value={lang.proficiency}
@@ -839,12 +845,12 @@ export default function ResumeForm({ data, setData }) {
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
                   >
-                    <option value="">Select level</option>
-                    <option value="Native">Native</option>
-                    <option value="Fluent">Fluent</option>
-                    <option value="Advanced">Advanced</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Basic">Basic</option>
+                    <option value="">{t('form.selectLevel')}</option>
+                    <option value="Native">{t('form.native')}</option>
+                    <option value="Fluent">{t('form.fluent')}</option>
+                    <option value="Advanced">{t('form.advanced')}</option>
+                    <option value="Intermediate">{t('form.intermediate')}</option>
+                    <option value="Basic">{t('form.basic')}</option>
                   </select>
                 </div>
               </div>
@@ -855,7 +861,7 @@ export default function ResumeForm({ data, setData }) {
             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
           >
             <FaPlus size={12} />
-            Add Language
+            {t('form.addLanguage')}
           </button>
         </div>
       </Section>

@@ -1,4 +1,5 @@
 import { forwardRef } from 'react'
+import { useTranslation } from '../TranslationContext'
 import {
   FaEnvelope,
   FaPhone,
@@ -8,6 +9,7 @@ import {
 } from 'react-icons/fa'
 
 const ResumePreview = forwardRef(({ data, theme, sectionOrder, sectionLabels }, ref) => {
+  const { t } = useTranslation()
   const { personalInfo, experience, education, skills, certifications, languages } = data
 
   const filledSkills = skills.filter((s) => s.trim() !== '')
@@ -261,8 +263,8 @@ const ResumePreview = forwardRef(({ data, theme, sectionOrder, sectionLabels }, 
         filledEducation.length === 0 &&
         filledSkills.length === 0 && (
           <div className="text-center py-16 text-gray-400">
-            <p className="text-lg font-medium mb-2">Your resume preview will appear here</p>
-            <p className="text-sm">Start filling in the form on the left to see your resume come to life!</p>
+            <p className="text-lg font-medium mb-2">{t('preview.emptyTitle')}</p>
+            <p className="text-sm">{t('preview.emptySubtitle')}</p>
           </div>
         )}
     </div>

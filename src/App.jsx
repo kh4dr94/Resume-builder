@@ -25,6 +25,8 @@ import AIFeatures from './components/AIFeatures'
 import ResumeAnalytics from './components/ResumeAnalytics'
 import VersionHistory from './components/VersionHistory'
 import QuickFill from './components/QuickFill'
+import { TranslationProvider } from './TranslationContext'
+import { t } from './i18n'
 import {
   FaFilePdf,
   FaEye,
@@ -47,34 +49,13 @@ const DEFAULT_SECTION_ORDER = [
   'languages',
 ]
 
-const SECTION_LABELS_I18N = {
-  'en-US': { summary: 'Professional Summary', experience: 'Work Experience', education: 'Education', skills: 'Skills', certifications: 'Certifications', languages: 'Languages' },
-  'en-GB': { summary: 'Professional Summary', experience: 'Work Experience', education: 'Education', skills: 'Skills', certifications: 'Certifications', languages: 'Languages' },
-  'en-AU': { summary: 'Professional Summary', experience: 'Work Experience', education: 'Education', skills: 'Skills', certifications: 'Certifications', languages: 'Languages' },
-  'es': { summary: 'Resumen Profesional', experience: 'Experiencia Laboral', education: 'Educación', skills: 'Habilidades', certifications: 'Certificaciones', languages: 'Idiomas' },
-  'es-MX': { summary: 'Resumen Profesional', experience: 'Experiencia Laboral', education: 'Educación', skills: 'Habilidades', certifications: 'Certificaciones', languages: 'Idiomas' },
-  'fr': { summary: 'Résumé Professionnel', experience: 'Expérience Professionnelle', education: 'Formation', skills: 'Compétences', certifications: 'Certifications', languages: 'Langues' },
-  'fr-CA': { summary: 'Résumé Professionnel', experience: 'Expérience Professionnelle', education: 'Formation', skills: 'Compétences', certifications: 'Certifications', languages: 'Langues' },
-  'de': { summary: 'Berufsprofil', experience: 'Berufserfahrung', education: 'Ausbildung', skills: 'Fähigkeiten', certifications: 'Zertifizierungen', languages: 'Sprachen' },
-  'pt': { summary: 'Resumo Profissional', experience: 'Experiência Profissional', education: 'Formação', skills: 'Habilidades', certifications: 'Certificações', languages: 'Idiomas' },
-  'pt-PT': { summary: 'Resumo Profissional', experience: 'Experiência Profissional', education: 'Formação', skills: 'Competências', certifications: 'Certificações', languages: 'Idiomas' },
-  'it': { summary: 'Profilo Professionale', experience: 'Esperienza Lavorativa', education: 'Formazione', skills: 'Competenze', certifications: 'Certificazioni', languages: 'Lingue' },
-  'nl': { summary: 'Professioneel Profiel', experience: 'Werkervaring', education: 'Opleiding', skills: 'Vaardigheden', certifications: 'Certificeringen', languages: 'Talen' },
-  'ja': { summary: '職務要約', experience: '職務経歴', education: '学歴', skills: 'スキル', certifications: '資格', languages: '言語' },
-  'zh': { summary: '专业概述', experience: '工作经历', education: '教育背景', skills: '技能', certifications: '证书', languages: '语言' },
-  'ko': { summary: '전문 요약', experience: '경력 사항', education: '학력', skills: '기술', certifications: '자격증', languages: '언어' },
-  'ar': { summary: 'الملخص المهني', experience: 'الخبرة العملية', education: 'التعليم', skills: 'المهارات', certifications: 'الشهادات', languages: 'اللغات' },
-  'hi': { summary: 'पेशेवर सारांश', experience: 'कार्य अनुभव', education: 'शिक्षा', skills: 'कौशल', certifications: 'प्रमाणपत्र', languages: 'भाषाएँ' },
-  'ru': { summary: 'Профессиональное Резюме', experience: 'Опыт Работы', education: 'Образование', skills: 'Навыки', certifications: 'Сертификаты', languages: 'Языки' },
-  'tr': { summary: 'Profesyonel Özet', experience: 'İş Deneyimi', education: 'Eğitim', skills: 'Beceriler', certifications: 'Sertifikalar', languages: 'Diller' },
-  'vi': { summary: 'Tóm Tắt Chuyên Môn', experience: 'Kinh Nghiệm Làm Việc', education: 'Học Vấn', skills: 'Kỹ Năng', certifications: 'Chứng Chỉ', languages: 'Ngôn Ngữ' },
-  'sv': { summary: 'Professionell Sammanfattning', experience: 'Arbetslivserfarenhet', education: 'Utbildning', skills: 'Färdigheter', certifications: 'Certifieringar', languages: 'Språk' },
-}
-
-const DEFAULT_LABELS = { summary: 'Professional Summary', experience: 'Work Experience', education: 'Education', skills: 'Skills', certifications: 'Certifications', languages: 'Languages' }
-
-function getSectionLabels(lang) {
-  return SECTION_LABELS_I18N[lang] || DEFAULT_LABELS
+const sectionLabelKey = {
+  summary: 'sections.summary',
+  experience: 'sections.experience',
+  education: 'sections.education',
+  skills: 'sections.skills',
+  certifications: 'sections.certifications',
+  languages: 'sections.languages',
 }
 
 const createEmptyResumeData = () => ({
@@ -184,7 +165,7 @@ function App() {
   // Get active profile data
   const activeProfile = profiles.find((p) => p.id === activeProfileId) || profiles[0]
   const resumeData = activeProfile.data
-  const activeTemplate = templates.find((t) => t.id === activeTemplateId) || templates[0]
+  const activeTemplate = templates.find((t_) => t_.id === activeTemplateId) || templates[0]
 
   // Persist state
   useEffect(() => {
@@ -382,244 +363,253 @@ function App() {
   })
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-slate-100 to-blue-50'}`}>
-      {/* Header */}
-      <header className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm border-b`}>
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-base">R</span>
-            </div>
-            <div className="hidden sm:block">
-              <h1 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Resume Builder</h1>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Dark mode toggle */}
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-                darkMode
-                  ? 'bg-gray-700 text-yellow-400 hover:bg-gray-600'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {darkMode ? <FaSun size={16} /> : <FaMoon size={16} />}
-            </button>
-
-            {/* Tools button */}
-            <button
-              onClick={() => { setToolsInitialSheet(null); setToolsOpen(true) }}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-                darkMode
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <FaEllipsisH size={16} />
-            </button>
-
-            {/* View toggle */}
-            <div className={`flex lg:hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg p-0.5`}>
-              <button
-                onClick={() => setActiveView('form')}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  activeView === 'form'
-                    ? `${darkMode ? 'bg-gray-600 text-white' : 'bg-white shadow text-blue-600'}`
-                    : `${darkMode ? 'text-gray-400' : 'text-gray-600'}`
-                }`}
-              >
-                <FaEdit size={12} />
-                Edit
-              </button>
-              <button
-                onClick={() => setActiveView('preview')}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  activeView === 'preview'
-                    ? `${darkMode ? 'bg-gray-600 text-white' : 'bg-white shadow text-blue-600'}`
-                    : `${darkMode ? 'text-gray-400' : 'text-gray-600'}`
-                }`}
-              >
-                <FaEye size={12} />
-                Preview
-              </button>
-            </div>
-
-            {/* Settings */}
-            <button
-              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-                darkMode
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <FaCog size={16} />
-            </button>
-
-            {/* PDF Download */}
-            <button
-              onClick={handlePrint}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md font-medium text-sm"
-            >
-              <FaFilePdf size={14} />
-              <span className="hidden sm:inline">PDF</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Quick Tools Bar */}
-      <MobileToolbar
-        onShareOpen={() => { setToolsInitialSheet('share'); setToolsOpen(true) }}
-        onCoverLetterOpen={() => { setToolsInitialSheet('cover-letter'); setToolsOpen(true) }}
-        onJobMatchOpen={() => { setToolsInitialSheet('job-match'); setToolsOpen(true) }}
-        onGrammarOpen={() => { setToolsInitialSheet('grammar'); setToolsOpen(true) }}
-        onTailorOpen={() => { setToolsInitialSheet('tailor'); setToolsOpen(true) }}
-        onQuantifyOpen={() => { setToolsInitialSheet('quantify'); setToolsOpen(true) }}
-        onLanguageOpen={() => { setToolsInitialSheet('language'); setToolsOpen(true) }}
-        currentLanguage={currentLanguage}
-      />
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-4 pb-20 lg:py-6 lg:pb-6">
-        <div className="flex gap-6">
-          {/* Form Panel */}
-          <div
-            className={`w-full lg:w-1/2 xl:w-5/12 ${
-              activeView === 'preview' ? 'hidden lg:block' : ''
-            }`}
-          >
-            <div className="space-y-3">
-              {/* Active Profile Card */}
-              <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-sm border p-4`}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 ${darkMode ? 'bg-gray-700' : 'bg-blue-50'} rounded-lg flex items-center justify-center`}>
-                    <FaColumns size={16} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
-                  </div>
-                  <div className="flex-1">
-                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Active Profile</p>
-                    <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-                      {activeProfile.name}
-                    </p>
-                  </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
-                    {profiles.length}
-                  </span>
-                </div>
+    <TranslationProvider language={currentLanguage}>
+      <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-slate-100 to-blue-50'}`}>
+        {/* Header */}
+        <header className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm border-b`}>
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-base">R</span>
               </div>
+              <div className="hidden sm:block">
+                <h1 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t(currentLanguage, 'app.title')}</h1>
+              </div>
+            </div>
 
-              {/* Quick Fill */}
-              <QuickFill onFill={handleQuickFill} />
+            <div className="flex items-center gap-2">
+              {/* Dark mode toggle */}
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                  darkMode
+                    ? 'bg-gray-700 text-yellow-400 hover:bg-gray-600'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {darkMode ? <FaSun size={16} /> : <FaMoon size={16} />}
+              </button>
 
-              {/* Resume Analytics */}
-              <ResumeAnalytics data={resumeData} />
+              {/* Tools button */}
+              <button
+                onClick={() => { setToolsInitialSheet(null); setToolsOpen(true) }}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                  darkMode
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <FaEllipsisH size={16} />
+              </button>
 
-              {/* Version History */}
-              <VersionHistory
-                versions={versions}
-                onRestore={handleRestoreVersion}
-                onDelete={handleDeleteVersion}
-              />
-
-              {/* Template Selector */}
-              <TemplateSelector
-                activeTemplateId={activeTemplateId}
-                onSelect={setActiveTemplateId}
-              />
-
-              {/* Profile Manager */}
-              <ProfileManager
-                profiles={profiles}
-                activeProfileId={activeProfileId}
-                onSwitch={handleSwitchProfile}
-                onCreate={handleCreateProfile}
-                onDelete={handleDeleteProfile}
-                onRename={handleRenameProfile}
-              />
-
-              {/* Section Order (Drag & Drop) */}
-              <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-sm border p-4`}>
-                <h3 className={`text-sm font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-700'} flex items-center gap-2 mb-3`}>
-                  <FaGripVertical size={12} className="text-green-600" />
-                  Section Order
-                  <span className={`text-xs font-normal ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>(drag to reorder)</span>
-                </h3>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
+              {/* View toggle */}
+              <div className={`flex lg:hidden ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} rounded-lg p-0.5`}>
+                <button
+                  onClick={() => setActiveView('form')}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+                    activeView === 'form'
+                      ? `${darkMode ? 'bg-gray-600 text-white' : 'bg-white shadow text-blue-600'}`
+                      : `${darkMode ? 'text-gray-400' : 'text-gray-600'}`
+                  }`}
                 >
-                  <SortableContext
-                    items={sectionOrder}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div className="space-y-1">
-                      {sectionOrder.map((sectionId) => (
-                        <DraggableSection key={sectionId} id={sectionId}>
-                          <div className={`px-3 py-2 ${darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-gray-50 border-gray-200 text-gray-700'} rounded-lg border text-sm font-medium`}>
-                            {getSectionLabels(currentLanguage)[sectionId]}
-                          </div>
-                        </DraggableSection>
-                      ))}
+                  <FaEdit size={12} />
+                  {t(currentLanguage, 'app.edit')}
+                </button>
+                <button
+                  onClick={() => setActiveView('preview')}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+                    activeView === 'preview'
+                      ? `${darkMode ? 'bg-gray-600 text-white' : 'bg-white shadow text-blue-600'}`
+                      : `${darkMode ? 'text-gray-400' : 'text-gray-600'}`
+                  }`}
+                >
+                  <FaEye size={12} />
+                  {t(currentLanguage, 'app.preview')}
+                </button>
+              </div>
+
+              {/* Settings */}
+              <button
+                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                  darkMode
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <FaCog size={16} />
+              </button>
+
+              {/* PDF Download */}
+              <button
+                onClick={handlePrint}
+                className="flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md font-medium text-sm"
+              >
+                <FaFilePdf size={14} />
+                <span className="hidden sm:inline">PDF</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Mobile Quick Tools Bar */}
+        <MobileToolbar
+          onShareOpen={() => { setToolsInitialSheet('share'); setToolsOpen(true) }}
+          onCoverLetterOpen={() => { setToolsInitialSheet('cover-letter'); setToolsOpen(true) }}
+          onJobMatchOpen={() => { setToolsInitialSheet('job-match'); setToolsOpen(true) }}
+          onGrammarOpen={() => { setToolsInitialSheet('grammar'); setToolsOpen(true) }}
+          onTailorOpen={() => { setToolsInitialSheet('tailor'); setToolsOpen(true) }}
+          onQuantifyOpen={() => { setToolsInitialSheet('quantify'); setToolsOpen(true) }}
+          onLanguageOpen={() => { setToolsInitialSheet('language'); setToolsOpen(true) }}
+          currentLanguage={currentLanguage}
+        />
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 py-4 pb-20 lg:py-6 lg:pb-6">
+          <div className="flex gap-6">
+            {/* Form Panel */}
+            <div
+              className={`w-full lg:w-1/2 xl:w-5/12 ${
+                activeView === 'preview' ? 'hidden lg:block' : ''
+              }`}
+            >
+              <div className="space-y-3">
+                {/* Active Profile Card */}
+                <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-sm border p-4`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 ${darkMode ? 'bg-gray-700' : 'bg-blue-50'} rounded-lg flex items-center justify-center`}>
+                      <FaColumns size={16} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
                     </div>
-                  </SortableContext>
-                </DndContext>
-              </div>
+                    <div className="flex-1">
+                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{t(currentLanguage, 'profile.activeProfile')}</p>
+                      <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                        {activeProfile.name}
+                      </p>
+                    </div>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+                      {profiles.length}
+                    </span>
+                  </div>
+                </div>
 
-              {/* Resume Form */}
-              <ResumeForm data={resumeData} setData={setResumeData} />
+                {/* Quick Fill */}
+                <QuickFill onFill={handleQuickFill} />
+
+                {/* Resume Analytics */}
+                <ResumeAnalytics data={resumeData} />
+
+                {/* Version History */}
+                <VersionHistory
+                  versions={versions}
+                  onRestore={handleRestoreVersion}
+                  onDelete={handleDeleteVersion}
+                />
+
+                {/* Template Selector */}
+                <TemplateSelector
+                  activeTemplateId={activeTemplateId}
+                  onSelect={setActiveTemplateId}
+                />
+
+                {/* Profile Manager */}
+                <ProfileManager
+                  profiles={profiles}
+                  activeProfileId={activeProfileId}
+                  onSwitch={handleSwitchProfile}
+                  onCreate={handleCreateProfile}
+                  onDelete={handleDeleteProfile}
+                  onRename={handleRenameProfile}
+                />
+
+                {/* Section Order (Drag & Drop) */}
+                <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-sm border p-4`}>
+                  <h3 className={`text-sm font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-700'} flex items-center gap-2 mb-3`}>
+                    <FaGripVertical size={12} className="text-green-600" />
+                    {t(currentLanguage, 'sections.sectionOrder')}
+                    <span className={`text-xs font-normal ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>({t(currentLanguage, 'sections.dragToReorder')})</span>
+                  </h3>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={sectionOrder}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-1">
+                        {sectionOrder.map((sectionId) => (
+                          <DraggableSection key={sectionId} id={sectionId}>
+                            <div className={`px-3 py-2 ${darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-gray-50 border-gray-200 text-gray-700'} rounded-lg border text-sm font-medium`}>
+                              {t(currentLanguage, sectionLabelKey[sectionId])}
+                            </div>
+                          </DraggableSection>
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                </div>
+
+                {/* Resume Form */}
+                <ResumeForm data={resumeData} setData={setResumeData} />
+              </div>
+            </div>
+
+            {/* Preview Panel */}
+            <div
+              className={`w-full lg:w-1/2 xl:w-7/12 ${
+                activeView === 'form' ? 'hidden lg:block' : ''
+              }`}
+            >
+              <div className="sticky top-6">
+                <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'} rounded-xl shadow-lg overflow-hidden`}>
+                  <div className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} px-4 py-2 border-b flex items-center gap-2`}>
+                    <FaEye className={darkMode ? 'text-gray-400' : 'text-gray-400'} size={14} />
+                    <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t(currentLanguage, 'preview.livePreview')}</span>
+                    <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} ml-auto capitalize`}>
+                      {t(currentLanguage, 'preview.template')}: {activeTemplate.name}
+                    </span>
+                  </div>
+                  <div className="p-4 overflow-auto max-h-[calc(100vh-160px)]">
+                    <ResumePreview
+                      ref={resumeRef}
+                      data={resumeData}
+                      theme={activeTemplate}
+                      sectionOrder={sectionOrder}
+                      sectionLabels={{
+                        summary: t(currentLanguage, 'sections.summary'),
+                        experience: t(currentLanguage, 'sections.experience'),
+                        education: t(currentLanguage, 'sections.education'),
+                        skills: t(currentLanguage, 'sections.skills'),
+                        certifications: t(currentLanguage, 'sections.certifications'),
+                        languages: t(currentLanguage, 'sections.languages'),
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        </main>
 
-          {/* Preview Panel */}
-          <div
-            className={`w-full lg:w-1/2 xl:w-7/12 ${
-              activeView === 'form' ? 'hidden lg:block' : ''
-            }`}
-          >
-            <div className="sticky top-6">
-              <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'} rounded-xl shadow-lg overflow-hidden`}>
-                <div className={`${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} px-4 py-2 border-b flex items-center gap-2`}>
-                  <FaEye className={darkMode ? 'text-gray-400' : 'text-gray-400'} size={14} />
-                  <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Live Preview</span>
-                  <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'} ml-auto capitalize`}>
-                    Template: {activeTemplate.name}
-                  </span>
-                </div>
-                <div className="p-4 overflow-auto max-h-[calc(100vh-160px)]">
-                  <ResumePreview
-                    ref={resumeRef}
-                    data={resumeData}
-                    theme={activeTemplate}
-                    sectionOrder={sectionOrder}
-                    sectionLabels={getSectionLabels(currentLanguage)}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Tools Panel */}
-      <ToolsPanel
-        isOpen={toolsOpen}
-        onClose={() => { setToolsOpen(false); setToolsInitialSheet(null) }}
-        resumeData={resumeData}
-        onUpdateData={(data) => setResumeData(data)}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-        canUndo={undoStack.length > 0}
-        canRedo={redoStack.length > 0}
-        onExport={handleExport}
-        onImport={handleImport}
-        currentLanguage={currentLanguage}
-        onLanguageChange={setCurrentLanguage}
-        initialSheet={toolsInitialSheet}
-        onPrint={handlePrint}
-      />
-    </div>
+        {/* Tools Panel */}
+        <ToolsPanel
+          isOpen={toolsOpen}
+          onClose={() => { setToolsOpen(false); setToolsInitialSheet(null) }}
+          resumeData={resumeData}
+          onUpdateData={(data) => setResumeData(data)}
+          onUndo={handleUndo}
+          onRedo={handleRedo}
+          canUndo={undoStack.length > 0}
+          canRedo={redoStack.length > 0}
+          onExport={handleExport}
+          onImport={handleImport}
+          currentLanguage={currentLanguage}
+          onLanguageChange={setCurrentLanguage}
+          initialSheet={toolsInitialSheet}
+          onPrint={handlePrint}
+        />
+      </div>
+    </TranslationProvider>
   )
 }
 

@@ -1,3 +1,4 @@
+import { useTranslation } from '../TranslationContext'
 import {
   FaShareAlt,
   FaEnvelope,
@@ -56,16 +57,17 @@ export default function MobileToolbar({
   onLanguageOpen,
   currentLanguage,
 }) {
+  const { t } = useTranslation()
   const currentFlag = LANGUAGE_FLAGS[currentLanguage] || '🇺🇸'
 
   const tools = [
-    { id: 'share', icon: FaShareAlt, label: 'Share', action: onShareOpen },
-    { id: 'envelope', icon: FaEnvelope, label: 'Letter', action: onCoverLetterOpen },
-    { id: 'jobmatch', icon: FaBullseye, label: 'Match', action: onJobMatchOpen },
-    { id: 'grammar', icon: FaSpellCheck, label: 'Grammar', action: onGrammarOpen },
-    { id: 'tailor', icon: FaCrosshairs, label: 'Tailor', action: onTailorOpen },
-    { id: 'quantify', icon: FaChartBar, label: 'Quantify', action: onQuantifyOpen },
-    { id: 'language', icon: FaGlobe, label: 'Lang', flag: currentFlag, action: onLanguageOpen },
+    { id: 'share', icon: FaShareAlt, label: t('toolbar.share'), action: onShareOpen },
+    { id: 'envelope', icon: FaEnvelope, label: t('toolbar.letter'), action: onCoverLetterOpen },
+    { id: 'jobmatch', icon: FaBullseye, label: t('toolbar.match'), action: onJobMatchOpen },
+    { id: 'grammar', icon: FaSpellCheck, label: t('toolbar.grammar'), action: onGrammarOpen },
+    { id: 'tailor', icon: FaCrosshairs, label: t('toolbar.tailor'), action: onTailorOpen },
+    { id: 'quantify', icon: FaChartBar, label: t('toolbar.quantify'), action: onQuantifyOpen },
+    { id: 'language', icon: FaGlobe, label: t('toolbar.lang'), flag: currentFlag, action: onLanguageOpen },
   ]
 
   return (
