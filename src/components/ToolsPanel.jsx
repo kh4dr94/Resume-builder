@@ -67,15 +67,19 @@ function ToolsBottomSheet({ isOpen, onClose, children, title }) {
   )
 }
 
-function ShareSheet({ onClose, resumeData }) {
+function ShareSheet({ onClose, resumeData, onPrint }) {
   const [copied, setCopied] = useState(false)
-  const [emailSent, setEmailSent] = useState(false)
   const [email, setEmail] = useState('')
 
   const handleCopyLink = () => {
     navigator.clipboard?.writeText(window.location.href)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleDownloadPDF = () => {
+    onPrint?.()
+    onClose()
   }
 
   const handleCopyText = () => {
@@ -175,9 +179,21 @@ function ShareSheet({ onClose, resumeData }) {
 
   return (
     <div className="space-y-4">
+      {/* Primary Action - PDF */}
+      <button
+        onClick={handleDownloadPDF}
+        className="w-full flex items-center gap-3 px-4 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl active:from-blue-700 active:to-indigo-700 transition-all shadow-md active:scale-[0.98]"
+      >
+        <span className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-lg">📄</span>
+        <div className="text-left">
+          <p className="text-sm font-semibold text-white">Download PDF</p>
+          <p className="text-xs text-blue-100">Best for sharing with recruiters & employers</p>
+        </div>
+      </button>
+
       {/* Social Share */}
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Share via</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Share link via</p>
         <div className="grid grid-cols-4 gap-2">
           <button onClick={handleWhatsApp} className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-green-50 active:bg-green-100 transition-all active:scale-95">
             <span className="text-xl">💬</span>
@@ -200,7 +216,7 @@ function ShareSheet({ onClose, resumeData }) {
 
       {/* Email Share */}
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Email to someone</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Email resume link</p>
         <div className="flex gap-2">
           <input
             type="email"
@@ -443,6 +459,7 @@ export default function ToolsPanel({
   currentLanguage,
   onLanguageChange,
   initialSheet,
+  onPrint,
 }) {
   const [activeSubSheet, setActiveSubSheet] = useState(null)
 
@@ -551,7 +568,7 @@ export default function ToolsPanel({
 
       {/* Sub-sheets */}
       <ToolsBottomSheet isOpen={isOpen && activeSubSheet === 'share'} onClose={closeSubSheet} title="Share Resume">
-        <ShareSheet onClose={closeSubSheet} resumeData={resumeData} />
+        <ShareSheet onClose={closeSubSheet} resumeData={resumeData} onPrint={onPrint} />
       </ToolsBottomSheet>
 
       <ToolsBottomSheet isOpen={isOpen && activeSubSheet === 'cover-letter'} onClose={closeSubSheet} title="Cover Letter">

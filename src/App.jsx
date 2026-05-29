@@ -590,6 +590,7 @@ function App() {
         currentLanguage={currentLanguage}
         onLanguageChange={setCurrentLanguage}
         initialSheet={toolsInitialSheet}
+        onPrint={handlePrint}
       />
     </div>
   )
