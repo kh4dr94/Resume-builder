@@ -44,7 +44,7 @@ function ToolsBottomSheet({ isOpen, onClose, children, title }) {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div
         ref={sheetRef}
-        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[70vh] flex flex-col animate-slide-up"
+        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] flex flex-col animate-slide-up pb-[env(safe-area-inset-bottom,0px)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-center pt-3 pb-1">
@@ -59,7 +59,7 @@ function ToolsBottomSheet({ isOpen, onClose, children, title }) {
             <FaTimes size={14} />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 pb-[env(safe-area-inset-bottom,16px)]">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-4 pb-12">
           {children}
         </div>
       </div>
