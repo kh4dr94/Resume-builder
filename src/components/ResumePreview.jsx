@@ -7,7 +7,7 @@ import {
   FaGlobe,
 } from 'react-icons/fa'
 
-const ResumePreview = forwardRef(({ data, theme, sectionOrder }, ref) => {
+const ResumePreview = forwardRef(({ data, theme, sectionOrder, sectionLabels }, ref) => {
   const { personalInfo, experience, education, skills, certifications, languages } = data
 
   const filledSkills = skills.filter((s) => s.trim() !== '')
@@ -28,7 +28,7 @@ const ResumePreview = forwardRef(({ data, theme, sectionOrder }, ref) => {
             className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-2"
             style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
           >
-            Professional Summary
+            {sectionLabels?.summary || 'Professional Summary'}
           </h2>
           <p style={{ color: theme.textSecondary }} className="leading-[1.6]">
             {personalInfo.summary}
@@ -42,7 +42,7 @@ const ResumePreview = forwardRef(({ data, theme, sectionOrder }, ref) => {
             className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-3"
             style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
           >
-            Professional Experience
+            {sectionLabels?.experience || 'Professional Experience'}
           </h2>
           <div className="space-y-4">
             {filledExperience.map((exp) => (
@@ -79,7 +79,7 @@ const ResumePreview = forwardRef(({ data, theme, sectionOrder }, ref) => {
             className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-3"
             style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
           >
-            Education
+            {sectionLabels?.education || 'Education'}
           </h2>
           <div className="space-y-3">
             {filledEducation.map((edu) => (
@@ -114,7 +114,7 @@ const ResumePreview = forwardRef(({ data, theme, sectionOrder }, ref) => {
             className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-2"
             style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
           >
-            Skills
+            {sectionLabels?.skills || 'Skills'}
           </h2>
           <div className="flex flex-wrap gap-2 mt-1">
             {filledSkills.map((skill, index) => (
@@ -140,7 +140,7 @@ const ResumePreview = forwardRef(({ data, theme, sectionOrder }, ref) => {
             className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-3"
             style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
           >
-            Certifications
+            {sectionLabels?.certifications || 'Certifications'}
           </h2>
           <div className="space-y-2">
             {filledCertifications.map((cert) => (
@@ -172,7 +172,7 @@ const ResumePreview = forwardRef(({ data, theme, sectionOrder }, ref) => {
             className="text-[13px] font-bold uppercase tracking-wider pb-1 mb-2"
             style={{ color: theme.accent, borderBottom: `1px solid ${theme.sectionBorder}` }}
           >
-            Languages
+            {sectionLabels?.languages || 'Languages'}
           </h2>
           <div className="flex flex-wrap gap-x-6 gap-y-1 mt-1">
             {filledLanguages.map((lang) => (

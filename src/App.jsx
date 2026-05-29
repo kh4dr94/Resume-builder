@@ -47,13 +47,34 @@ const DEFAULT_SECTION_ORDER = [
   'languages',
 ]
 
-const SECTION_LABELS = {
-  summary: 'Professional Summary',
-  experience: 'Work Experience',
-  education: 'Education',
-  skills: 'Skills',
-  certifications: 'Certifications',
-  languages: 'Languages',
+const SECTION_LABELS_I18N = {
+  'en-US': { summary: 'Professional Summary', experience: 'Work Experience', education: 'Education', skills: 'Skills', certifications: 'Certifications', languages: 'Languages' },
+  'en-GB': { summary: 'Professional Summary', experience: 'Work Experience', education: 'Education', skills: 'Skills', certifications: 'Certifications', languages: 'Languages' },
+  'en-AU': { summary: 'Professional Summary', experience: 'Work Experience', education: 'Education', skills: 'Skills', certifications: 'Certifications', languages: 'Languages' },
+  'es': { summary: 'Resumen Profesional', experience: 'Experiencia Laboral', education: 'Educación', skills: 'Habilidades', certifications: 'Certificaciones', languages: 'Idiomas' },
+  'es-MX': { summary: 'Resumen Profesional', experience: 'Experiencia Laboral', education: 'Educación', skills: 'Habilidades', certifications: 'Certificaciones', languages: 'Idiomas' },
+  'fr': { summary: 'Résumé Professionnel', experience: 'Expérience Professionnelle', education: 'Formation', skills: 'Compétences', certifications: 'Certifications', languages: 'Langues' },
+  'fr-CA': { summary: 'Résumé Professionnel', experience: 'Expérience Professionnelle', education: 'Formation', skills: 'Compétences', certifications: 'Certifications', languages: 'Langues' },
+  'de': { summary: 'Berufsprofil', experience: 'Berufserfahrung', education: 'Ausbildung', skills: 'Fähigkeiten', certifications: 'Zertifizierungen', languages: 'Sprachen' },
+  'pt': { summary: 'Resumo Profissional', experience: 'Experiência Profissional', education: 'Formação', skills: 'Habilidades', certifications: 'Certificações', languages: 'Idiomas' },
+  'pt-PT': { summary: 'Resumo Profissional', experience: 'Experiência Profissional', education: 'Formação', skills: 'Competências', certifications: 'Certificações', languages: 'Idiomas' },
+  'it': { summary: 'Profilo Professionale', experience: 'Esperienza Lavorativa', education: 'Formazione', skills: 'Competenze', certifications: 'Certificazioni', languages: 'Lingue' },
+  'nl': { summary: 'Professioneel Profiel', experience: 'Werkervaring', education: 'Opleiding', skills: 'Vaardigheden', certifications: 'Certificeringen', languages: 'Talen' },
+  'ja': { summary: '職務要約', experience: '職務経歴', education: '学歴', skills: 'スキル', certifications: '資格', languages: '言語' },
+  'zh': { summary: '专业概述', experience: '工作经历', education: '教育背景', skills: '技能', certifications: '证书', languages: '语言' },
+  'ko': { summary: '전문 요약', experience: '경력 사항', education: '학력', skills: '기술', certifications: '자격증', languages: '언어' },
+  'ar': { summary: 'الملخص المهني', experience: 'الخبرة العملية', education: 'التعليم', skills: 'المهارات', certifications: 'الشهادات', languages: 'اللغات' },
+  'hi': { summary: 'पेशेवर सारांश', experience: 'कार्य अनुभव', education: 'शिक्षा', skills: 'कौशल', certifications: 'प्रमाणपत्र', languages: 'भाषाएँ' },
+  'ru': { summary: 'Профессиональное Резюме', experience: 'Опыт Работы', education: 'Образование', skills: 'Навыки', certifications: 'Сертификаты', languages: 'Языки' },
+  'tr': { summary: 'Profesyonel Özet', experience: 'İş Deneyimi', education: 'Eğitim', skills: 'Beceriler', certifications: 'Sertifikalar', languages: 'Diller' },
+  'vi': { summary: 'Tóm Tắt Chuyên Môn', experience: 'Kinh Nghiệm Làm Việc', education: 'Học Vấn', skills: 'Kỹ Năng', certifications: 'Chứng Chỉ', languages: 'Ngôn Ngữ' },
+  'sv': { summary: 'Professionell Sammanfattning', experience: 'Arbetslivserfarenhet', education: 'Utbildning', skills: 'Färdigheter', certifications: 'Certifieringar', languages: 'Språk' },
+}
+
+const DEFAULT_LABELS = { summary: 'Professional Summary', experience: 'Work Experience', education: 'Education', skills: 'Skills', certifications: 'Certifications', languages: 'Languages' }
+
+function getSectionLabels(lang) {
+  return SECTION_LABELS_I18N[lang] || DEFAULT_LABELS
 }
 
 const createEmptyResumeData = () => ({
@@ -537,7 +558,7 @@ function App() {
                       {sectionOrder.map((sectionId) => (
                         <DraggableSection key={sectionId} id={sectionId}>
                           <div className={`px-3 py-2 ${darkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-gray-50 border-gray-200 text-gray-700'} rounded-lg border text-sm font-medium`}>
-                            {SECTION_LABELS[sectionId]}
+                            {getSectionLabels(currentLanguage)[sectionId]}
                           </div>
                         </DraggableSection>
                       ))}
@@ -572,6 +593,7 @@ function App() {
                     data={resumeData}
                     theme={activeTemplate}
                     sectionOrder={sectionOrder}
+                    sectionLabels={getSectionLabels(currentLanguage)}
                   />
                 </div>
               </div>
