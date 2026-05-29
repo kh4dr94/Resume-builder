@@ -449,6 +449,7 @@ function App() {
       <MobileToolbar
         onShareOpen={() => { setToolsInitialSheet('share'); setToolsOpen(true) }}
         onCoverLetterOpen={() => { setToolsInitialSheet('cover-letter'); setToolsOpen(true) }}
+        onJobMatchOpen={() => { setToolsInitialSheet('job-match'); setToolsOpen(true) }}
         onGrammarOpen={() => { setToolsInitialSheet('grammar'); setToolsOpen(true) }}
         onTailorOpen={() => { setToolsInitialSheet('tailor'); setToolsOpen(true) }}
         onQuantifyOpen={() => { setToolsInitialSheet('quantify'); setToolsOpen(true) }}

@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
 import {
   FaShareAlt,
   FaEnvelope,
+  FaBullseye,
   FaSpellCheck,
   FaCrosshairs,
   FaChartBar,
@@ -11,6 +11,7 @@ import {
 export default function MobileToolbar({
   onShareOpen,
   onCoverLetterOpen,
+  onJobMatchOpen,
   onGrammarOpen,
   onTailorOpen,
   onQuantifyOpen,
@@ -19,6 +20,7 @@ export default function MobileToolbar({
   const tools = [
     { id: 'share', icon: FaShareAlt, label: 'Share', action: onShareOpen },
     { id: 'envelope', icon: FaEnvelope, label: 'Letter', action: onCoverLetterOpen },
+    { id: 'jobmatch', icon: FaBullseye, label: 'Match', action: onJobMatchOpen },
     { id: 'grammar', icon: FaSpellCheck, label: 'Grammar', badge: 6, action: onGrammarOpen },
     { id: 'tailor', icon: FaCrosshairs, label: 'Tailor', action: onTailorOpen },
     { id: 'quantify', icon: FaChartBar, label: 'Quantify', action: onQuantifyOpen },
