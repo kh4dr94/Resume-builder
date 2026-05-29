@@ -21,7 +21,7 @@ export default function MobileToolbar({
     { id: 'share', icon: FaShareAlt, label: 'Share', action: onShareOpen },
     { id: 'envelope', icon: FaEnvelope, label: 'Letter', action: onCoverLetterOpen },
     { id: 'jobmatch', icon: FaBullseye, label: 'Match', action: onJobMatchOpen },
-    { id: 'grammar', icon: FaSpellCheck, label: 'Grammar', badge: 6, action: onGrammarOpen },
+    { id: 'grammar', icon: FaSpellCheck, label: 'Grammar', action: onGrammarOpen },
     { id: 'tailor', icon: FaCrosshairs, label: 'Tailor', action: onTailorOpen },
     { id: 'quantify', icon: FaChartBar, label: 'Quantify', action: onQuantifyOpen },
     { id: 'language', icon: FaGlobe, label: 'Lang', flag: '🇺🇸', action: onLanguageOpen },
