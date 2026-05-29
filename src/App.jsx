@@ -581,6 +581,7 @@ function App() {
         isOpen={toolsOpen}
         onClose={() => { setToolsOpen(false); setToolsInitialSheet(null) }}
         resumeData={resumeData}
+        onUpdateData={(data) => setResumeData(data)}
         onUndo={handleUndo}
         onRedo={handleRedo}
         canUndo={undoStack.length > 0}
