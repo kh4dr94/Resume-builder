@@ -2,32 +2,27 @@ import { useState, useEffect, useRef } from 'react'
 import {
   FaShareAlt,
   FaEnvelope,
-  FaEye,
   FaSpellCheck,
   FaCrosshairs,
   FaChartBar,
   FaGlobe,
-  FaWrench,
-  FaEllipsisH,
-  FaFilePdf,
-  FaEdit,
 } from 'react-icons/fa'
 
 export default function MobileToolbar({
-  onToolsOpen,
   onShareOpen,
+  onCoverLetterOpen,
   onGrammarOpen,
-  activeView,
-  onViewChange,
+  onTailorOpen,
+  onQuantifyOpen,
+  onLanguageOpen,
 }) {
   const tools = [
     { id: 'share', icon: FaShareAlt, label: 'Share', action: onShareOpen },
-    { id: 'envelope', icon: FaEnvelope, label: 'Letter', action: () => onToolsOpen?.() },
-    { id: 'eye', icon: FaEye, label: 'Preview', action: () => onViewChange?.('preview') },
+    { id: 'envelope', icon: FaEnvelope, label: 'Letter', action: onCoverLetterOpen },
     { id: 'grammar', icon: FaSpellCheck, label: 'Grammar', badge: 6, action: onGrammarOpen },
-    { id: 'tailor', icon: FaCrosshairs, label: 'Tailor', action: () => onToolsOpen?.() },
-    { id: 'quantify', icon: FaChartBar, label: 'Quantify', action: () => onToolsOpen?.() },
-    { id: 'language', icon: FaGlobe, label: 'Lang', flag: '🇺🇸', action: () => onToolsOpen?.() },
+    { id: 'tailor', icon: FaCrosshairs, label: 'Tailor', action: onTailorOpen },
+    { id: 'quantify', icon: FaChartBar, label: 'Quantify', action: onQuantifyOpen },
+    { id: 'language', icon: FaGlobe, label: 'Lang', flag: '🇺🇸', action: onLanguageOpen },
   ]
 
   return (

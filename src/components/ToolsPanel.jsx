@@ -270,10 +270,26 @@ export default function ToolsPanel({
   onImport,
   currentLanguage,
   onLanguageChange,
+  initialSheet,
 }) {
   const [activeSubSheet, setActiveSubSheet] = useState(null)
 
-  const closeSubSheet = () => setActiveSubSheet(null)
+  // When initialSheet changes and panel opens, go directly to that sheet
+  useEffect(() => {
+    if (isOpen && initialSheet) {
+      setActiveSubSheet(initialSheet)
+    }
+    if (!isOpen) {
+      setActiveSubSheet(null)
+    }
+  }, [isOpen, initialSheet])
+
+  const closeSubSheet = () => {
+    setActiveSubSheet(null)
+    if (initialSheet) {
+      onClose()
+    }
+  }
 
   const tools = [
     { id: 'share', label: 'Share', icon: FaShareAlt, color: 'bg-blue-100 text-blue-600' },
@@ -322,7 +338,7 @@ export default function ToolsPanel({
 
   return (
     <>
-      <ToolsBottomSheet isOpen={isOpen} onClose={onClose} title="Tools">
+      <ToolsBottomSheet isOpen={isOpen && !activeSubSheet} onClose={onClose} title="Tools">
         <div className="grid grid-cols-4 gap-3">
           {tools.map((tool) => (
             <button
@@ -354,31 +370,31 @@ export default function ToolsPanel({
       </ToolsBottomSheet>
 
       {/* Sub-sheets */}
-      <ToolsBottomSheet isOpen={activeSubSheet === 'share'} onClose={closeSubSheet} title="Share Resume">
+      <ToolsBottomSheet isOpen={isOpen && activeSubSheet === 'share'} onClose={closeSubSheet} title="Share Resume">
         <ShareSheet onClose={closeSubSheet} resumeData={resumeData} />
       </ToolsBottomSheet>
 
-      <ToolsBottomSheet isOpen={activeSubSheet === 'cover-letter'} onClose={closeSubSheet} title="Cover Letter">
+      <ToolsBottomSheet isOpen={isOpen && activeSubSheet === 'cover-letter'} onClose={closeSubSheet} title="Cover Letter">
         <CoverLetterSheet onClose={closeSubSheet} />
       </ToolsBottomSheet>
 
-      <ToolsBottomSheet isOpen={activeSubSheet === 'job-match'} onClose={closeSubSheet} title="Job Match">
+      <ToolsBottomSheet isOpen={isOpen && activeSubSheet === 'job-match'} onClose={closeSubSheet} title="Job Match">
         <JobMatchSheet onClose={closeSubSheet} />
       </ToolsBottomSheet>
 
-      <ToolsBottomSheet isOpen={activeSubSheet === 'grammar'} onClose={closeSubSheet} title="Grammar Check">
+      <ToolsBottomSheet isOpen={isOpen && activeSubSheet === 'grammar'} onClose={closeSubSheet} title="Grammar Check">
         <GrammarSheet onClose={closeSubSheet} />
       </ToolsBottomSheet>
 
-      <ToolsBottomSheet isOpen={activeSubSheet === 'tailor'} onClose={closeSubSheet} title="Tailor Resume">
+      <ToolsBottomSheet isOpen={isOpen && activeSubSheet === 'tailor'} onClose={closeSubSheet} title="Tailor Resume">
         <TailorSheet onClose={closeSubSheet} />
       </ToolsBottomSheet>
 
-      <ToolsBottomSheet isOpen={activeSubSheet === 'quantify'} onClose={closeSubSheet} title="Quantify Impact">
+      <ToolsBottomSheet isOpen={isOpen && activeSubSheet === 'quantify'} onClose={closeSubSheet} title="Quantify Impact">
         <QuantifySheet onClose={closeSubSheet} />
       </ToolsBottomSheet>
 
-      <ToolsBottomSheet isOpen={activeSubSheet === 'language'} onClose={closeSubSheet} title="Language">
+      <ToolsBottomSheet isOpen={isOpen && activeSubSheet === 'language'} onClose={closeSubSheet} title="Language">
         <LanguageSheet
           currentLanguage={currentLanguage}
           onSelect={onLanguageChange}

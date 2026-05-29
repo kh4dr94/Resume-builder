@@ -149,6 +149,7 @@ function App() {
   const [activeView, setActiveView] = useState('form')
   const [darkMode, setDarkMode] = useState(savedState?.darkMode || false)
   const [toolsOpen, setToolsOpen] = useState(false)
+  const [toolsInitialSheet, setToolsInitialSheet] = useState(null)
   const [currentLanguage, setCurrentLanguage] = useState(savedState?.currentLanguage || 'en-US')
   const [versions, setVersions] = useState(loadVersions)
   const [undoStack, setUndoStack] = useState([])
@@ -385,7 +386,7 @@ function App() {
 
             {/* Tools button */}
             <button
-              onClick={() => setToolsOpen(true)}
+              onClick={() => { setToolsInitialSheet(null); setToolsOpen(true) }}
               className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
                 darkMode
                   ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -446,11 +447,12 @@ function App() {
 
       {/* Mobile Quick Tools Bar */}
       <MobileToolbar
-        onToolsOpen={() => setToolsOpen(true)}
-        onShareOpen={() => setToolsOpen(true)}
-        onGrammarOpen={() => setToolsOpen(true)}
-        activeView={activeView}
-        onViewChange={setActiveView}
+        onShareOpen={() => { setToolsInitialSheet('share'); setToolsOpen(true) }}
+        onCoverLetterOpen={() => { setToolsInitialSheet('cover-letter'); setToolsOpen(true) }}
+        onGrammarOpen={() => { setToolsInitialSheet('grammar'); setToolsOpen(true) }}
+        onTailorOpen={() => { setToolsInitialSheet('tailor'); setToolsOpen(true) }}
+        onQuantifyOpen={() => { setToolsInitialSheet('quantify'); setToolsOpen(true) }}
+        onLanguageOpen={() => { setToolsInitialSheet('language'); setToolsOpen(true) }}
       />
 
       {/* Main Content */}
@@ -576,7 +578,7 @@ function App() {
       {/* Tools Panel */}
       <ToolsPanel
         isOpen={toolsOpen}
-        onClose={() => setToolsOpen(false)}
+        onClose={() => { setToolsOpen(false); setToolsInitialSheet(null) }}
         resumeData={resumeData}
         onUndo={handleUndo}
         onRedo={handleRedo}
@@ -586,6 +588,7 @@ function App() {
         onImport={handleImport}
         currentLanguage={currentLanguage}
         onLanguageChange={setCurrentLanguage}
+        initialSheet={toolsInitialSheet}
       />
     </div>
   )
