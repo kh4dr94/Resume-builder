@@ -69,6 +69,8 @@ function ToolsBottomSheet({ isOpen, onClose, children, title }) {
 
 function ShareSheet({ onClose, resumeData }) {
   const [copied, setCopied] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
+  const [email, setEmail] = useState('')
 
   const handleCopyLink = () => {
     navigator.clipboard?.writeText(window.location.href)
@@ -76,21 +78,183 @@ function ShareSheet({ onClose, resumeData }) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const handleCopyText = () => {
+    const { personalInfo, experience, skills } = resumeData
+    const text = [
+      personalInfo.fullName,
+      personalInfo.title,
+      personalInfo.email,
+      personalInfo.phone,
+      '',
+      personalInfo.summary,
+      '',
+      '--- Experience ---',
+      ...experience.filter(e => e.company).map(e => `${e.position} at ${e.company}`),
+      '',
+      '--- Skills ---',
+      skills.filter(s => s.trim()).join(', '),
+    ].join('\n')
+    navigator.clipboard?.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleDownloadJSON = () => {
+    const blob = new Blob([JSON.stringify(resumeData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${resumeData.personalInfo.fullName || 'resume'}_data.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleDownloadTxt = () => {
+    const { personalInfo, experience, education, skills, certifications, languages } = resumeData
+    const lines = [
+      personalInfo.fullName?.toUpperCase() || 'RESUME',
+      personalInfo.title || '',
+      [personalInfo.email, personalInfo.phone, personalInfo.location].filter(Boolean).join(' | '),
+      [personalInfo.linkedin, personalInfo.website].filter(Boolean).join(' | '),
+      '',
+      '═══ PROFESSIONAL SUMMARY ═══',
+      personalInfo.summary || '',
+      '',
+      '═══ EXPERIENCE ═══',
+      ...experience.filter(e => e.company).flatMap(e => [
+        `${e.position} — ${e.company} (${e.startDate}${e.current ? ' - Present' : e.endDate ? ` - ${e.endDate}` : ''})`,
+        e.description || '',
+        '',
+      ]),
+      '═══ EDUCATION ═══',
+      ...education.filter(e => e.institution).flatMap(e => [
+        `${e.degree}${e.field ? ` in ${e.field}` : ''} — ${e.institution} (${e.startDate || ''}${e.endDate ? ` - ${e.endDate}` : ''})`,
+        e.gpa ? `GPA: ${e.gpa}` : '',
+        '',
+      ]),
+      '═══ SKILLS ═══',
+      skills.filter(s => s.trim()).join(', '),
+      '',
+      certifications.some(c => c.name) ? '═══ CERTIFICATIONS ═══' : '',
+      ...certifications.filter(c => c.name).map(c => `${c.name} — ${c.issuer || ''} (${c.date || ''})`),
+      '',
+      languages.some(l => l.language) ? '═══ LANGUAGES ═══' : '',
+      ...languages.filter(l => l.language).map(l => `${l.language}${l.proficiency ? ` (${l.proficiency})` : ''}`),
+    ].filter(line => line !== undefined)
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${personalInfo.fullName || 'resume'}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleEmailShare = () => {
+    const subject = encodeURIComponent(`Resume - ${resumeData.personalInfo.fullName || 'My Resume'}`)
+    const body = encodeURIComponent(`Hi,\n\nPlease find my resume at: ${window.location.href}\n\nBest regards,\n${resumeData.personalInfo.fullName || ''}`)
+    window.open(`mailto:${email}?subject=${subject}&body=${body}`)
+    setEmailSent(true)
+    setTimeout(() => setEmailSent(false), 2000)
+  }
+
+  const handleWhatsApp = () => {
+    const text = encodeURIComponent(`Check out my resume: ${window.location.href}`)
+    window.open(`https://wa.me/?text=${text}`, '_blank')
+  }
+
+  const handleLinkedIn = () => {
+    const url = encodeURIComponent(window.location.href)
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank')
+  }
+
+  const handleTwitter = () => {
+    const text = encodeURIComponent(`Check out my professional resume! ${window.location.href}`)
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank')
+  }
+
   return (
-    <div className="space-y-3">
-      <p className="text-sm text-gray-600">Share your resume with others</p>
-      <button
-        onClick={handleCopyLink}
-        className="w-full px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700 font-medium active:bg-blue-100"
-      >
-        {copied ? 'Link Copied!' : 'Copy Share Link'}
-      </button>
-      <button
-        onClick={onClose}
-        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 font-medium active:bg-gray-100"
-      >
-        Download as JSON
-      </button>
+    <div className="space-y-4">
+      {/* Social Share */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Share via</p>
+        <div className="grid grid-cols-4 gap-2">
+          <button onClick={handleWhatsApp} className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-green-50 active:bg-green-100 transition-all active:scale-95">
+            <span className="text-xl">💬</span>
+            <span className="text-[10px] font-medium text-green-700">WhatsApp</span>
+          </button>
+          <button onClick={handleLinkedIn} className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-blue-50 active:bg-blue-100 transition-all active:scale-95">
+            <span className="text-xl">💼</span>
+            <span className="text-[10px] font-medium text-blue-700">LinkedIn</span>
+          </button>
+          <button onClick={handleTwitter} className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-sky-50 active:bg-sky-100 transition-all active:scale-95">
+            <span className="text-xl">🐦</span>
+            <span className="text-[10px] font-medium text-sky-700">Twitter</span>
+          </button>
+          <button onClick={handleCopyLink} className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-gray-50 active:bg-gray-100 transition-all active:scale-95">
+            <span className="text-xl">{copied ? '✅' : '🔗'}</span>
+            <span className="text-[10px] font-medium text-gray-700">{copied ? 'Copied!' : 'Link'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Email Share */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Email to someone</p>
+        <div className="flex gap-2">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="recipient@email.com"
+            className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <button
+            onClick={handleEmailShare}
+            disabled={!email}
+            className="px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg active:bg-blue-700 disabled:opacity-40 disabled:active:bg-blue-600"
+          >
+            {emailSent ? '✓' : 'Send'}
+          </button>
+        </div>
+      </div>
+
+      {/* Download Options */}
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Download as</p>
+        <div className="space-y-2">
+          <button
+            onClick={handleDownloadTxt}
+            className="w-full flex items-center gap-3 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl active:bg-gray-100 transition-all"
+          >
+            <span className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center text-xs font-bold text-gray-600">TXT</span>
+            <div className="text-left">
+              <p className="text-sm font-medium text-gray-700">Plain Text</p>
+              <p className="text-xs text-gray-500">Formatted text file for easy sharing</p>
+            </div>
+          </button>
+          <button
+            onClick={handleDownloadJSON}
+            className="w-full flex items-center gap-3 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl active:bg-gray-100 transition-all"
+          >
+            <span className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-xs font-bold text-blue-600">JSON</span>
+            <div className="text-left">
+              <p className="text-sm font-medium text-gray-700">Data Export</p>
+              <p className="text-xs text-gray-500">Import into another resume builder</p>
+            </div>
+          </button>
+          <button
+            onClick={handleCopyText}
+            className="w-full flex items-center gap-3 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl active:bg-gray-100 transition-all"
+          >
+            <span className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-xs font-bold text-purple-600">📋</span>
+            <div className="text-left">
+              <p className="text-sm font-medium text-gray-700">{copied ? 'Copied to clipboard!' : 'Copy as Text'}</p>
+              <p className="text-xs text-gray-500">Paste into emails or messages</p>
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
