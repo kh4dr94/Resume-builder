@@ -1,4 +1,5 @@
 import { FaBolt } from 'react-icons/fa'
+import { useTranslation } from '../TranslationContext'
 
 const SAMPLE_DATA = {
   personalInfo: {
@@ -91,13 +92,14 @@ const SAMPLE_DATA = {
 }
 
 export default function QuickFill({ onFill }) {
+  const { t } = useTranslation()
   return (
     <button
       onClick={() => onFill(SAMPLE_DATA)}
       className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 border-2 border-yellow-300 border-dashed rounded-xl text-yellow-700 font-medium text-sm hover:bg-yellow-100 active:scale-95 transition-all"
     >
       <FaBolt size={14} className="text-yellow-500" />
-      Quick Fill
+      {t('quickFill.button')}
     </button>
   )
 }

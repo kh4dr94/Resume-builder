@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { FaHistory, FaChevronDown, FaChevronUp, FaTrash, FaUndo } from 'react-icons/fa'
+import { useTranslation } from '../TranslationContext'
 
 export default function VersionHistory({ versions, onRestore, onDelete }) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
 
   const formatDate = (timestamp) => {
@@ -30,9 +32,9 @@ export default function VersionHistory({ versions, onRestore, onDelete }) {
             <FaHistory size={14} className="text-orange-600" />
           </div>
           <div className="text-left">
-            <span className="text-sm font-semibold text-gray-800">Version History</span>
+            <span className="text-sm font-semibold text-gray-800">{t('version.title')}</span>
             <p className="text-xs text-gray-500">
-              {versions.length} saved version{versions.length !== 1 ? 's' : ''}
+              {versions.length} {t('version.savedVersions')}
             </p>
           </div>
         </div>
@@ -47,7 +49,7 @@ export default function VersionHistory({ versions, onRestore, onDelete }) {
         <div className="px-4 pb-4 border-t border-gray-100 pt-3">
           {versions.length === 0 ? (
             <p className="text-sm text-gray-500 text-center py-4">
-              No versions saved yet. Versions are auto-saved as you edit.
+              {t('version.noVersions')}
             </p>
           ) : (
             <div className="space-y-2">

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { FaPlus, FaTrash, FaUser, FaCheck, FaTimes } from 'react-icons/fa'
+import { useTranslation } from '../TranslationContext'
 
 export default function ProfileManager({
   profiles,
@@ -9,6 +10,7 @@ export default function ProfileManager({
   onDelete,
   onRename,
 }) {
+  const { t } = useTranslation()
   const [isCreating, setIsCreating] = useState(false)
   const [newName, setNewName] = useState('')
   const [editingId, setEditingId] = useState(null)
@@ -35,7 +37,7 @@ export default function ProfileManager({
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
           <FaUser size={12} className="text-blue-600" />
-          Resume Profiles
+          {t('profile.profiles')}
         </h3>
         <button
           onClick={() => setIsCreating(true)}
@@ -100,7 +102,7 @@ export default function ProfileManager({
                 >
                   {profile.name}
                   {profile.id === activeProfileId && (
-                    <span className="ml-2 text-xs text-blue-500">(active)</span>
+                    <span className="ml-2 text-xs text-blue-500">({t('profile.activeProfile').toLowerCase()})</span>
                   )}
                 </span>
                 {profiles.length > 1 && (
@@ -143,7 +145,7 @@ export default function ProfileManager({
             onClick={handleCreate}
             className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Create
+            {t('profile.create')}
           </button>
           <button
             onClick={() => {
@@ -158,7 +160,7 @@ export default function ProfileManager({
       )}
 
       <p className="text-xs text-gray-400 mt-2">
-        Double-click a profile name to rename it
+        {t('profile.doubleClickRename')}
       </p>
     </div>
   )

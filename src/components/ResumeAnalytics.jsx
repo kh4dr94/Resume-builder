@@ -12,6 +12,7 @@ import {
   FaStar,
   FaBalanceScale,
 } from 'react-icons/fa'
+import { useTranslation } from '../TranslationContext'
 
 function analyzeResume(data) {
   const { personalInfo, experience, education, skills, certifications, languages } = data
@@ -149,6 +150,7 @@ function SectionBar({ label, score }) {
 }
 
 export default function ResumeAnalytics({ data }) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const analytics = analyzeResume(data)
@@ -167,11 +169,11 @@ export default function ResumeAnalytics({ data }) {
           <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
             <FaChartBar size={14} className="text-blue-600" />
           </div>
-          <span className="text-sm font-semibold text-gray-800">Resume Analytics</span>
+          <span className="text-sm font-semibold text-gray-800">{t('analytics.title')}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${badgeClass}`}>
-            {percentage}% complete
+            {percentage}% {t('analytics.complete')}
           </span>
           {expanded ? <FaChevronUp className="text-gray-400" size={12} /> : <FaChevronDown className="text-gray-400" size={12} />}
         </div>
@@ -181,17 +183,22 @@ export default function ResumeAnalytics({ data }) {
         <div className="border-t border-gray-100">
           {/* Tabs */}
           <div className="flex border-b border-gray-100 px-4 pt-2">
-            {['overview', 'sections', 'tips', 'checklist'].map((tab) => (
+            {[
+              { key: 'overview', label: t('analytics.overview') },
+              { key: 'sections', label: t('analytics.sections') },
+              { key: 'tips', label: t('analytics.tips') },
+              { key: 'checklist', label: t('analytics.checklist') },
+            ].map((tab) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
                 className={`px-3 py-2 text-xs font-medium capitalize border-b-2 transition-all -mb-px ${
-                  activeTab === tab
+                  activeTab === tab.key
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
-                {tab}
+                {tab.label}
               </button>
             ))}
           </div>
@@ -204,15 +211,15 @@ export default function ResumeAnalytics({ data }) {
                 <div className="flex items-center justify-around">
                   <div className="flex flex-col items-center gap-1">
                     <ScoreRing score={percentage} color={mainColor} />
-                    <span className="text-[10px] text-gray-500 font-medium">Completion</span>
+                    <span className="text-[10px] text-gray-500 font-medium">{t('analytics.completion')}</span>
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <ScoreRing score={impactScore} color={impactScore >= 60 ? '#22c55e' : impactScore >= 30 ? '#eab308' : '#ef4444'} />
-                    <span className="text-[10px] text-gray-500 font-medium">Impact</span>
+                    <span className="text-[10px] text-gray-500 font-medium">{t('analytics.impact')}</span>
                   </div>
                   <div className="flex flex-col items-center gap-1">
                     <ScoreRing score={Math.min(100, Math.round((wordCount / 500) * 100))} color="#6366f1" />
-                    <span className="text-[10px] text-gray-500 font-medium">Length</span>
+                    <span className="text-[10px] text-gray-500 font-medium">{t('analytics.length')}</span>
                   </div>
                 </div>
 
@@ -220,15 +227,15 @@ export default function ResumeAnalytics({ data }) {
                 <div className="grid grid-cols-3 gap-2">
                   <div className="text-center px-2 py-2.5 bg-gray-50 rounded-lg">
                     <p className="text-base font-bold text-gray-800">{wordCount}</p>
-                    <p className="text-[10px] text-gray-500">Words</p>
+                    <p className="text-[10px] text-gray-500">{t('analytics.words')}</p>
                   </div>
                   <div className="text-center px-2 py-2.5 bg-gray-50 rounded-lg">
                     <p className="text-base font-bold text-gray-800">{actionVerbCount}</p>
-                    <p className="text-[10px] text-gray-500">Action Verbs</p>
+                    <p className="text-[10px] text-gray-500">{t('analytics.actionVerbs')}</p>
                   </div>
                   <div className="text-center px-2 py-2.5 bg-gray-50 rounded-lg">
                     <p className="text-base font-bold text-gray-800">{numberCount}</p>
-                    <p className="text-[10px] text-gray-500">Metrics</p>
+                    <p className="text-[10px] text-gray-500">{t('analytics.metrics')}</p>
                   </div>
                 </div>
 
@@ -238,20 +245,20 @@ export default function ResumeAnalytics({ data }) {
                     <FaFileAlt size={12} className="text-indigo-500" />
                     <div>
                       <p className="text-xs font-semibold text-indigo-700">{readabilityScore}</p>
-                      <p className="text-[10px] text-indigo-500">Readability</p>
+                      <p className="text-[10px] text-indigo-500">{t('analytics.readability')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 rounded-lg">
                     <FaStar size={12} className="text-amber-500" />
                     <div>
-                      <p className="text-xs font-semibold text-amber-700">{filledSkills.length} Skills</p>
+                      <p className="text-xs font-semibold text-amber-700">{filledSkills.length} {t('analytics.skills')}</p>
                       <p className="text-[10px] text-amber-500">{filledSkills.length >= 8 ? 'Excellent' : filledSkills.length >= 5 ? 'Good' : 'Add more'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg">
                     <FaBolt size={12} className="text-blue-500" />
                     <div>
-                      <p className="text-xs font-semibold text-blue-700">{filledExp.length} Roles</p>
+                      <p className="text-xs font-semibold text-blue-700">{filledExp.length} {t('analytics.roles')}</p>
                       <p className="text-[10px] text-blue-500">{filledExp.length >= 3 ? 'Strong' : 'Add more'}</p>
                     </div>
                   </div>
@@ -259,7 +266,7 @@ export default function ResumeAnalytics({ data }) {
                     <FaBalanceScale size={12} className="text-green-500" />
                     <div>
                       <p className="text-xs font-semibold text-green-700">{avgWordsPerSentence} avg</p>
-                      <p className="text-[10px] text-green-500">Words/sentence</p>
+                      <p className="text-[10px] text-green-500">{t('analytics.wordsPerSentence')}</p>
                     </div>
                   </div>
                 </div>

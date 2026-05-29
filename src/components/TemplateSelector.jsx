@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { FaPalette, FaCheck } from 'react-icons/fa'
+import { useTranslation } from '../TranslationContext'
 
 export const templates = [
   {
@@ -222,6 +223,7 @@ export const templates = [
 ]
 
 export default function TemplateSelector({ activeTemplateId, onSelect }) {
+  const { t } = useTranslation()
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
       <div className="flex items-center justify-between mb-3">
@@ -229,8 +231,8 @@ export default function TemplateSelector({ activeTemplateId, onSelect }) {
           <div className="w-7 h-7 bg-purple-100 rounded-lg flex items-center justify-center">
             <FaPalette size={12} className="text-purple-600" />
           </div>
-          Choose Template
-          <span className="text-xs font-normal text-gray-400">12 professional designs</span>
+          {t('template.title')}
+          <span className="text-xs font-normal text-gray-400">12 {t('template.designs')}</span>
         </h3>
         {activeTemplateId && (
           <span className="text-xs px-2 py-0.5 bg-purple-50 text-purple-600 rounded-full font-medium capitalize">
