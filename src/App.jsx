@@ -21,6 +21,7 @@ import ProfileManager from './components/ProfileManager'
 import TemplateSelector, { templates } from './components/TemplateSelector'
 import MobileToolbar from './components/MobileToolbar'
 import ToolsPanel from './components/ToolsPanel'
+import AIFeatures from './components/AIFeatures'
 import ResumeAnalytics from './components/ResumeAnalytics'
 import VersionHistory from './components/VersionHistory'
 import QuickFill from './components/QuickFill'
@@ -34,6 +35,7 @@ import {
   FaEllipsisH,
   FaCog,
   FaColumns,
+  FaMagic,
 } from 'react-icons/fa'
 
 const DEFAULT_SECTION_ORDER = [
@@ -150,6 +152,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(savedState?.darkMode || false)
   const [toolsOpen, setToolsOpen] = useState(false)
   const [toolsInitialSheet, setToolsInitialSheet] = useState(null)
+  const [aiOpen, setAiOpen] = useState(false)
   const [currentLanguage, setCurrentLanguage] = useState(savedState?.currentLanguage || 'en-US')
   const [versions, setVersions] = useState(loadVersions)
   const [undoStack, setUndoStack] = useState([])
@@ -384,6 +387,19 @@ function App() {
               {darkMode ? <FaSun size={16} /> : <FaMoon size={16} />}
             </button>
 
+            {/* AI button */}
+            <button
+              onClick={() => setAiOpen(true)}
+              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                darkMode
+                  ? 'bg-purple-900/50 text-purple-300 hover:bg-purple-800/50'
+                  : 'bg-purple-50 text-purple-600 hover:bg-purple-100'
+              }`}
+              title="AI Tools"
+            >
+              <FaMagic size={14} />
+            </button>
+
             {/* Tools button */}
             <button
               onClick={() => { setToolsInitialSheet(null); setToolsOpen(true) }}
@@ -592,6 +608,14 @@ function App() {
         onLanguageChange={setCurrentLanguage}
         initialSheet={toolsInitialSheet}
         onPrint={handlePrint}
+      />
+
+      {/* AI Features */}
+      <AIFeatures
+        resumeData={resumeData}
+        onUpdateData={(data) => setResumeData(data)}
+        isOpen={aiOpen}
+        onClose={() => setAiOpen(false)}
       />
     </div>
   )
