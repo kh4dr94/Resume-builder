@@ -96,6 +96,141 @@ function TextArea({ label, value, onChange, placeholder = '', rows = 3 }) {
   )
 }
 
+// AI Summary generation templates
+const SUMMARY_TEMPLATES = [
+  (title, skills, years) => `Results-driven ${title} with ${years}+ years of experience in ${skills.slice(0, 3).join(', ')}. Proven track record of delivering high-impact solutions and driving measurable business outcomes.`,
+  (title, skills, years) => `Dynamic ${title} combining ${years}+ years of expertise in ${skills.slice(0, 3).join(', ')} with strong analytical and leadership abilities. Passionate about building innovative solutions that scale.`,
+  (title, skills, years) => `Accomplished ${title} with ${years}+ years specializing in ${skills.slice(0, 3).join(', ')}. Known for translating complex requirements into elegant, efficient solutions that exceed stakeholder expectations.`,
+  (title, skills, years) => `Strategic ${title} leveraging ${years}+ years of hands-on experience in ${skills.slice(0, 4).join(', ')}. Committed to continuous improvement and delivering excellence in fast-paced environments.`,
+]
+
+// Skills database for suggestions
+const SKILLS_DB = {
+  'software engineer': ['JavaScript', 'TypeScript', 'React', 'Node.js', 'Python', 'Git', 'AWS', 'Docker', 'Kubernetes', 'CI/CD', 'REST APIs', 'GraphQL', 'SQL', 'MongoDB', 'Agile/Scrum', 'System Design', 'Microservices', 'Unit Testing'],
+  'frontend developer': ['React', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'Tailwind CSS', 'Next.js', 'Vue.js', 'Webpack', 'Responsive Design', 'Accessibility', 'Performance Optimization', 'Git', 'REST APIs', 'Figma', 'Jest'],
+  'backend developer': ['Node.js', 'Python', 'Java', 'Go', 'SQL', 'PostgreSQL', 'MongoDB', 'Redis', 'Docker', 'Kubernetes', 'AWS', 'REST APIs', 'GraphQL', 'Microservices', 'CI/CD', 'Security'],
+  'product manager': ['Product Strategy', 'Roadmapping', 'User Research', 'A/B Testing', 'Data Analytics', 'Agile/Scrum', 'Stakeholder Management', 'Jira', 'Market Analysis', 'KPI Tracking', 'Cross-functional Leadership', 'SQL'],
+  'data scientist': ['Python', 'R', 'Machine Learning', 'Deep Learning', 'TensorFlow', 'SQL', 'Statistics', 'Data Visualization', 'Pandas', 'NumPy', 'Scikit-learn', 'NLP', 'A/B Testing', 'Spark', 'Tableau'],
+  'designer': ['Figma', 'Sketch', 'Adobe Creative Suite', 'UI Design', 'UX Research', 'Prototyping', 'Design Systems', 'Typography', 'Wireframing', 'User Testing', 'Interaction Design', 'Responsive Design', 'Accessibility'],
+  'marketing manager': ['Digital Marketing', 'SEO/SEM', 'Content Strategy', 'Social Media', 'Google Analytics', 'Email Marketing', 'PPC', 'Brand Management', 'CRM', 'A/B Testing', 'Copywriting', 'Campaign Management', 'HubSpot'],
+  'project manager': ['Project Planning', 'Agile/Scrum', 'Risk Management', 'Stakeholder Management', 'Budget Management', 'Jira', 'Resource Allocation', 'Cross-functional Leadership', 'Communication', 'Kanban', 'Process Improvement'],
+  'devops engineer': ['Docker', 'Kubernetes', 'AWS', 'Terraform', 'CI/CD', 'Jenkins', 'Linux', 'Python', 'Bash', 'Ansible', 'Monitoring', 'Git', 'Prometheus', 'Grafana', 'Infrastructure as Code'],
+  'full stack developer': ['JavaScript', 'TypeScript', 'React', 'Node.js', 'Python', 'SQL', 'MongoDB', 'REST APIs', 'GraphQL', 'Docker', 'AWS', 'Git', 'Next.js', 'PostgreSQL', 'CI/CD', 'Testing'],
+}
+
+function AISummaryInline({ personalInfo, skills, experience, onApply }) {
+  const [showOptions, setShowOptions] = useState(false)
+  const [applied, setApplied] = useState(null)
+
+  const title = personalInfo.title || 'Professional'
+  const validSkills = skills.filter(s => s.trim())
+  const fallbackSkills = validSkills.length > 0 ? validSkills : ['problem-solving', 'communication', 'leadership']
+  const years = Math.max(1, experience.filter(e => e.company).length)
+
+  const summaries = SUMMARY_TEMPLATES.map((fn, idx) => ({
+    id: idx,
+    text: fn(title, fallbackSkills, years),
+  }))
+
+  const handleApply = (summary) => {
+    onApply(summary.text)
+    setApplied(summary.id)
+    setTimeout(() => setApplied(null), 2000)
+  }
+
+  return (
+    <div className="mt-2">
+      <button
+        onClick={() => setShowOptions(!showOptions)}
+        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 border border-purple-200 rounded-lg text-xs font-medium text-purple-700 hover:bg-purple-100 active:scale-95 transition-all"
+      >
+        <FaMagic size={10} />
+        {showOptions ? 'Hide AI Suggestions' : 'AI Generate Summary'}
+      </button>
+
+      {showOptions && (
+        <div className="mt-2 space-y-2 max-h-48 overflow-y-auto pr-1">
+          {summaries.map((summary) => (
+            <div key={summary.id} className="p-2.5 bg-white border border-gray-200 rounded-lg">
+              <p className="text-xs text-gray-600 leading-relaxed mb-1.5">{summary.text}</p>
+              <button
+                onClick={() => handleApply(summary)}
+                className={`px-2 py-1 text-[10px] font-semibold rounded ${
+                  applied === summary.id
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-purple-600 text-white active:bg-purple-700'
+                }`}
+              >
+                {applied === summary.id ? '✓ Applied!' : 'Use This'}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function AISkillsInline({ title, existingSkills, onAddSkill }) {
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [added, setAdded] = useState(new Set())
+
+  const normalizedTitle = (title || '').toLowerCase().trim()
+  let suggestedSkills = null
+
+  // Try to match job title to database
+  for (const [key, skills] of Object.entries(SKILLS_DB)) {
+    if (normalizedTitle.includes(key) || key.includes(normalizedTitle)) {
+      suggestedSkills = skills
+      break
+    }
+  }
+
+  if (!suggestedSkills) {
+    suggestedSkills = ['Communication', 'Problem Solving', 'Project Management', 'Data Analysis', 'Leadership', 'Strategic Planning', 'Team Collaboration', 'Critical Thinking', 'Time Management', 'Adaptability']
+  }
+
+  const existingLower = existingSkills.map(s => s.toLowerCase().trim())
+  const filtered = suggestedSkills.filter(s => !existingLower.includes(s.toLowerCase()) && !added.has(s))
+
+  const handleAdd = (skill) => {
+    onAddSkill(skill)
+    setAdded(prev => new Set([...prev, skill]))
+  }
+
+  return (
+    <div className="mt-2">
+      <button
+        onClick={() => setShowSuggestions(!showSuggestions)}
+        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 border border-purple-200 rounded-lg text-xs font-medium text-purple-700 hover:bg-purple-100 active:scale-95 transition-all"
+      >
+        <FaMagic size={10} />
+        {showSuggestions ? 'Hide Suggestions' : 'AI Suggest Skills'}
+      </button>
+
+      {showSuggestions && (
+        <div className="mt-2 max-h-40 overflow-y-auto pr-1">
+          {filtered.length === 0 ? (
+            <p className="text-xs text-green-600 py-2">✓ All suggested skills already added!</p>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {filtered.map((skill, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleAdd(skill)}
+                  className="px-2.5 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-medium text-blue-700 active:bg-blue-100 active:scale-95 transition-all"
+                >
+                  + {skill}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function AIRewriteInline({ description, onApply }) {
   const [rewrites, setRewrites] = useState({})
   const [showAll, setShowAll] = useState(false)
@@ -404,6 +539,12 @@ export default function ResumeForm({ data, setData }) {
               placeholder="A brief summary of your professional background, key achievements, and career goals..."
               rows={4}
             />
+            <AISummaryInline
+              personalInfo={data.personalInfo}
+              skills={data.skills}
+              experience={data.experience}
+              onApply={(summary) => updatePersonalInfo('summary', summary)}
+            />
           </div>
         </div>
       </Section>
@@ -592,6 +733,16 @@ export default function ResumeForm({ data, setData }) {
             <FaPlus size={12} />
             Add Skill
           </button>
+          <AISkillsInline
+            title={data.personalInfo.title}
+            existingSkills={data.skills}
+            onAddSkill={(skill) => {
+              setData((prev) => ({
+                ...prev,
+                skills: [...prev.skills, skill],
+              }))
+            }}
+          />
           <p className="text-xs text-gray-500 mt-1">
             Tip: Add one skill per line for best formatting, or separate with commas
           </p>
