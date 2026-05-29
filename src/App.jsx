@@ -457,7 +457,7 @@ function App() {
       />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-4 lg:py-6">
+      <main className="max-w-7xl mx-auto px-4 py-4 pb-20 lg:py-6 lg:pb-6">
         <div className="flex gap-6">
           {/* Form Panel */}
           <div
