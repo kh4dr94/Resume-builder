@@ -19,6 +19,7 @@ import ResumePreview from './components/ResumePreview'
 import DraggableSection from './components/DraggableSection'
 import ProfileManager from './components/ProfileManager'
 import ThemePicker, { themes } from './components/ThemePicker'
+import MobileToolbar from './components/MobileToolbar'
 import { FaFilePdf, FaEye, FaEdit, FaGripVertical } from 'react-icons/fa'
 
 const DEFAULT_SECTION_ORDER = [
@@ -248,7 +249,7 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 py-6 pb-24 lg:pb-6">
         <div className="flex gap-6">
           {/* Form Panel */}
           <div
@@ -335,6 +336,22 @@ function App() {
           </div>
         </div>
       </main>
+
+      {/* Mobile Toolbar */}
+      <MobileToolbar
+        onPrint={handlePrint}
+        activeThemeId={activeThemeId}
+        onSelectTheme={setActiveThemeId}
+        profiles={profiles}
+        activeProfileId={activeProfileId}
+        onSwitchProfile={handleSwitchProfile}
+        onCreateProfile={handleCreateProfile}
+        onDeleteProfile={handleDeleteProfile}
+        onRenameProfile={handleRenameProfile}
+        sectionOrder={sectionOrder}
+        sectionLabels={SECTION_LABELS}
+        onReorder={setSectionOrder}
+      />
     </div>
   )
 }
