@@ -387,19 +387,6 @@ function App() {
               {darkMode ? <FaSun size={16} /> : <FaMoon size={16} />}
             </button>
 
-            {/* AI button */}
-            <button
-              onClick={() => setAiOpen(true)}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-                darkMode
-                  ? 'bg-purple-900/50 text-purple-300 hover:bg-purple-800/50'
-                  : 'bg-purple-50 text-purple-600 hover:bg-purple-100'
-              }`}
-              title="AI Tools"
-            >
-              <FaMagic size={14} />
-            </button>
-
             {/* Tools button */}
             <button
               onClick={() => { setToolsInitialSheet(null); setToolsOpen(true) }}
@@ -608,14 +595,6 @@ function App() {
         onLanguageChange={setCurrentLanguage}
         initialSheet={toolsInitialSheet}
         onPrint={handlePrint}
-      />
-
-      {/* AI Features */}
-      <AIFeatures
-        resumeData={resumeData}
-        onUpdateData={(data) => setResumeData(data)}
-        isOpen={aiOpen}
-        onClose={() => setAiOpen(false)}
       />
     </div>
   )

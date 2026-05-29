@@ -10,7 +10,35 @@ import {
   FaTrash,
   FaChevronDown,
   FaChevronUp,
+  FaMagic,
+  FaCheck,
+  FaRedo,
 } from 'react-icons/fa'
+
+// AI Rewrite logic
+const ACTION_VERBS = [
+  'Spearheaded', 'Orchestrated', 'Pioneered', 'Accelerated', 'Transformed',
+  'Championed', 'Architected', 'Streamlined', 'Cultivated', 'Delivered',
+  'Engineered', 'Optimized', 'Launched', 'Directed', 'Implemented',
+  'Established', 'Revitalized', 'Negotiated', 'Maximized', 'Formulated',
+  'Elevated', 'Consolidated', 'Redesigned', 'Mentored', 'Facilitated',
+  'Automated', 'Devised', 'Executed', 'Generated', 'Strengthened',
+  'Initiated', 'Overhauled', 'Modernized', 'Leveraged', 'Coordinated',
+  'Drove', 'Influenced', 'Secured', 'Resolved', 'Integrated',
+  'Deployed', 'Scaled', 'Reduced', 'Increased', 'Enhanced',
+]
+
+function rewriteBullet(bullet) {
+  if (!bullet || !bullet.trim()) return bullet
+  let text = bullet.trim().replace(/^[-•*]\s*/, '')
+  const weakOpeners = /^(I\s+)?(did|made|got|helped|worked on|was responsible for|handled|managed|used|ran)\s+/i
+  text = text.replace(weakOpeners, '')
+  text = text.charAt(0).toUpperCase() + text.slice(1)
+  const verb = ACTION_VERBS[Math.floor(Math.random() * ACTION_VERBS.length)]
+  const hasNumbers = /\d/.test(text)
+  const quantifier = hasNumbers ? '' : ', resulting in [X]% improvement'
+  return `${verb} ${text.charAt(0).toLowerCase() + text.slice(1)}${quantifier}`
+}
 
 function Section({ title, icon: Icon, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen)
@@ -64,6 +92,97 @@ function TextArea({ label, value, onChange, placeholder = '', rows = 3 }) {
         rows={rows}
         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm resize-none"
       />
+    </div>
+  )
+}
+
+function AIRewriteInline({ description, onApply }) {
+  const [rewrites, setRewrites] = useState({})
+  const [showAll, setShowAll] = useState(false)
+
+  const bullets = description.split('\n').filter(l => l.trim()).map((line, idx) => ({
+    idx,
+    text: line.replace(/^[-•*]\s*/, '').trim(),
+    raw: line,
+  }))
+
+  const handleRewrite = (bulletIdx) => {
+    const bullet = bullets[bulletIdx]
+    const improved = rewriteBullet(bullet.text)
+    setRewrites(prev => ({ ...prev, [bulletIdx]: improved }))
+  }
+
+  const handleApply = (bulletIdx) => {
+    const rewritten = rewrites[bulletIdx]
+    if (!rewritten) return
+    const lines = description.split('\n')
+    let count = -1
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].trim()) {
+        count++
+        if (count === bulletIdx) {
+          lines[i] = `• ${rewritten}`
+          break
+        }
+      }
+    }
+    onApply(lines.join('\n'))
+    setRewrites(prev => {
+      const copy = { ...prev }
+      delete copy[bulletIdx]
+      return copy
+    })
+  }
+
+  if (bullets.length === 0) return null
+
+  return (
+    <div className="mt-2">
+      <button
+        onClick={() => setShowAll(!showAll)}
+        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 border border-purple-200 rounded-lg text-xs font-medium text-purple-700 hover:bg-purple-100 active:scale-95 transition-all"
+      >
+        <FaMagic size={10} />
+        {showAll ? 'Hide AI Rewrite' : `AI Rewrite (${bullets.length} bullets)`}
+      </button>
+
+      {showAll && (
+        <div className="mt-2 space-y-2">
+          {bullets.map((bullet, idx) => (
+            <div key={idx} className="p-2.5 bg-white border border-gray-200 rounded-lg">
+              <p className="text-xs text-gray-600 mb-1.5">"{bullet.text}"</p>
+              {rewrites[idx] ? (
+                <div className="space-y-1.5">
+                  <div className="p-2 bg-green-50 border border-green-200 rounded-md">
+                    <p className="text-xs text-green-800">✨ {rewrites[idx]}</p>
+                  </div>
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={() => handleApply(idx)}
+                      className="px-2 py-1 bg-green-600 text-white text-[10px] font-semibold rounded active:bg-green-700"
+                    >
+                      <FaCheck className="inline mr-0.5" size={8} /> Apply
+                    </button>
+                    <button
+                      onClick={() => handleRewrite(idx)}
+                      className="px-2 py-1 bg-gray-200 text-gray-700 text-[10px] font-medium rounded active:bg-gray-300"
+                    >
+                      <FaRedo className="inline mr-0.5" size={8} /> Retry
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => handleRewrite(idx)}
+                  className="px-2.5 py-1.5 bg-purple-600 text-white text-[10px] font-semibold rounded-md active:bg-purple-700"
+                >
+                  <FaMagic className="inline mr-1" size={9} /> Rewrite
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -353,6 +472,13 @@ export default function ResumeForm({ data, setData }) {
                     placeholder="• Led a team of 5 engineers to deliver a microservices architecture&#10;• Improved system performance by 40% through optimization&#10;• Mentored junior developers and conducted code reviews"
                     rows={4}
                   />
+                  {/* AI Rewrite for each bullet */}
+                  {exp.description && exp.description.trim() && (
+                    <AIRewriteInline
+                      description={exp.description}
+                      onApply={(newDesc) => updateExperience(exp.id, 'description', newDesc)}
+                    />
+                  )}
                 </div>
               </div>
             </div>
