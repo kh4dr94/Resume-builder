@@ -384,6 +384,285 @@ function getTemplateName(templateId, lang) {
   return TEMPLATE_NAMES_I18N[langKey]?.[templateId] || templateId
 }
 
+function TemplatePreviewMini({ layoutId }) {
+  const line = "h-0.5 bg-white/20 rounded-sm"
+  const thickLine = "h-1 bg-white/25 rounded-sm"
+  const header = "h-2 bg-white/30 rounded-sm"
+
+  // Sidebar left (creative, bold)
+  if (['creative', 'bold', 'split'].includes(layoutId)) {
+    return (
+      <div className="absolute inset-0 flex">
+        <div className="w-[35%] bg-black/20 p-1.5 space-y-1">
+          <div className="h-1.5 bg-white/30 rounded-sm w-full" />
+          <div className="h-0.5 bg-white/15 rounded-sm w-3/4" />
+          <div className="mt-1.5 space-y-0.5">
+            <div className="h-0.5 bg-white/15 rounded-sm w-full" />
+            <div className="h-0.5 bg-white/15 rounded-sm w-2/3" />
+          </div>
+        </div>
+        <div className="flex-1 p-1.5 space-y-1">
+          <div className={`${thickLine} w-full`} />
+          <div className={`${line} w-5/6`} />
+          <div className={`${line} w-4/6`} />
+          <div className={`${thickLine} w-full mt-1`} />
+          <div className={`${line} w-5/6`} />
+        </div>
+      </div>
+    )
+  }
+
+  // Sidebar right (infographic)
+  if (layoutId === 'infographic') {
+    return (
+      <div className="absolute inset-0 flex">
+        <div className="flex-1 p-1.5 space-y-1">
+          <div className="h-2 bg-white/30 rounded-sm w-full" />
+          <div className={`${line} w-5/6`} />
+          <div className={`${line} w-4/6`} />
+          <div className={`${thickLine} w-full mt-1`} />
+          <div className={`${line} w-5/6`} />
+        </div>
+        <div className="w-[35%] bg-black/20 p-1.5 space-y-1">
+          <div className="h-0.5 bg-white/15 rounded-sm w-full" />
+          <div className="h-0.5 bg-white/15 rounded-sm w-2/3" />
+          <div className="mt-1 space-y-0.5">
+            <div className="h-0.5 bg-white/15 rounded-sm w-full" />
+            <div className="h-0.5 bg-white/15 rounded-sm w-3/4" />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Banner header (executive, professional, magazine)
+  if (['executive', 'professional', 'magazine'].includes(layoutId)) {
+    return (
+      <div className="absolute inset-0 flex flex-col">
+        <div className="bg-black/20 p-1.5 pb-2">
+          <div className="h-2 bg-white/35 rounded-sm w-3/4" />
+          <div className="h-0.5 bg-white/20 rounded-sm w-1/2 mt-0.5" />
+        </div>
+        <div className="flex-1 p-1.5 space-y-0.5">
+          <div className={`${thickLine} w-full`} />
+          <div className={`${line} w-5/6`} />
+          <div className={`${line} w-4/6`} />
+          <div className={`${thickLine} w-full mt-1`} />
+          <div className={`${line} w-5/6`} />
+        </div>
+      </div>
+    )
+  }
+
+  // Gradient header (gradient)
+  if (layoutId === 'gradient') {
+    return (
+      <div className="absolute inset-0 flex flex-col">
+        <div className="bg-black/15 p-1.5 pb-2 rounded-b-lg">
+          <div className="h-2 bg-white/35 rounded-sm w-3/4" />
+          <div className="h-0.5 bg-white/20 rounded-sm w-1/2 mt-0.5" />
+        </div>
+        <div className="flex-1 p-1.5 space-y-0.5">
+          <div className={`${thickLine} w-full`} />
+          <div className={`${line} w-5/6`} />
+          <div className={`${line} w-4/6`} />
+        </div>
+      </div>
+    )
+  }
+
+  // Timeline (timeline)
+  if (layoutId === 'timeline') {
+    return (
+      <div className="absolute inset-1.5 flex flex-col">
+        <div className="h-2 bg-white/30 rounded-sm w-3/4 mx-auto mb-1" />
+        <div className="flex-1 flex">
+          <div className="w-1 flex flex-col items-center mx-1">
+            <div className="w-1 h-1 rounded-full bg-white/40" />
+            <div className="w-0.5 flex-1 bg-white/20" />
+            <div className="w-1 h-1 rounded-full bg-white/40" />
+            <div className="w-0.5 flex-1 bg-white/20" />
+            <div className="w-1 h-1 rounded-full bg-white/40" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <div className={`${line} w-full`} />
+            <div className={`${line} w-4/5`} />
+            <div className={`${line} w-full mt-1`} />
+            <div className={`${line} w-4/5`} />
+            <div className={`${line} w-full mt-1`} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Metro cards
+  if (layoutId === 'metro') {
+    return (
+      <div className="absolute inset-1.5 flex flex-col gap-1">
+        <div className="bg-white/15 rounded p-1 space-y-0.5">
+          <div className="h-1.5 bg-white/25 rounded-sm w-3/4" />
+          <div className="h-0.5 bg-white/15 rounded-sm w-1/2" />
+        </div>
+        <div className="bg-white/15 rounded p-1 space-y-0.5">
+          <div className="h-1 bg-white/25 rounded-sm w-2/3" />
+          <div className="h-0.5 bg-white/15 rounded-sm w-full" />
+          <div className="h-0.5 bg-white/15 rounded-sm w-4/5" />
+        </div>
+        <div className="bg-white/15 rounded p-1 space-y-0.5">
+          <div className="h-1 bg-white/25 rounded-sm w-1/2" />
+          <div className="h-0.5 bg-white/15 rounded-sm w-full" />
+        </div>
+      </div>
+    )
+  }
+
+  // Ribbon
+  if (layoutId === 'ribbon') {
+    return (
+      <div className="absolute inset-1.5 flex flex-col gap-0.5">
+        <div className="h-2 bg-white/30 rounded-sm w-3/4 mx-auto" />
+        <div className="h-1 bg-white/20 rounded-sm w-1/2 mx-auto mb-1" />
+        <div className="h-1 bg-white/40 rounded-r-sm w-1/3 -ml-0.5" />
+        <div className={`${line} w-full`} />
+        <div className={`${line} w-4/5`} />
+        <div className="h-1 bg-white/40 rounded-r-sm w-2/5 -ml-0.5 mt-0.5" />
+        <div className={`${line} w-full`} />
+        <div className={`${line} w-4/5`} />
+      </div>
+    )
+  }
+
+  // Asymmetric
+  if (layoutId === 'asymmetric') {
+    return (
+      <div className="absolute inset-1.5 flex flex-col gap-0.5">
+        <div className="h-2 bg-white/30 rounded-sm w-3/4 ml-auto" />
+        <div className="h-0.5 bg-white/15 rounded-sm w-1/2 ml-auto mb-1" />
+        <div className={`${thickLine} w-full`} />
+        <div className={`${line} w-5/6`} />
+        <div className={`${thickLine} w-full mt-1 ml-6`} />
+        <div className={`${line} w-5/6 ml-6`} />
+        <div className={`${thickLine} w-full mt-1`} />
+        <div className={`${line} w-4/5`} />
+      </div>
+    )
+  }
+
+  // Compact
+  if (layoutId === 'compact') {
+    return (
+      <div className="absolute inset-1 flex flex-col gap-0">
+        <div className="flex justify-between mb-0.5">
+          <div className="h-1.5 bg-white/30 rounded-sm w-1/3" />
+          <div className="space-y-0 text-right">
+            <div className="h-0.5 bg-white/15 rounded-sm w-8" />
+            <div className="h-0.5 bg-white/15 rounded-sm w-6 ml-auto" />
+          </div>
+        </div>
+        <div className="space-y-0.5">
+          <div className={`${line} w-full`} />
+          <div className={`${line} w-5/6`} />
+          <div className={`${line} w-4/6`} />
+          <div className={`${line} w-full`} />
+          <div className={`${line} w-5/6`} />
+          <div className={`${line} w-3/6`} />
+          <div className={`${line} w-full`} />
+          <div className={`${line} w-4/6`} />
+        </div>
+      </div>
+    )
+  }
+
+  // Dark mode
+  if (layoutId === 'darkmode') {
+    return (
+      <div className="absolute inset-0 bg-gray-900/50 flex flex-col p-1.5 gap-0.5">
+        <div className="h-2 bg-blue-400/40 rounded-sm w-3/4 mx-auto" />
+        <div className="h-1 bg-white/15 rounded-sm w-1/2 mx-auto mb-1" />
+        <div className="h-0.5 bg-blue-400/30 rounded-sm w-2/3" />
+        <div className="h-0.5 bg-white/10 rounded-sm w-full" />
+        <div className="h-0.5 bg-white/10 rounded-sm w-5/6" />
+        <div className="h-0.5 bg-blue-400/30 rounded-sm w-2/3 mt-1" />
+        <div className="h-0.5 bg-white/10 rounded-sm w-full" />
+      </div>
+    )
+  }
+
+  // Minimal
+  if (layoutId === 'minimal') {
+    return (
+      <div className="absolute inset-2 flex flex-col gap-0.5">
+        <div className="h-3 bg-white/25 rounded-sm w-2/3 mb-1" />
+        <div className="h-0.5 bg-white/10 rounded-sm w-1/3 mb-2" />
+        <div className={`${line} w-full`} />
+        <div className={`${line} w-5/6`} />
+        <div className={`${line} w-4/6 mt-2`} />
+        <div className={`${line} w-5/6`} />
+      </div>
+    )
+  }
+
+  // Elegant
+  if (layoutId === 'elegant') {
+    return (
+      <div className="absolute inset-1.5 flex flex-col items-center gap-0.5">
+        <div className="h-2.5 bg-white/30 rounded-sm w-2/3 italic" />
+        <div className="h-0.5 bg-white/15 rounded-sm w-1/3" />
+        <div className="flex items-center gap-1 my-1">
+          <div className="w-4 h-[1px] bg-white/30" />
+          <div className="w-1 h-1 rounded-full bg-white/30" />
+          <div className="w-4 h-[1px] bg-white/30" />
+        </div>
+        <div className={`${line} w-full`} />
+        <div className={`${line} w-5/6`} />
+        <div className={`${line} w-4/6`} />
+      </div>
+    )
+  }
+
+  // Tech
+  if (layoutId === 'tech') {
+    return (
+      <div className="absolute inset-1.5 flex flex-col gap-0.5">
+        <div className="h-2 bg-white/30 rounded-sm w-3/4 font-mono" />
+        <div className="h-0.5 bg-white/15 rounded-sm w-1/2 mb-1" />
+        <div className="flex gap-0.5">
+          <div className="w-0.5 h-3 bg-white/40 rounded-sm" />
+          <div className="space-y-0.5 flex-1">
+            <div className={`${line} w-full`} />
+            <div className={`${line} w-4/5`} />
+            <div className={`${line} w-3/5`} />
+          </div>
+        </div>
+        <div className="flex gap-0.5 mt-0.5">
+          <div className="w-0.5 h-3 bg-white/40 rounded-sm" />
+          <div className="space-y-0.5 flex-1">
+            <div className={`${line} w-full`} />
+            <div className={`${line} w-4/5`} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Default: single column centered (modern, classic, academic)
+  return (
+    <div className="absolute inset-1.5 flex flex-col gap-0.5">
+      <div className="h-2 bg-white/30 rounded-sm w-3/4 mx-auto" />
+      <div className="h-1 bg-white/20 rounded-sm w-1/2 mx-auto" />
+      <div className="flex-1 mt-1 space-y-0.5">
+        <div className={`${line} w-full`} />
+        <div className={`${line} w-5/6`} />
+        <div className={`${line} w-4/6`} />
+        <div className={`${thickLine} w-full mt-1`} />
+        <div className={`${line} w-5/6`} />
+        <div className={`${line} w-4/6`} />
+      </div>
+    </div>
+  )
+}
+
 export default function TemplateSelector({ activeTemplateId, onSelect }) {
   const { t, language } = useTranslation()
   return (
@@ -402,7 +681,7 @@ export default function TemplateSelector({ activeTemplateId, onSelect }) {
           </span>
         )}
       </div>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-4 gap-2 max-h-64 overflow-y-auto pr-1">
         {templates.map((template) => (
           <button
             key={template.id}
@@ -416,18 +695,8 @@ export default function TemplateSelector({ activeTemplateId, onSelect }) {
             <div
               className={`w-full aspect-[3/4] rounded-lg bg-gradient-to-br ${template.gradient} relative overflow-hidden`}
             >
-              {/* Mini preview lines */}
-              <div className="absolute inset-1.5 flex flex-col gap-0.5">
-                <div className="h-2 bg-white/30 rounded-sm w-3/4 mx-auto" />
-                <div className="h-1 bg-white/20 rounded-sm w-1/2 mx-auto" />
-                <div className="flex-1 mt-1 space-y-0.5">
-                  <div className="h-0.5 bg-white/20 rounded-sm w-full" />
-                  <div className="h-0.5 bg-white/20 rounded-sm w-5/6" />
-                  <div className="h-0.5 bg-white/20 rounded-sm w-4/6" />
-                  <div className="h-0.5 bg-white/15 rounded-sm w-full mt-1" />
-                  <div className="h-0.5 bg-white/15 rounded-sm w-5/6" />
-                </div>
-              </div>
+              {/* Layout-specific mini preview */}
+              <TemplatePreviewMini layoutId={template.id} />
               {activeTemplateId === template.id && (
                 <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
                   <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
