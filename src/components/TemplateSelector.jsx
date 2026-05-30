@@ -385,281 +385,289 @@ function getTemplateName(templateId, lang) {
 }
 
 function TemplatePreviewMini({ layoutId }) {
-  const line = "h-0.5 bg-white/20 rounded-sm"
-  const thickLine = "h-1 bg-white/25 rounded-sm"
-  const header = "h-2 bg-white/30 rounded-sm"
+  const f = "rgba(255,255,255,0.3)"
+  const l = "rgba(255,255,255,0.18)"
+  const d = "rgba(0,0,0,0.25)"
+  const a = "rgba(100,180,255,0.4)"
 
-  // Sidebar left (creative, bold)
+  // Sidebar left (creative, bold, split)
   if (['creative', 'bold', 'split'].includes(layoutId)) {
     return (
-      <div className="absolute inset-0 flex">
-        <div className="w-[35%] bg-black/20 p-1.5 space-y-1">
-          <div className="h-1.5 bg-white/30 rounded-sm w-full" />
-          <div className="h-0.5 bg-white/15 rounded-sm w-3/4" />
-          <div className="mt-1.5 space-y-0.5">
-            <div className="h-0.5 bg-white/15 rounded-sm w-full" />
-            <div className="h-0.5 bg-white/15 rounded-sm w-2/3" />
-          </div>
-        </div>
-        <div className="flex-1 p-1.5 space-y-1">
-          <div className={`${thickLine} w-full`} />
-          <div className={`${line} w-5/6`} />
-          <div className={`${line} w-4/6`} />
-          <div className={`${thickLine} w-full mt-1`} />
-          <div className={`${line} w-5/6`} />
-        </div>
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="0" y="0" width="24" height="100" rx="1" fill={d} />
+        <rect x="3" y="8" width="18" height="5" rx="1" fill={f} />
+        <rect x="3" y="16" width="14" height="2" rx="0.5" fill={l} />
+        <rect x="3" y="24" width="18" height="2" rx="0.5" fill={l} />
+        <rect x="3" y="29" width="12" height="2" rx="0.5" fill={l} />
+        <rect x="3" y="38" width="18" height="2" rx="0.5" fill={l} />
+        <rect x="3" y="43" width="14" height="2" rx="0.5" fill={l} />
+        <rect x="28" y="10" width="48" height="3" rx="1" fill={f} />
+        <rect x="28" y="18" width="44" height="2" rx="0.5" fill={l} />
+        <rect x="28" y="23" width="36" height="2" rx="0.5" fill={l} />
+        <rect x="28" y="32" width="48" height="3" rx="1" fill={f} />
+        <rect x="28" y="40" width="44" height="2" rx="0.5" fill={l} />
+        <rect x="28" y="45" width="38" height="2" rx="0.5" fill={l} />
+        <rect x="28" y="54" width="48" height="3" rx="1" fill={f} />
+        <rect x="28" y="62" width="40" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Sidebar right (infographic)
   if (layoutId === 'infographic') {
     return (
-      <div className="absolute inset-0 flex">
-        <div className="flex-1 p-1.5 space-y-1">
-          <div className="h-2 bg-white/30 rounded-sm w-full" />
-          <div className={`${line} w-5/6`} />
-          <div className={`${line} w-4/6`} />
-          <div className={`${thickLine} w-full mt-1`} />
-          <div className={`${line} w-5/6`} />
-        </div>
-        <div className="w-[35%] bg-black/20 p-1.5 space-y-1">
-          <div className="h-0.5 bg-white/15 rounded-sm w-full" />
-          <div className="h-0.5 bg-white/15 rounded-sm w-2/3" />
-          <div className="mt-1 space-y-0.5">
-            <div className="h-0.5 bg-white/15 rounded-sm w-full" />
-            <div className="h-0.5 bg-white/15 rounded-sm w-3/4" />
-          </div>
-        </div>
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="56" y="0" width="24" height="100" rx="1" fill={d} />
+        <rect x="5" y="8" width="44" height="5" rx="1" fill={f} />
+        <rect x="5" y="16" width="38" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="26" width="44" height="3" rx="1" fill={f} />
+        <rect x="5" y="34" width="40" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="39" width="34" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="48" width="44" height="3" rx="1" fill={f} />
+        <rect x="5" y="56" width="38" height="2" rx="0.5" fill={l} />
+        <rect x="59" y="8" width="18" height="2" rx="0.5" fill={l} />
+        <rect x="59" y="13" width="14" height="2" rx="0.5" fill={l} />
+        <rect x="59" y="22" width="18" height="2" rx="0.5" fill={l} />
+        <rect x="59" y="27" width="12" height="2" rx="0.5" fill={l} />
+        <rect x="59" y="36" width="16" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Banner header (executive, professional, magazine)
   if (['executive', 'professional', 'magazine'].includes(layoutId)) {
     return (
-      <div className="absolute inset-0 flex flex-col">
-        <div className="bg-black/20 p-1.5 pb-2">
-          <div className="h-2 bg-white/35 rounded-sm w-3/4" />
-          <div className="h-0.5 bg-white/20 rounded-sm w-1/2 mt-0.5" />
-        </div>
-        <div className="flex-1 p-1.5 space-y-0.5">
-          <div className={`${thickLine} w-full`} />
-          <div className={`${line} w-5/6`} />
-          <div className={`${line} w-4/6`} />
-          <div className={`${thickLine} w-full mt-1`} />
-          <div className={`${line} w-5/6`} />
-        </div>
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="0" y="0" width="80" height="25" rx="1" fill={d} />
+        <rect x="8" y="7" width="40" height="5" rx="1" fill={f} />
+        <rect x="8" y="15" width="28" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="32" width="64" height="3" rx="1" fill={f} />
+        <rect x="8" y="40" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="45" width="48" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="54" width="64" height="3" rx="1" fill={f} />
+        <rect x="8" y="62" width="52" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="67" width="44" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="76" width="64" height="3" rx="1" fill={f} />
+        <rect x="8" y="84" width="48" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Gradient header (gradient)
   if (layoutId === 'gradient') {
     return (
-      <div className="absolute inset-0 flex flex-col">
-        <div className="bg-black/15 p-1.5 pb-2 rounded-b-lg">
-          <div className="h-2 bg-white/35 rounded-sm w-3/4" />
-          <div className="h-0.5 bg-white/20 rounded-sm w-1/2 mt-0.5" />
-        </div>
-        <div className="flex-1 p-1.5 space-y-0.5">
-          <div className={`${thickLine} w-full`} />
-          <div className={`${line} w-5/6`} />
-          <div className={`${line} w-4/6`} />
-        </div>
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="0" y="0" width="80" height="28" rx="2" fill={d} />
+        <rect x="8" y="7" width="44" height="5" rx="1" fill={f} />
+        <rect x="8" y="15" width="30" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="36" width="64" height="3" rx="1" fill={f} />
+        <rect x="8" y="44" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="49" width="44" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="58" width="64" height="3" rx="1" fill={f} />
+        <rect x="8" y="66" width="50" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Timeline (timeline)
   if (layoutId === 'timeline') {
     return (
-      <div className="absolute inset-1.5 flex flex-col">
-        <div className="h-2 bg-white/30 rounded-sm w-3/4 mx-auto mb-1" />
-        <div className="flex-1 flex">
-          <div className="w-1 flex flex-col items-center mx-1">
-            <div className="w-1 h-1 rounded-full bg-white/40" />
-            <div className="w-0.5 flex-1 bg-white/20" />
-            <div className="w-1 h-1 rounded-full bg-white/40" />
-            <div className="w-0.5 flex-1 bg-white/20" />
-            <div className="w-1 h-1 rounded-full bg-white/40" />
-          </div>
-          <div className="flex-1 space-y-1">
-            <div className={`${line} w-full`} />
-            <div className={`${line} w-4/5`} />
-            <div className={`${line} w-full mt-1`} />
-            <div className={`${line} w-4/5`} />
-            <div className={`${line} w-full mt-1`} />
-          </div>
-        </div>
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="15" y="5" width="50" height="5" rx="1" fill={f} />
+        <rect x="20" y="13" width="36" height="2" rx="0.5" fill={l} />
+        <line x1="12" y1="22" x2="12" y2="92" stroke={l} strokeWidth="1.5" />
+        <circle cx="12" cy="26" r="2.5" fill={f} />
+        <rect x="18" y="24" width="52" height="2" rx="0.5" fill={l} />
+        <rect x="18" y="29" width="44" height="2" rx="0.5" fill={l} />
+        <circle cx="12" cy="42" r="2.5" fill={f} />
+        <rect x="18" y="40" width="52" height="2" rx="0.5" fill={l} />
+        <rect x="18" y="45" width="40" height="2" rx="0.5" fill={l} />
+        <circle cx="12" cy="58" r="2.5" fill={f} />
+        <rect x="18" y="56" width="48" height="2" rx="0.5" fill={l} />
+        <rect x="18" y="61" width="42" height="2" rx="0.5" fill={l} />
+        <circle cx="12" cy="74" r="2.5" fill={f} />
+        <rect x="18" y="72" width="50" height="2" rx="0.5" fill={l} />
+        <rect x="18" y="77" width="38" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Metro cards
   if (layoutId === 'metro') {
     return (
-      <div className="absolute inset-1.5 flex flex-col gap-1">
-        <div className="bg-white/15 rounded p-1 space-y-0.5">
-          <div className="h-1.5 bg-white/25 rounded-sm w-3/4" />
-          <div className="h-0.5 bg-white/15 rounded-sm w-1/2" />
-        </div>
-        <div className="bg-white/15 rounded p-1 space-y-0.5">
-          <div className="h-1 bg-white/25 rounded-sm w-2/3" />
-          <div className="h-0.5 bg-white/15 rounded-sm w-full" />
-          <div className="h-0.5 bg-white/15 rounded-sm w-4/5" />
-        </div>
-        <div className="bg-white/15 rounded p-1 space-y-0.5">
-          <div className="h-1 bg-white/25 rounded-sm w-1/2" />
-          <div className="h-0.5 bg-white/15 rounded-sm w-full" />
-        </div>
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="5" y="5" width="70" height="22" rx="4" fill="rgba(255,255,255,0.15)" />
+        <rect x="10" y="10" width="36" height="4" rx="1" fill={f} />
+        <rect x="10" y="17" width="24" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="32" width="70" height="26" rx="4" fill="rgba(255,255,255,0.15)" />
+        <rect x="10" y="37" width="30" height="3" rx="1" fill={f} />
+        <rect x="10" y="43" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="10" y="48" width="48" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="63" width="70" height="22" rx="4" fill="rgba(255,255,255,0.15)" />
+        <rect x="10" y="68" width="28" height="3" rx="1" fill={f} />
+        <rect x="10" y="74" width="52" height="2" rx="0.5" fill={l} />
+        <rect x="10" y="79" width="44" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Ribbon
   if (layoutId === 'ribbon') {
     return (
-      <div className="absolute inset-1.5 flex flex-col gap-0.5">
-        <div className="h-2 bg-white/30 rounded-sm w-3/4 mx-auto" />
-        <div className="h-1 bg-white/20 rounded-sm w-1/2 mx-auto mb-1" />
-        <div className="h-1 bg-white/40 rounded-r-sm w-1/3 -ml-0.5" />
-        <div className={`${line} w-full`} />
-        <div className={`${line} w-4/5`} />
-        <div className="h-1 bg-white/40 rounded-r-sm w-2/5 -ml-0.5 mt-0.5" />
-        <div className={`${line} w-full`} />
-        <div className={`${line} w-4/5`} />
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="15" y="5" width="50" height="5" rx="1" fill={f} />
+        <rect x="22" y="13" width="36" height="2" rx="0.5" fill={l} />
+        <rect x="0" y="22" width="28" height="6" rx="1" fill="rgba(255,255,255,0.4)" />
+        <rect x="8" y="32" width="64" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="37" width="52" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="42" width="44" height="2" rx="0.5" fill={l} />
+        <rect x="0" y="50" width="32" height="6" rx="1" fill="rgba(255,255,255,0.4)" />
+        <rect x="8" y="60" width="64" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="65" width="50" height="2" rx="0.5" fill={l} />
+        <rect x="0" y="74" width="26" height="6" rx="1" fill="rgba(255,255,255,0.4)" />
+        <rect x="8" y="84" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="89" width="44" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Asymmetric
   if (layoutId === 'asymmetric') {
     return (
-      <div className="absolute inset-1.5 flex flex-col gap-0.5">
-        <div className="h-2 bg-white/30 rounded-sm w-3/4 ml-auto" />
-        <div className="h-0.5 bg-white/15 rounded-sm w-1/2 ml-auto mb-1" />
-        <div className={`${thickLine} w-full`} />
-        <div className={`${line} w-5/6`} />
-        <div className={`${thickLine} w-full mt-1 ml-6`} />
-        <div className={`${line} w-5/6 ml-6`} />
-        <div className={`${thickLine} w-full mt-1`} />
-        <div className={`${line} w-4/5`} />
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="25" y="5" width="50" height="5" rx="1" fill={f} />
+        <rect x="35" y="13" width="40" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="22" width="70" height="3" rx="1" fill={f} />
+        <rect x="5" y="28" width="60" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="33" width="50" height="2" rx="0.5" fill={l} />
+        <rect x="20" y="42" width="55" height="3" rx="1" fill={f} />
+        <rect x="20" y="48" width="50" height="2" rx="0.5" fill={l} />
+        <rect x="20" y="53" width="40" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="62" width="70" height="3" rx="1" fill={f} />
+        <rect x="5" y="68" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="20" y="77" width="55" height="3" rx="1" fill={f} />
+        <rect x="20" y="83" width="46" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Compact
   if (layoutId === 'compact') {
     return (
-      <div className="absolute inset-1 flex flex-col gap-0">
-        <div className="flex justify-between mb-0.5">
-          <div className="h-1.5 bg-white/30 rounded-sm w-1/3" />
-          <div className="space-y-0 text-right">
-            <div className="h-0.5 bg-white/15 rounded-sm w-8" />
-            <div className="h-0.5 bg-white/15 rounded-sm w-6 ml-auto" />
-          </div>
-        </div>
-        <div className="space-y-0.5">
-          <div className={`${line} w-full`} />
-          <div className={`${line} w-5/6`} />
-          <div className={`${line} w-4/6`} />
-          <div className={`${line} w-full`} />
-          <div className={`${line} w-5/6`} />
-          <div className={`${line} w-3/6`} />
-          <div className={`${line} w-full`} />
-          <div className={`${line} w-4/6`} />
-        </div>
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="5" y="4" width="30" height="4" rx="1" fill={f} />
+        <rect x="50" y="4" width="25" height="2" rx="0.5" fill={l} />
+        <rect x="52" y="8" width="20" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="14" width="70" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="19" width="60" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="24" width="50" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="29" width="70" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="34" width="55" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="39" width="65" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="44" width="70" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="49" width="48" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="54" width="62" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="59" width="70" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="64" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="69" width="44" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="74" width="70" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="79" width="60" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="84" width="52" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Dark mode
   if (layoutId === 'darkmode') {
     return (
-      <div className="absolute inset-0 bg-gray-900/50 flex flex-col p-1.5 gap-0.5">
-        <div className="h-2 bg-blue-400/40 rounded-sm w-3/4 mx-auto" />
-        <div className="h-1 bg-white/15 rounded-sm w-1/2 mx-auto mb-1" />
-        <div className="h-0.5 bg-blue-400/30 rounded-sm w-2/3" />
-        <div className="h-0.5 bg-white/10 rounded-sm w-full" />
-        <div className="h-0.5 bg-white/10 rounded-sm w-5/6" />
-        <div className="h-0.5 bg-blue-400/30 rounded-sm w-2/3 mt-1" />
-        <div className="h-0.5 bg-white/10 rounded-sm w-full" />
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="0" y="0" width="80" height="100" rx="2" fill="rgba(17,24,39,0.5)" />
+        <rect x="15" y="8" width="50" height="5" rx="1" fill={a} />
+        <rect x="22" y="16" width="36" height="2" rx="0.5" fill="rgba(255,255,255,0.15)" />
+        <rect x="8" y="26" width="40" height="2" rx="0.5" fill="rgba(100,180,255,0.3)" />
+        <rect x="8" y="32" width="64" height="2" rx="0.5" fill="rgba(255,255,255,0.1)" />
+        <rect x="8" y="37" width="56" height="2" rx="0.5" fill="rgba(255,255,255,0.1)" />
+        <rect x="8" y="47" width="36" height="2" rx="0.5" fill="rgba(100,180,255,0.3)" />
+        <rect x="8" y="53" width="64" height="2" rx="0.5" fill="rgba(255,255,255,0.1)" />
+        <rect x="8" y="58" width="50" height="2" rx="0.5" fill="rgba(255,255,255,0.1)" />
+        <rect x="8" y="68" width="32" height="2" rx="0.5" fill="rgba(100,180,255,0.3)" />
+        <rect x="8" y="74" width="60" height="2" rx="0.5" fill="rgba(255,255,255,0.1)" />
+      </svg>
     )
   }
 
   // Minimal
   if (layoutId === 'minimal') {
     return (
-      <div className="absolute inset-2 flex flex-col gap-0.5">
-        <div className="h-3 bg-white/25 rounded-sm w-2/3 mb-1" />
-        <div className="h-0.5 bg-white/10 rounded-sm w-1/3 mb-2" />
-        <div className={`${line} w-full`} />
-        <div className={`${line} w-5/6`} />
-        <div className={`${line} w-4/6 mt-2`} />
-        <div className={`${line} w-5/6`} />
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="8" y="10" width="44" height="8" rx="1" fill="rgba(255,255,255,0.25)" />
+        <rect x="8" y="22" width="20" height="2" rx="0.5" fill="rgba(255,255,255,0.1)" />
+        <rect x="8" y="36" width="64" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="43" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="56" width="44" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="63" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="76" width="48" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="83" width="36" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Elegant
   if (layoutId === 'elegant') {
     return (
-      <div className="absolute inset-1.5 flex flex-col items-center gap-0.5">
-        <div className="h-2.5 bg-white/30 rounded-sm w-2/3 italic" />
-        <div className="h-0.5 bg-white/15 rounded-sm w-1/3" />
-        <div className="flex items-center gap-1 my-1">
-          <div className="w-4 h-[1px] bg-white/30" />
-          <div className="w-1 h-1 rounded-full bg-white/30" />
-          <div className="w-4 h-[1px] bg-white/30" />
-        </div>
-        <div className={`${line} w-full`} />
-        <div className={`${line} w-5/6`} />
-        <div className={`${line} w-4/6`} />
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="15" y="8" width="50" height="6" rx="1" fill={f} />
+        <rect x="24" y="18" width="32" height="2" rx="0.5" fill={l} />
+        <line x1="20" y1="26" x2="36" y2="26" stroke={f} strokeWidth="1" />
+        <polygon points="40,23 42,26 40,29 38,26" fill={f} />
+        <line x1="44" y1="26" x2="60" y2="26" stroke={f} strokeWidth="1" />
+        <rect x="8" y="34" width="64" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="40" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="46" width="48" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="56" width="64" height="3" rx="1" fill={f} />
+        <rect x="8" y="63" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="8" y="68" width="44" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Tech
   if (layoutId === 'tech') {
     return (
-      <div className="absolute inset-1.5 flex flex-col gap-0.5">
-        <div className="h-2 bg-white/30 rounded-sm w-3/4 font-mono" />
-        <div className="h-0.5 bg-white/15 rounded-sm w-1/2 mb-1" />
-        <div className="flex gap-0.5">
-          <div className="w-0.5 h-3 bg-white/40 rounded-sm" />
-          <div className="space-y-0.5 flex-1">
-            <div className={`${line} w-full`} />
-            <div className={`${line} w-4/5`} />
-            <div className={`${line} w-3/5`} />
-          </div>
-        </div>
-        <div className="flex gap-0.5 mt-0.5">
-          <div className="w-0.5 h-3 bg-white/40 rounded-sm" />
-          <div className="space-y-0.5 flex-1">
-            <div className={`${line} w-full`} />
-            <div className={`${line} w-4/5`} />
-          </div>
-        </div>
-      </div>
+      <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+        <rect x="8" y="8" width="50" height="5" rx="1" fill={f} />
+        <rect x="8" y="16" width="32" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="26" width="2.5" height="18" rx="1" fill="rgba(255,255,255,0.4)" />
+        <rect x="12" y="27" width="60" height="2" rx="0.5" fill={l} />
+        <rect x="12" y="32" width="50" height="2" rx="0.5" fill={l} />
+        <rect x="12" y="37" width="40" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="50" width="2.5" height="18" rx="1" fill="rgba(255,255,255,0.4)" />
+        <rect x="12" y="51" width="60" height="2" rx="0.5" fill={l} />
+        <rect x="12" y="56" width="48" height="2" rx="0.5" fill={l} />
+        <rect x="12" y="61" width="42" height="2" rx="0.5" fill={l} />
+        <rect x="5" y="74" width="2.5" height="14" rx="1" fill="rgba(255,255,255,0.4)" />
+        <rect x="12" y="75" width="56" height="2" rx="0.5" fill={l} />
+        <rect x="12" y="80" width="44" height="2" rx="0.5" fill={l} />
+      </svg>
     )
   }
 
   // Default: single column centered (modern, classic, academic)
   return (
-    <div className="absolute inset-1.5 flex flex-col gap-0.5">
-      <div className="h-2 bg-white/30 rounded-sm w-3/4 mx-auto" />
-      <div className="h-1 bg-white/20 rounded-sm w-1/2 mx-auto" />
-      <div className="flex-1 mt-1 space-y-0.5">
-        <div className={`${line} w-full`} />
-        <div className={`${line} w-5/6`} />
-        <div className={`${line} w-4/6`} />
-        <div className={`${thickLine} w-full mt-1`} />
-        <div className={`${line} w-5/6`} />
-        <div className={`${line} w-4/6`} />
-      </div>
-    </div>
+    <svg viewBox="0 0 80 100" className="absolute inset-0 w-full h-full p-1">
+      <rect x="15" y="8" width="50" height="5" rx="1" fill={f} />
+      <rect x="22" y="16" width="36" height="2" rx="0.5" fill={l} />
+      <rect x="18" y="21" width="44" height="2" rx="0.5" fill={l} />
+      <rect x="8" y="30" width="64" height="3" rx="1" fill={f} />
+      <rect x="8" y="37" width="56" height="2" rx="0.5" fill={l} />
+      <rect x="8" y="42" width="48" height="2" rx="0.5" fill={l} />
+      <rect x="8" y="51" width="64" height="3" rx="1" fill={f} />
+      <rect x="8" y="58" width="56" height="2" rx="0.5" fill={l} />
+      <rect x="8" y="63" width="44" height="2" rx="0.5" fill={l} />
+      <rect x="8" y="72" width="64" height="3" rx="1" fill={f} />
+      <rect x="8" y="79" width="52" height="2" rx="0.5" fill={l} />
+      <rect x="8" y="84" width="40" height="2" rx="0.5" fill={l} />
+    </svg>
   )
 }
 
