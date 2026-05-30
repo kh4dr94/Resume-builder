@@ -68,6 +68,7 @@ const createEmptyResumeData = () => ({
     linkedin: '',
     website: '',
     summary: '',
+    profileImage: '',
   },
   experience: [
     {

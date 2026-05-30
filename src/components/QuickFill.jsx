@@ -11,6 +11,7 @@ const SAMPLE_DATA_EN = {
     linkedin: 'linkedin.com/in/alexjohnson',
     website: 'alexjohnson.dev',
     summary: 'Results-driven Senior Software Engineer with 7+ years of experience building scalable web applications. Passionate about clean architecture, performance optimization, and mentoring teams. Led multiple cross-functional teams delivering products used by millions of users worldwide.',
+    profileImage: '',
   },
   experience: [
     { id: 1, company: 'Google', position: 'Senior Software Engineer', startDate: 'Jan 2021', endDate: '', current: true, description: '• Led a team of 8 engineers to redesign the core search infrastructure\n• Improved page load performance by 45% through lazy loading and code splitting\n• Mentored 4 junior developers through quarterly growth plans\n• Architected microservices handling 2M+ requests per day' },
@@ -42,6 +43,7 @@ const SAMPLE_DATA_ES = {
     linkedin: 'linkedin.com/in/carlosgarcia',
     website: 'carlosgarcia.dev',
     summary: 'Ingeniero de Software Senior orientado a resultados con más de 7 años de experiencia construyendo aplicaciones web escalables. Apasionado por la arquitectura limpia, la optimización del rendimiento y la mentoría de equipos. Lideré múltiples equipos multifuncionales entregando productos utilizados por millones de usuarios.',
+    profileImage: '',
   },
   experience: [
     { id: 1, company: 'Google', position: 'Ingeniero de Software Senior', startDate: 'Ene 2021', endDate: '', current: true, description: '• Lideré un equipo de 8 ingenieros para rediseñar la infraestructura central de búsqueda\n• Mejoré el rendimiento de carga de página en un 45% mediante carga diferida\n• Mentoré a 4 desarrolladores junior a través de planes de crecimiento trimestrales\n• Diseñé microservicios que manejan más de 2M de solicitudes por día' },
@@ -73,6 +75,7 @@ const SAMPLE_DATA_FR = {
     linkedin: 'linkedin.com/in/mariedupont',
     website: 'mariedupont.dev',
     summary: 'Ingénieure Logiciel Senior axée sur les résultats avec plus de 7 ans d\'expérience dans la création d\'applications web évolutives. Passionnée par l\'architecture propre, l\'optimisation des performances et le mentorat d\'équipes. Direction de plusieurs équipes transversales livrant des produits utilisés par des millions d\'utilisateurs.',
+    profileImage: '',
   },
   experience: [
     { id: 1, company: 'Google', position: 'Ingénieure Logiciel Senior', startDate: 'Jan 2021', endDate: '', current: true, description: '• Direction d\'une équipe de 8 ingénieurs pour repenser l\'infrastructure de recherche\n• Amélioration des performances de chargement de 45% grâce au lazy loading\n• Mentorat de 4 développeurs juniors via des plans de croissance trimestriels\n• Architecture de microservices gérant plus de 2M de requêtes par jour' },
@@ -104,6 +107,7 @@ const SAMPLE_DATA_DE = {
     linkedin: 'linkedin.com/in/maxmueller',
     website: 'maxmueller.dev',
     summary: 'Ergebnisorientierter Senior Software-Ingenieur mit über 7 Jahren Erfahrung in der Entwicklung skalierbarer Webanwendungen. Leidenschaftlich für saubere Architektur, Leistungsoptimierung und Teamführung. Leitung mehrerer funktionsübergreifender Teams, die Produkte für Millionen von Nutzern weltweit bereitstellen.',
+    profileImage: '',
   },
   experience: [
     { id: 1, company: 'Google', position: 'Senior Software-Ingenieur', startDate: 'Jan 2021', endDate: '', current: true, description: '• Leitung eines Teams von 8 Ingenieuren zur Neugestaltung der Suchinfrastruktur\n• Verbesserung der Seitenladegeschwindigkeit um 45% durch Lazy Loading\n• Mentoring von 4 Junior-Entwicklern durch vierteljährliche Wachstumspläne\n• Architektur von Microservices mit über 2M Anfragen pro Tag' },

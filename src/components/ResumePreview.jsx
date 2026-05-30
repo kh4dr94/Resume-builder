@@ -276,8 +276,13 @@ function SidebarSections({ d, sectionOrder, sectionLabels, theme }) {
 const ModernLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '40px 48px', minHeight: '297mm', color: theme.textPrimary, fontFamily: theme.fontFamily, backgroundColor: '#ffffff' }}>
     <div className="text-center mb-6 pb-4" style={{ borderBottom: `2px solid ${theme.sectionBorder}` }}>
-      <h1 className="text-[28px] font-bold tracking-wide uppercase mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[14px] font-medium tracking-wider uppercase mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center justify-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+        <div>
+          <h1 className="text-[28px] font-bold tracking-wide uppercase mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[14px] font-medium tracking-wider uppercase mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+        </div>
+      </div>
       <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-[10px]" style={{ color: theme.textMuted }}>
         <ContactItem icon={FaEnvelope} value={d.personalInfo.email} />
         <ContactItem icon={FaPhone} value={d.personalInfo.phone} />
@@ -297,8 +302,13 @@ ModernLayout.displayName = 'ModernLayout'
 const ClassicLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '40px 48px', minHeight: '297mm', color: theme.textPrimary, fontFamily: theme.fontFamily, backgroundColor: '#ffffff' }}>
     <div className="text-center mb-6 pb-4" style={{ borderBottom: `3px double ${theme.sectionBorder}` }}>
-      <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.primary, fontFamily: theme.fontFamily }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[13px] italic mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center justify-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+        <div>
+          <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.primary, fontFamily: theme.fontFamily }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[13px] italic mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+        </div>
+      </div>
       <ContactRow personalInfo={d.personalInfo} theme={theme} />
     </div>
     {isEmpty(d) ? <EmptyState t={t} /> : sectionOrder.map((id) => <RenderSection key={id} sectionId={id} d={d} theme={theme} sectionLabels={sectionLabels} />)}
@@ -315,6 +325,7 @@ const CreativeLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t },
   return (
     <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ minHeight: '297mm', fontFamily: theme.fontFamily, display: 'flex' }}>
       <div className="flex-shrink-0" style={{ width: '35%', backgroundColor: theme.headerBg, color: theme.headerText, padding: '36px 24px' }}>
+        {d.personalInfo.profileImage && <div className="flex justify-center mb-4"><img src={d.personalInfo.profileImage} alt="" className="w-[60px] h-[60px] rounded-full object-cover border-2 border-white/30" /></div>}
         <h1 className="text-[22px] font-bold tracking-wide mb-1" style={{ color: theme.headerText }}>{d.personalInfo.fullName || 'Your Name'}</h1>
         {d.personalInfo.title && <p className="text-[12px] font-medium tracking-wider uppercase mb-4 opacity-90">{d.personalInfo.title}</p>}
         <div className="mb-6 opacity-90"><ContactColumn personalInfo={d.personalInfo} theme={theme} /></div>
@@ -334,8 +345,13 @@ CreativeLayout.displayName = 'CreativeLayout'
 const MinimalLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '56px 56px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div className="mb-8">
-      <h1 className="text-[36px] font-light tracking-tight mb-0.5" style={{ color: theme.textPrimary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[14px] font-normal tracking-wide mb-4" style={{ color: theme.textMuted }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+        <div>
+          <h1 className="text-[36px] font-light tracking-tight mb-0.5" style={{ color: theme.textPrimary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[14px] font-normal tracking-wide mb-4" style={{ color: theme.textMuted }}>{d.personalInfo.title}</p>}
+        </div>
+      </div>
       <ContactRow personalInfo={d.personalInfo} theme={theme} />
     </div>
     {isEmpty(d) ? <EmptyState t={t} /> : sectionOrder.map((id) => <RenderSection key={id} sectionId={id} d={d} theme={theme} sectionLabels={sectionLabels} variant="minimal" />)}
@@ -349,8 +365,13 @@ MinimalLayout.displayName = 'MinimalLayout'
 const ExecutiveLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ minHeight: '297mm', fontFamily: theme.fontFamily, backgroundColor: '#ffffff', color: theme.textPrimary }}>
     <div style={{ backgroundColor: theme.headerBg, padding: '36px 48px', color: theme.headerText }}>
-      <h1 className="text-[28px] font-bold tracking-wide uppercase mb-1" style={{ color: theme.headerText }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[14px] font-medium tracking-wider uppercase opacity-90">{d.personalInfo.title}</p>}
+      <div className="flex items-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-white/30" />}
+        <div>
+          <h1 className="text-[28px] font-bold tracking-wide uppercase mb-1" style={{ color: theme.headerText }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[14px] font-medium tracking-wider uppercase opacity-90">{d.personalInfo.title}</p>}
+        </div>
+      </div>
     </div>
     <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[10px] px-12 py-3" style={{ color: theme.textMuted, borderBottom: `2px solid ${theme.accent}` }}>
       <ContactItem icon={FaEnvelope} value={d.personalInfo.email} />
@@ -372,9 +393,14 @@ ExecutiveLayout.displayName = 'ExecutiveLayout'
 const ProfessionalLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ minHeight: '297mm', fontFamily: theme.fontFamily, backgroundColor: '#ffffff', color: theme.textPrimary }}>
     <div style={{ backgroundColor: theme.headerBg, padding: '28px 48px', color: theme.headerText }}>
-      <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.headerText }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide opacity-90 mb-2">{d.personalInfo.title}</p>}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] opacity-80">
+      <div className="flex items-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-white/30" />}
+        <div>
+          <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.headerText }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide opacity-90 mb-2">{d.personalInfo.title}</p>}
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] opacity-80 mt-2">
         <ContactItem icon={FaEnvelope} value={d.personalInfo.email} />
         <ContactItem icon={FaPhone} value={d.personalInfo.phone} />
         <ContactItem icon={FaMapMarkerAlt} value={d.personalInfo.location} />
@@ -395,6 +421,7 @@ ProfessionalLayout.displayName = 'ProfessionalLayout'
 const ElegantLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '48px 48px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div className="text-center mb-8">
+      {d.personalInfo.profileImage && <div className="flex justify-center mb-3"><img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover" /></div>}
       <h1 className="text-[32px] font-bold italic mb-1" style={{ color: theme.accent, fontFamily: "'Playfair Display', serif" }}>{d.personalInfo.fullName || 'Your Name'}</h1>
       {d.personalInfo.title && <p className="text-[13px] tracking-widest uppercase mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
       <div className="flex justify-center items-center gap-2 mb-3">
@@ -424,6 +451,7 @@ const BoldLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref
   return (
     <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ minHeight: '297mm', fontFamily: theme.fontFamily, display: 'flex' }}>
       <div className="flex-shrink-0" style={{ width: '35%', backgroundColor: theme.headerBg, color: theme.headerText, padding: '36px 24px' }}>
+        {d.personalInfo.profileImage && <div className="flex justify-center mb-4"><img src={d.personalInfo.profileImage} alt="" className="w-[60px] h-[60px] rounded-full object-cover border-2 border-white/30" /></div>}
         <h1 className="text-[22px] font-bold tracking-wide mb-1" style={{ color: theme.accent }}>{d.personalInfo.fullName || 'Your Name'}</h1>
         {d.personalInfo.title && <p className="text-[12px] font-medium tracking-wider uppercase mb-4 opacity-90">{d.personalInfo.title}</p>}
         <div className="mb-6 opacity-90"><ContactColumn personalInfo={d.personalInfo} theme={theme} /></div>
@@ -443,8 +471,13 @@ BoldLayout.displayName = 'BoldLayout'
 const TechLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '40px 48px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div className="mb-6 pb-4" style={{ borderBottom: `2px solid ${theme.accent}` }}>
-      <h1 className="text-[26px] font-bold tracking-tight mb-1" style={{ color: theme.primary, fontFamily: "'JetBrains Mono', monospace" }}>{'> '}{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide mb-3" style={{ color: theme.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+        <div>
+          <h1 className="text-[26px] font-bold tracking-tight mb-1" style={{ color: theme.primary, fontFamily: "'JetBrains Mono', monospace" }}>{'> '}{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide mb-3" style={{ color: theme.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{d.personalInfo.title}</p>}
+        </div>
+      </div>
       <ContactRow personalInfo={d.personalInfo} theme={theme} />
     </div>
     {isEmpty(d) ? <EmptyState t={t} /> : sectionOrder.map((id) => <RenderSection key={id} sectionId={id} d={d} theme={theme} sectionLabels={sectionLabels} variant="tech" />)}
@@ -458,8 +491,13 @@ TechLayout.displayName = 'TechLayout'
 const AcademicLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '40px 48px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div className="text-center mb-6 pb-3" style={{ borderBottom: `2px solid ${theme.accent}` }}>
-      <h1 className="text-[24px] font-bold tracking-wide uppercase mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[12px] italic mb-2" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center justify-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+        <div>
+          <h1 className="text-[24px] font-bold tracking-wide uppercase mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[12px] italic mb-2" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+        </div>
+      </div>
       <ContactRow personalInfo={d.personalInfo} theme={theme} />
     </div>
     {isEmpty(d) ? <EmptyState t={t} /> : sectionOrder.map((id) => <RenderSection key={id} sectionId={id} d={d} theme={theme} sectionLabels={sectionLabels} variant="academic" />)}
@@ -477,8 +515,13 @@ const InfographicLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t
     <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ minHeight: '297mm', fontFamily: theme.fontFamily, display: 'flex' }}>
       <div style={{ width: '65%', padding: '36px 32px', color: theme.textPrimary, backgroundColor: '#ffffff' }}>
         <div className="mb-6">
-          <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-          {d.personalInfo.title && <p className="text-[13px] font-medium mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+          <div className="flex items-center gap-4">
+            {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+            <div>
+              <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+              {d.personalInfo.title && <p className="text-[13px] font-medium mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+            </div>
+          </div>
         </div>
         {isEmpty(d) ? <EmptyState t={t} /> : mainSections.map((id) => <RenderSection key={id} sectionId={id} d={d} theme={theme} sectionLabels={sectionLabels} />)}
       </div>
@@ -497,6 +540,7 @@ InfographicLayout.displayName = 'InfographicLayout'
 const DarkLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '40px 48px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: theme.bgColor || '#111827' }}>
     <div className="text-center mb-6 pb-4" style={{ borderBottom: `1px solid ${theme.sectionBorder}` }}>
+      {d.personalInfo.profileImage && <div className="flex justify-center mb-3"><img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover border-2 border-blue-400/30" /></div>}
       <h1 className="text-[28px] font-bold tracking-wide uppercase mb-1" style={{ color: theme.accent }}>{d.personalInfo.fullName || 'Your Name'}</h1>
       {d.personalInfo.title && <p className="text-[14px] font-medium tracking-wider uppercase mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
       <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-[10px]" style={{ color: theme.textMuted }}>
@@ -518,8 +562,13 @@ DarkLayout.displayName = 'DarkLayout'
 const TimelineLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '40px 48px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div className="mb-6 pb-4" style={{ borderBottom: `2px solid ${theme.accent}` }}>
-      <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+        <div>
+          <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+        </div>
+      </div>
       <ContactRow personalInfo={d.personalInfo} theme={theme} />
     </div>
     {isEmpty(d) ? <EmptyState t={t} /> : sectionOrder.map((id) => <RenderSection key={id} sectionId={id} d={d} theme={theme} sectionLabels={sectionLabels} variant="timeline" />)}
@@ -533,9 +582,12 @@ TimelineLayout.displayName = 'TimelineLayout'
 const CompactLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[9px] leading-tight overflow-y-auto" style={{ padding: '24px 32px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div className="flex justify-between items-start mb-3 pb-2" style={{ borderBottom: `1px solid ${theme.sectionBorder}` }}>
-      <div>
-        <h1 className="text-[20px] font-bold tracking-tight mb-0.5" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-        {d.personalInfo.title && <p className="text-[11px] font-medium" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center gap-3">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />}
+        <div>
+          <h1 className="text-[20px] font-bold tracking-tight mb-0.5" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[11px] font-medium" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+        </div>
       </div>
       <div className="text-right space-y-0.5 text-[9px]" style={{ color: theme.textMuted }}>
         {d.personalInfo.email && <div>{d.personalInfo.email}</div>}
@@ -555,6 +607,7 @@ CompactLayout.displayName = 'CompactLayout'
 const MagazineLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div className="text-center py-12 px-12" style={{ backgroundColor: theme.headerBg }}>
+      {d.personalInfo.profileImage && <div className="flex justify-center mb-3"><img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover" /></div>}
       <h1 className="text-[42px] font-bold tracking-tight mb-2" style={{ color: theme.headerText, fontFamily: "'Playfair Display', serif" }}>{d.personalInfo.fullName || 'Your Name'}</h1>
       {d.personalInfo.title && <p className="text-[16px] font-light tracking-widest uppercase mb-4" style={{ color: theme.accent }}>{d.personalInfo.title}</p>}
       <div className="flex flex-wrap justify-center items-center gap-x-5 gap-y-1 text-[10px]" style={{ color: theme.textMuted }}>
@@ -578,9 +631,14 @@ MagazineLayout.displayName = 'MagazineLayout'
 const GradientLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div style={{ background: theme.accentGradient || `linear-gradient(135deg, ${theme.headerBg} 0%, ${theme.accent} 100%)`, padding: '36px 48px', borderRadius: '0 0 24px 24px', color: '#ffffff' }}>
-      <h1 className="text-[28px] font-bold tracking-wide mb-1">{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[14px] font-medium tracking-wider uppercase opacity-90 mb-3">{d.personalInfo.title}</p>}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] opacity-90">
+      <div className="flex items-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-white/30" />}
+        <div>
+          <h1 className="text-[28px] font-bold tracking-wide mb-1">{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[14px] font-medium tracking-wider uppercase opacity-90 mb-3">{d.personalInfo.title}</p>}
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] opacity-90 mt-2">
         <ContactItem icon={FaEnvelope} value={d.personalInfo.email} />
         <ContactItem icon={FaPhone} value={d.personalInfo.phone} />
         <ContactItem icon={FaMapMarkerAlt} value={d.personalInfo.location} />
@@ -605,6 +663,7 @@ const SplitLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, re
   return (
     <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ minHeight: '297mm', fontFamily: theme.fontFamily, display: 'flex' }}>
       <div style={{ width: '50%', backgroundColor: theme.headerBg, color: theme.headerText, padding: '36px 28px' }}>
+        {d.personalInfo.profileImage && <div className="flex justify-center mb-4"><img src={d.personalInfo.profileImage} alt="" className="w-[60px] h-[60px] rounded-full object-cover border-2 border-white/30" /></div>}
         <h1 className="text-[24px] font-bold tracking-wide mb-1" style={{ color: theme.headerText }}>{d.personalInfo.fullName || 'Your Name'}</h1>
         {d.personalInfo.title && <p className="text-[12px] font-medium tracking-wider uppercase mb-4 opacity-90">{d.personalInfo.title}</p>}
         <div className="mb-6 opacity-90"><ContactColumn personalInfo={d.personalInfo} theme={theme} /></div>
@@ -630,8 +689,13 @@ SplitLayout.displayName = 'SplitLayout'
 const MetroLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '32px 36px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#f8fafb' }}>
     <div className="mb-6 p-5 rounded-xl" style={{ backgroundColor: '#ffffff', border: `2px solid ${theme.sectionBorder}` }}>
-      <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[13px] font-medium mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+        <div>
+          <h1 className="text-[26px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[13px] font-medium mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+        </div>
+      </div>
       <ContactRow personalInfo={d.personalInfo} theme={theme} />
     </div>
     {isEmpty(d) ? <EmptyState t={t} /> : sectionOrder.map((id) => (
@@ -649,8 +713,13 @@ MetroLayout.displayName = 'MetroLayout'
 const RibbonLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '40px 48px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div className="mb-6 pb-4" style={{ borderBottom: `3px solid ${theme.accent}` }}>
-      <h1 className="text-[28px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center gap-4">
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+        <div>
+          <h1 className="text-[28px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+        </div>
+      </div>
       <ContactRow personalInfo={d.personalInfo} theme={theme} />
     </div>
     {isEmpty(d) ? <EmptyState t={t} /> : sectionOrder.map((id) => <RenderSection key={id} sectionId={id} d={d} theme={theme} sectionLabels={sectionLabels} variant="ribbon" />)}
@@ -664,8 +733,13 @@ RibbonLayout.displayName = 'RibbonLayout'
 const AsymmetricLayout = forwardRef(({ d, theme, sectionOrder, sectionLabels, t }, ref) => (
   <div ref={ref} className="w-full max-w-[210mm] mx-auto text-[11px] leading-relaxed overflow-y-auto" style={{ padding: '40px 36px', minHeight: '297mm', fontFamily: theme.fontFamily, color: theme.textPrimary, backgroundColor: '#ffffff' }}>
     <div className="mb-6 pb-4 text-right" style={{ borderBottom: `2px solid ${theme.accent}` }}>
-      <h1 className="text-[28px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
-      {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+      <div className="flex items-center justify-end gap-4">
+        <div>
+          <h1 className="text-[28px] font-bold tracking-wide mb-1" style={{ color: theme.primary }}>{d.personalInfo.fullName || 'Your Name'}</h1>
+          {d.personalInfo.title && <p className="text-[13px] font-medium tracking-wide mb-3" style={{ color: theme.textSecondary }}>{d.personalInfo.title}</p>}
+        </div>
+        {d.personalInfo.profileImage && <img src={d.personalInfo.profileImage} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+      </div>
       <div className="flex flex-wrap justify-end items-center gap-x-4 gap-y-1 text-[10px]" style={{ color: theme.textMuted }}>
         <ContactItem icon={FaEnvelope} value={d.personalInfo.email} />
         <ContactItem icon={FaPhone} value={d.personalInfo.phone} />

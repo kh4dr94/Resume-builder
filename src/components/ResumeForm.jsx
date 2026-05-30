@@ -14,6 +14,7 @@ import {
   FaMagic,
   FaCheck,
   FaRedo,
+  FaCamera,
 } from 'react-icons/fa'
 
 // AI Rewrite logic
@@ -487,6 +488,49 @@ export default function ResumeForm({ data, setData }) {
       {/* Personal Information */}
       <Section title={t('form.personalInfo')} icon={FaUser} defaultOpen={true}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Profile Image Upload */}
+          <div className="sm:col-span-2 flex flex-col items-center mb-2">
+            <div
+              className="relative w-16 h-16 rounded-full border-2 border-gray-300 flex items-center justify-center overflow-hidden cursor-pointer hover:border-blue-400 transition-colors bg-gray-50"
+              onClick={() => {
+                const input = document.createElement('input')
+                input.type = 'file'
+                input.accept = 'image/*'
+                input.onchange = (e) => {
+                  const file = e.target.files[0]
+                  if (!file) return
+                  const reader = new FileReader()
+                  reader.onload = (ev) => {
+                    updatePersonalInfo('profileImage', ev.target.result)
+                  }
+                  reader.readAsDataURL(file)
+                }
+                input.click()
+              }}
+            >
+              {data.personalInfo.profileImage ? (
+                <img
+                  src={data.personalInfo.profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <FaCamera size={20} className="text-gray-400" />
+              )}
+              {data.personalInfo.profileImage && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    updatePersonalInfo('profileImage', '')
+                  }}
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 shadow"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            <span className="text-xs text-gray-500 mt-1">Upload Photo</span>
+          </div>
           <div className="sm:col-span-2">
             <InputField
               label={t('form.fullName')}
